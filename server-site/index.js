@@ -1,8 +1,9 @@
-// Import required libraries
+// src/app.js
 const express = require('express');
 const dotenv = require('dotenv');
 const connectDB = require('./src/config/db');
-const menuRoutes = require('./src/routes/MenuRoutes'); // Import routes
+const menuRoutes = require('./src/routes/MenuRoutes');
+const cors = require('cors');
 
 // Load environment variables
 dotenv.config();
@@ -14,18 +15,15 @@ connectDB();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware to parse JSON
+app.use(cors({ origin: 'http://localhost:5173' }));
 app.use(express.json());
 
-// Use routes
 app.use('/api/menu', menuRoutes);
 
-// Root route
 app.get('/', (req, res) => {
   res.send('Backend connected');
 });
 
-// Listen for incoming requests
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

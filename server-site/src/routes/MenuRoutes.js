@@ -2,11 +2,10 @@ const express = require('express');
 const router = express.Router();
 const MenuItem = require('../models/MenuSchema');
 
-// Route to add menu items to the database
 router.post('/', async (req, res) => {
   try {
-    const { category, name, price } = req.body;
-    const newMenuItem = new MenuItem({ category, name, price });
+    const { category, items } = req.body; // Updated to destructure items
+    const newMenuItem = new MenuItem({ category, items }); // Use items array directly
     await newMenuItem.save();
     res.status(201).json(newMenuItem);
   } catch (error) {
@@ -14,7 +13,6 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Route to get all menu items
 router.get('/', async (req, res) => {
   try {
     const menuItems = await MenuItem.find();
