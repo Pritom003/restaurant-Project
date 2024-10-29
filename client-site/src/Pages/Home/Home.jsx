@@ -5,15 +5,17 @@ import MenuBox from './MenuBox/MenuBox';
 const Home = () => {
     return (
         <div 
-            className="h-full font-sans w-screen grid lg:grid-cols-4 
-            bg-cover bg-center bg-fixed px-10 py-20 text-5xl gap-2 items-center justify-center"
+            className="h-full font-sans w-screen grid
+             lg:grid-cols-4 
+            bg-cover bg-center bg-fixed 
+            px-10 py-20 text-5xl gap-2 items-start justify-between"
             style={{ backgroundImage: `url(${background})`, backgroundAttachment: 'fixed' }}
         >
             <div className='col-span-3 lg:min-w-[40vw] min-w-[80vw] overflow-y-auto'>
                 <MenuBox />
             </div>
             <div>
-              <Cart />
+              <Cart className='w-full' />
             </div>
         </div>
     );

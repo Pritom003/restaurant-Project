@@ -18,7 +18,7 @@ const MenuBox = () => {
   };
 
   return (
-    <div className="max-w-[300px] md:max-w-[600px] lg:max-w-[900px] mx-auto p-4 text-black bg-[#e8e7e5] ">
+    <div className="max-w-[80vw] lg:max-w-[900px] mx-auto p-4 text-black bg-[#e8e7e5] ">
       {/* heading */}
       <div>
         <div className="flex justify-center mb-4 pt-8">
@@ -66,7 +66,7 @@ const MenuBox = () => {
       </div>
 
       {/* menu */}
-      {loading && <Loader />}
+      {loading && <div className="flex justify-center align-middle items-center"><Loader /></div>}
       {error && <p>Error loading menu: {error}</p>}
       {!loading &&
         !error &&
