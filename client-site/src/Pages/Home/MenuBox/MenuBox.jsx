@@ -21,7 +21,7 @@ const MenuBox = () => {
     <div className="max-w-[300px] md:max-w-[600px] lg:max-w-[900px] mx-auto p-4 text-black bg-[#e8e7e5] ">
       {/* heading */}
       <div>
-        <div className="flex justify-center mb-4">
+        <div className="flex justify-center mb-4 pt-8">
           <Heading />
         </div>
         <p className="text-xs text-center">
