@@ -18,7 +18,7 @@ const MenuBox = ({ addToCart }) => { // Accept addToCart as a prop
   };
 
   return (
-    <div className="max-w-[80vw] lg:max-w-[900px] mx-auto p-4 text-black bg-[#e8e7e5] ">
+    <div >
       {/* heading */}
       <div>
         <div className="flex justify-center mb-4 pt-8">

@@ -3,7 +3,7 @@ import { FaArrowRightLong } from "react-icons/fa6";
 
 const Cart = ({ items = [], totalPrice, removeFromCart }) => { // Set default value for items
     return (
-        <div className='bg-[#e8e7e5] px-2 pb-4 pt-4 w-[80vw] md:w-full min-h-56 overflow-y-auto'>
+        <div>
             <h3 className='border border-l-2 pl-2 text-xl border-l-red-900'>Cart</h3>
             <div className="mt-2 p-2 border min-h-36 border-gray-300">
                 <ul className='text-xs'>
