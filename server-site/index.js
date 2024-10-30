@@ -20,6 +20,7 @@ app.use(express.json());
 
 app.use('/api/menu', menuRoutes);
 
+
 app.get('/', (req, res) => {
   res.send('Backend connected');
 });
