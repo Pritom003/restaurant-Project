@@ -1,5 +1,5 @@
 const express = require('express');
-const { MongoClient } = require('mongodb');
+const { MongoClient ,ObjectId } = require('mongodb');
 const cors = require('cors');
 require('dotenv').config();
 
@@ -28,30 +28,77 @@ async function connectToMongoDB() {
   }
 }
 
-// Endpoint to add menu category
-app.post('/api/menu', async (req, res) => {
-  const { category, items } = req.body;
-  
-  // Check if category and items are provided
-  if (!category || !Array.isArray(items)) {
-    return res.status(400).json({ error: 'Menu data is required in the correct format' });
-  }
+app.post('/api/menu/:category/item', async (req, res) => {
+  console.log('Received request to add item to category:', req.params.category);
+  console.log('Request body:', req.body);
+
+  const { category } = req.params; // Get the category from the URL parameters
+  const { items } = req.body; // Get the items from the request body
 
   try {
     const database = client.db(dbName);
     const collection = database.collection(menuCollectionName);
 
-    // Prepare the menu item structure
-    const menuData = { category, items };
+    // Check if the category already exists
+    const existingCategory = await collection.findOne({ category: category });
 
-    // Insert the new category
-    const result = await collection.insertOne(menuData);
-    res.status(201).json({ message: 'Menu category added', id: result.insertedId });
+    if (existingCategory) {
+      // If the category exists, check if it's a "Set Menu"
+      if (category === "Set Menu") {
+        // For "Set Menu", update it by pushing new items with included items structure
+        const result = await collection.updateOne(
+          { category: category },
+          { $push: { items: { $each: items } } } // Push new items to the items array
+        );
+
+        if (result.modifiedCount === 0) {
+          return res.status(404).json({ error: 'Failed to add item to existing Set Menu category' });
+        }
+
+        return res.status(200).json({ message: 'Item added successfully to existing Set Menu category' });
+      } else {
+        // For other categories, update as before
+        const result = await collection.updateOne(
+          { category: category },
+          { $push: { items: { $each: items } } } // Push new items to the items array
+        );
+
+        if (result.modifiedCount === 0) {
+          return res.status(404).json({ error: 'Failed to add item to existing category' });
+        }
+
+        return res.status(200).json({ message: 'Item added successfully to existing category' });
+      }
+    } else {
+      // If the category does not exist, create a new one
+      const newCategory = {
+        category: category,
+        items: items, // Add the items directly since this is a new category
+      };
+
+      const result = await collection.insertOne(newCategory);
+
+      if (!result.acknowledged) {
+        return res.status(500).json({ error: 'Failed to create new category' });
+      }
+
+      return res.status(201).json({ message: 'New category created and item added successfully' });
+    }
   } catch (error) {
-    console.error('Error adding menu category:', error);
-    res.status(500).json({ error: 'Failed to add menu category' });
+    console.error('Error adding item:', error);
+    res.status(500).json({ error: 'Failed to add item' });
   }
 });
+
+
+
+
+
+
+
+
+
+
 
 // Endpoint to get all menu categories
 app.get('/api/menu', async (req, res) => {

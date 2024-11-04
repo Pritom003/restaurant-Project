@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
-import MenuData from "./Menudatea"; // Make sure this returns the correct menu data structure
+import MenuData from "../../../Hooks/Menudatea"; // Make sure this returns the correct menu data structure
 import Loader from "../../../Component/Shared/Loader/Loader";
 import Heading from "./Heading";
 
