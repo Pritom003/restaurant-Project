@@ -10,6 +10,7 @@ const port = process.env.PORT || 3000;
 const uri = process.env.MONGODB_URI;
 const dbName = 'restaurantDB';
 const menuCollectionName = 'menus';
+const orderCollectionName = 'orders';
 
 // Middleware
 app.use(cors());  // Enable CORS
@@ -28,6 +29,51 @@ async function connectToMongoDB() {
   }
 }
 
+
+// Order collection 
+
+
+app.post('/api/orders', async (req, res) => {
+  const { userEmail, items, totalPrice } = req.body;
+
+  if (!userEmail || !items || items.length === 0) {
+      return res.status(400).json({ error: 'User email and items are required' });
+  }
+
+  const orderData = {
+      userEmail,
+      items,
+      totalPrice,
+      createdAt: new Date(),
+  };
+
+  try {
+      const database = client.db(dbName);
+      const ordersCollection = database.collection(orderCollectionName); // Ensure you have this collection
+
+      const result = await ordersCollection.insertOne(orderData);
+      if (result.acknowledged) {
+          res.status(201).json({ message: 'Order placed successfully' });
+      } else {
+          res.status(500).json({ error: 'Failed to place order' });
+      }
+  } catch (error) {
+      console.error('Error placing order:', error);
+      res.status(500).json({ error: 'Failed to place order' });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+// --------------------------------------
+// post for all menu 
 app.post('/api/menu/:category/item', async (req, res) => {
   console.log('Received request to add item to category:', req.params.category);
   console.log('Request body:', req.body);
