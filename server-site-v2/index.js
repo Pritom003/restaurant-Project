@@ -3,6 +3,7 @@ const { MongoClient ,ObjectId } = require('mongodb');
 const cors = require('cors');
 require('dotenv').config();
 
+const axios = require('axios');
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -12,10 +13,17 @@ const dbName = 'restaurantDB';
 const menuCollectionName = 'menus';
 const orderCollectionName = 'orders';
 
-// Middleware
-app.use(cors());  // Enable CORS
-app.use(express.json());  // Enable JSON parsing
 
+// Middleware
+
+app.use(express.json());  // Enable JSON parsing
+const corsOptions = {
+  origin: 'http://localhost:5173', // Replace with your frontend URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type'], // Include other headers if necessary
+};
+
+app.use(cors(corsOptions));
 // MongoDB Client
 let client;
 
@@ -33,26 +41,38 @@ async function connectToMongoDB() {
 // Order collection 
 
 
+
+// Order collection endpoint
 app.post('/api/orders', async (req, res) => {
-  const { userEmail, items, totalPrice } = req.body;
+  const { userEmail,chefEmail, items, totalPrice } = req.body;
 
   if (!userEmail || !items || items.length === 0) {
       return res.status(400).json({ error: 'User email and items are required' });
   }
 
   const orderData = {
-      userEmail,
-      items,
-      totalPrice,
-      createdAt: new Date(),
-  };
+    chefEmail,
+    userEmail,
+    items: items.map(item => ({
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+    })),
+    totalPrice,
+    createdAt: new Date(),
+};
+
 
   try {
       const database = client.db(dbName);
-      const ordersCollection = database.collection(orderCollectionName); // Ensure you have this collection
+      const ordersCollection = database.collection(orderCollectionName);
 
       const result = await ordersCollection.insertOne(orderData);
       if (result.acknowledged) {
+          // Send the order data to Zapier
+          const zapierWebhookUrl = 'https://hooks.zapier.com/hooks/catch/20636785/25h17fq/'; // Replace with your Zapier webhook URL
+          await axios.post(zapierWebhookUrl, orderData);
+
           res.status(201).json({ message: 'Order placed successfully' });
       } else {
           res.status(500).json({ error: 'Failed to place order' });
@@ -62,6 +82,7 @@ app.post('/api/orders', async (req, res) => {
       res.status(500).json({ error: 'Failed to place order' });
   }
 });
+
 
 
 

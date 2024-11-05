@@ -12,28 +12,22 @@ const Cart = () => {
     };
 
     const handlePlaceOrder = async () => {
+        const chefEmail = "mkrefat5@gmail.com";
         const orderData = {
-            userEmail: "temp_user_email", // Replace with your variable
+            chefEmail,
+            userEmail: "nilimanammi36@gmail.com", // Replace with actual user email from your state or context
             items: items,
             totalPrice: totalPrice,
         };
     
-        console.log(orderData);
-    
         try {
-            const response = await axios.post('http://localhost:3000/api/orders', orderData, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-    
-            console.log(response.data); // Handle response as needed
+            const response = await axios.post('http://localhost:3000/api/orders', orderData); // Forward to your backend
+            console.log(response.data); // Handle response as needed, e.g., show success message
         } catch (error) {
             console.error('Error placing order:', error.message);
         }
     };
     
-
     return (
         <div>
             <h3 className='border border-l-2 pl-2 text-xl border-l-red-900'>Cart</h3>
@@ -42,7 +36,7 @@ const Cart = () => {
                     {items.length > 0 ? (
                         items.map((item) => (
                             <li key={item.name} className="flex justify-between items-center py-1">
-                                  <span className="flex-grow">{item.name} {item.quantity > 1 && `(${item.quantity}x)`}</span> {/* Display quantity with 'x' */}
+                                <span className="flex-grow">{item.name} {item.quantity > 1 && `(${item.quantity}x)`}</span>
                                 <span className="flex-shrink-0">${(item.price * item.quantity).toFixed(2)}</span>
                                 <button onClick={() => removeFromCart(item)} className="pl-2 hover:text-red-800">
                                     <PiTrashSimpleThin />
@@ -54,7 +48,6 @@ const Cart = () => {
                     )}
                 </ul>
 
-                {/* Total price */}
                 {items.length > 0 && (
                     <div className="text-end">
                         <div className="mt-2 text-lg">Total: ${totalPrice.toFixed(2)}</div>
