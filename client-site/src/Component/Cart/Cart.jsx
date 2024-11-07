@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { PiTrashSimpleThin } from "react-icons/pi";
 import { FaArrowRightLong } from "react-icons/fa6";
+import Swal from 'sweetalert2';
 
 const Cart = () => {
     const dispatch = useDispatch();
@@ -12,22 +13,40 @@ const Cart = () => {
     };
 
     const handlePlaceOrder = async () => {
-        const chefEmail = "mkrefat5@gmail.com";
+        const chefEmail = "njahanpritom65@gmail.com";
         const orderData = {
             chefEmail,
-            userEmail: "nilimanammi36@gmail.com", // Replace with actual user email from your state or context
+            userEmail: "fariadamd55@gmail.com", 
             items: items,
             totalPrice: totalPrice,
         };
     
         try {
             const response = await axios.post('http://localhost:3000/api/orders', orderData); // Forward to your backend
-            console.log(response.data); // Handle response as needed, e.g., show success message
+            console.log(response.data); // Handle response as needed
+
+            // Show success message with SweetAlert2
+            Swal.fire({
+                title: 'Success!',
+                text: 'Your order has been placed successfully!',
+                icon: 'success',
+                confirmButtonText: 'Okay'
+            });
+
+            // Optionally, clear the cart after successful order placement
+            dispatch({ type: 'CLEAR_CART' }); // If you have a CLEAR_CART action
         } catch (error) {
             console.error('Error placing order:', error.message);
+
+            // Show error message with SweetAlert2
+            Swal.fire({
+                title: 'Error!',
+                text: 'There was an issue placing your order. Please try again.',
+                icon: 'error',
+                confirmButtonText: 'Okay'
+            });
         }
     };
-    
     return (
         <div>
             <h3 className='border border-l-2 pl-2 text-xl border-l-red-900'>Cart</h3>

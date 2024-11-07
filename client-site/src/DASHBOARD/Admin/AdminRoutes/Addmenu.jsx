@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import useMenuData from '../../../Hooks/Menudatea'; // Adjust path as needed
+import Swal from 'sweetalert2';
 
 const AddMenuItem = () => {
   const { categories, axiosSecure } = useMenuData(); // Use the custom hook to get categories
@@ -23,11 +24,21 @@ const AddMenuItem = () => {
 
     try {
       await axiosSecure.post(`/menu/${itemData.category}/item`, itemData);
-      alert('Item added successfully!');
+      Swal.fire({
+        title: 'Success!',
+        text: 'Menu item added successfully!',
+        icon: 'success',
+        confirmButtonText: 'Okay'
+      });
       setIsOtherCategory(false); // Reset state if needed
     } catch (error) {
       console.error('Error adding item:', error);
-      alert('Failed to add item.');
+      Swal.fire({
+        title: 'Error!',
+        text: 'Failed to add item. Please try again.',
+        icon: 'error',
+        confirmButtonText: 'Okay'
+      });
     }
   };
 

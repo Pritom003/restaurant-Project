@@ -1,4 +1,3 @@
-// reducer.js
 const initialState = {
     items: JSON.parse(localStorage.getItem('cartItems')) || [],
     totalPrice: 0,
@@ -53,6 +52,13 @@ const cartReducer = (state = initialState, action) => {
                 ...state,
                 items: newItems,
                 totalPrice: newItems.reduce((total, item) => total + item.price * (item.quantity || 1), 0),
+            };
+        case 'CLEAR_CART':  // New case to clear the cart
+            localStorage.removeItem('cartItems');
+            return {
+                ...state,
+                items: [],
+                totalPrice: 0,
             };
         default:
             return state;
