@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { PiTrashSimpleThin } from "react-icons/pi";
 import { FaArrowRightLong } from "react-icons/fa6";
 import Swal from 'sweetalert2';
-
+import { TiShoppingCart } from "react-icons/ti";
 const Cart = () => {
     const dispatch = useDispatch();
     const { items, totalPrice } = useSelector((state) => state);
@@ -49,7 +49,7 @@ const Cart = () => {
     };
     return (
         <div>
-            <h3 className='border border-l-2 pl-2 text-xl border-l-red-900'>Cart</h3>
+            <h3 className='border border-l-2 pl-2 text-xl border-l-red-900 flex gap-2 text-black justify-between items-center'>Cart <TiShoppingCart /></h3>
             <div className="mt-2 p-2 border min-h-36 border-gray-300">
                 <ul className='text-xs'>
                     {items.length > 0 ? (
