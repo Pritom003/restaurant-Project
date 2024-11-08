@@ -78,7 +78,7 @@ const Cart = () => {
                         <div className="">
                             <button
                                 onClick={handlePlaceOrder}
-                                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                               className='text-lg text-gray-600 hover:text-red-950 hover:underline'
                             >
                                 Place Order
                             </button>
