@@ -1,44 +1,46 @@
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { PiTrashSimpleThin } from "react-icons/pi";
-import { FaArrowRightLong } from "react-icons/fa6";
 import Swal from 'sweetalert2';
 import { TiShoppingCart } from "react-icons/ti";
+import { useState } from 'react';
+import PaymentForm from './PaymentForm';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+
+const stripePromise = loadStripe("pk_test_51OEXhYE2dfp7aMfhJKJULSpIPPOvKTdRHdXo1ezaHdnCnbnkmMCH5J9hAMAmCRtemyKWnFbOrJaylZnNREk5SZLU00rUmAaV4Z");
+
 const Cart = () => {
     const dispatch = useDispatch();
     const { items, totalPrice } = useSelector((state) => state);
+    const [showPaymentForm, setShowPaymentForm] = useState(false);
 
     const removeFromCart = (item) => {
         dispatch({ type: 'REMOVE_FROM_CART', payload: item });
     };
 
-    const handlePlaceOrder = async () => {
+    const handlePlaceOrder = () => {
+        setShowPaymentForm(true);
+    };
+
+    const handleOrderCompletion = async () => {
         const chefEmail = "njahanpritom65@gmail.com";
         const orderData = {
             chefEmail,
-            userEmail: "fariadamd55@gmail.com", 
+            userEmail: "fariadamd55@gmail.com",
             items: items,
             totalPrice: totalPrice,
+            paymentStatus: "success",
         };
-    
+
         try {
-            const response = await axios.post('http://localhost:3000/api/orders', orderData); // Forward to your backend
-            console.log(response.data); // Handle response as needed
+            await axios.post('http://localhost:3000/api/orders', orderData)
 
-            // Show success message with SweetAlert2
-            Swal.fire({
-                title: 'Success!',
-                text: 'Your order has been placed successfully!',
-                icon: 'success',
-                confirmButtonText: 'Okay'
-            });
-
-            // Optionally, clear the cart after successful order placement
-            dispatch({ type: 'CLEAR_CART' }); // If you have a CLEAR_CART action
+            setShowPaymentForm(false);
+            Swal.fire('Payment Successful', 'Your order has been placed!', 'success');
+            dispatch({ type: 'CLEAR_CART' });
         } catch (error) {
             console.error('Error placing order:', error.message);
-
-            // Show error message with SweetAlert2
             Swal.fire({
                 title: 'Error!',
                 text: 'There was an issue placing your order. Please try again.',
@@ -47,9 +49,12 @@ const Cart = () => {
             });
         }
     };
+
     return (
         <div>
-            <h3 className='border border-l-2 pl-2 text-xl border-l-red-900 flex gap-2 text-black justify-between items-center'>Cart <TiShoppingCart /></h3>
+            <h3 className='border border-l-2 pl-2 text-xl border-l-red-900 flex gap-2 text-black justify-between items-center'>
+                Cart <TiShoppingCart />
+            </h3>
             <div className="mt-2 p-2 border min-h-36 border-gray-300">
                 <ul className='text-xs'>
                     {items.length > 0 ? (
@@ -70,17 +75,34 @@ const Cart = () => {
                 {items.length > 0 && (
                     <div className="text-end">
                         <div className="mt-2 text-lg">Total: ${totalPrice.toFixed(2)}</div>
-                        <div className="flex justify-end mt-2">
+                        <div className="">
                             <button
-                                className="text-red-950 flex justify-end items-center gap-1 underline align-middle text-xs px-4 py-2 rounded"
                                 onClick={handlePlaceOrder}
+                                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                             >
-                                Place Order <FaArrowRightLong />
+                                Place Order
                             </button>
                         </div>
                     </div>
                 )}
             </div>
+
+            {showPaymentForm && (
+                <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-lg max-w-md w-full">
+                        <h2 className="text-xl font-semibold mb-4">Complete Your Payment</h2>
+                        <Elements stripe={stripePromise}>
+                            <PaymentForm totalPrice={totalPrice} handleOrderCompletion={handleOrderCompletion} />
+                        </Elements>
+                        <button
+                            onClick={() => setShowPaymentForm(false)}
+                            className="mt-4 text-gray-500 underline"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
