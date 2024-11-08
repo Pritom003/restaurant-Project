@@ -19,7 +19,12 @@ app.use(express.json());  // Enable JSON parsing
 let client;
 
 async function connectToMongoDB() {
-  client = new MongoClient(uri);
+  // client = new MongoClient(uri);
+  client = new MongoClient(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 5000 // 5 seconds
+  });
   try {
     await client.connect();
     console.log('Connected to MongoDB');

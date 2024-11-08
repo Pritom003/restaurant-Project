@@ -13,7 +13,7 @@ connectDB();
 
 // Create an Express application instance
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
 
 app.use(cors({
   origin: true, // temporarily allows any origin for testing
