@@ -4,7 +4,7 @@ const cors = require('cors');
 require('dotenv').config();
 const axios = require('axios');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-
+const moment = require('moment'); 
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -60,6 +60,12 @@ app.post('/api/create-payment-intent', async (req, res) => {
   }
 });
 
+
+
+
+
+
+
 // Order collection endpoint
 app.post('/api/orders', async (req, res) => {
   const { userEmail, chefEmail, paymentStatus, items, totalPrice } = req.body;
@@ -76,6 +82,7 @@ app.post('/api/orders', async (req, res) => {
       name: item.name,
       price: item.price,
       quantity: item.quantity,
+      createdAt: new Date(), 
     })),
     totalPrice,
     createdAt: new Date(),
@@ -105,6 +112,110 @@ console.log(orderData);
     res.status(500).json({ error: 'Failed to place order' });
   }
 });
+
+// Endpoint to get all orders
+app.get('/api/orders', async (req, res) => {
+  try {
+    const database = client.db(dbName);
+    const ordersCollection = database.collection(orderCollectionName);
+
+    const orders = await ordersCollection.find().toArray();  // Get all orders from the database
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    res.status(500).json({ error: 'Failed to fetch orders' });
+  }
+});
+
+// Endpoint to delete an order
+app.delete('/api/orders/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const database = client.db(dbName);
+    const ordersCollection = database.collection(orderCollectionName);
+
+    const result = await ordersCollection.deleteOne({ _id: new ObjectId(id) });
+
+    if (result.deletedCount === 1) {
+      return res.status(200).json({ message: 'Order deleted successfully' });
+    } else {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+  } catch (error) {
+    console.error('Error deleting order:', error);
+    res.status(500).json({ error: 'Failed to delete order' });
+  }
+});
+
+
+
+
+
+// revenue 
+// Revenue: Weekly
+app.get('/api/revenue/weekly', async (req, res) => {
+  try {
+    const startOfWeek = moment().startOf('week').toDate();  // Start of the current week (Sunday)
+    const endOfWeek = moment().endOf('week').toDate();      // End of the current week (Saturday)
+
+    const database = client.db(dbName);
+    const ordersCollection = database.collection(orderCollectionName);
+
+    // Perform aggregation to calculate the total revenue for the week
+    const revenue = await ordersCollection.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startOfWeek, $lte: endOfWeek },  // Match orders within the current week
+          paymentStatus: "success",  // Optionally filter for paid orders
+        },
+      },
+      {
+        $group: {
+          _id: null,  // No grouping needed, just sum everything
+          totalRevenue: { $sum: '$totalPrice' },  // Sum the totalPrice for all matched orders
+        },
+      },
+    ]).toArray();  // Convert the aggregation result into an array
+
+    res.json({ revenue: revenue.length ? revenue[0].totalRevenue : 0 });
+  } catch (error) {
+    console.error('Error fetching weekly revenue:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+app.get('/api/revenue/monthly', async (req, res) => {
+  try {
+    const startOfMonth = moment().startOf('month').toDate();  // Start of the current month
+    const endOfMonth = moment().endOf('month').toDate();      // End of the current month
+
+    const database = client.db(dbName);
+    const ordersCollection = database.collection(orderCollectionName);
+
+    // Perform aggregation to calculate the total revenue for the month
+    const revenue = await ordersCollection.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startOfMonth, $lte: endOfMonth },  // Match orders within the current month
+          paymentStatus: "success",  // Optionally filter for paid orders
+        },
+      },
+      {
+        $group: {
+          _id: null,  // No grouping needed, just sum everything
+          totalRevenue: { $sum: '$totalPrice' },  // Sum the totalPrice for all matched orders
+        },
+      },
+    ]).toArray();  // Convert the aggregation result into an array
+
+    res.json({ revenue: revenue.length ? revenue[0].totalRevenue : 0 });
+  } catch (error) {
+    console.error('Error fetching monthly revenue:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
 
 // POST for all menu items
 app.post('/api/menu/:category/item', async (req, res) => {

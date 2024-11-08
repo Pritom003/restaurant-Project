@@ -8,6 +8,7 @@ import DashboardLayout from "./Component/Layouts/DashboardLayout";
 import AdminProfile from "./DASHBOARD/Admin/AdminRoutes/AdminProfile";
 import Addmenu from "./DASHBOARD/Admin/AdminRoutes/Addmenu";
 import AllMenulist from "./DASHBOARD/Admin/AdminRoutes/AllMenulist";
+import OrderLlist from "./DASHBOARD/Admin/AdminRoutes/OrderLlist";
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,7 @@ const router = createBrowserRouter([
       { path: "profile", element: <AdminProfile/> },
       { path: "add-menu", element: <Addmenu /> },
       { path: "menus", element: <AllMenulist /> },
+      { path: "orderList", element: <OrderLlist /> },
       // { path: "add-notice", element: <AddNotice /> },
       // { path: "user-list", element: <UserList /> },
       // { path: "employee-list", element: <EmployeeList /> },

@@ -7,18 +7,18 @@ import { GrMoney } from "react-icons/gr";
 import { RiMenuSearchFill } from "react-icons/ri";
 const DashboardLayout = () => { 
   const [isExpanded, setIsExpanded] = useState(false);
-  const role = "user";
+  const role = "admin";
 
   const toggleMenu = () => {
     setIsExpanded(!isExpanded);
   };
 
   return (
-    <div className="grid lg:flex  min-h-screen bg-gray-100">
+    <div className="grid lg:flex   bg-gray-100">
       <nav 
         style={{ backgroundImage: `url(${backgroundimg})`, position: 'relative' }}
         className={`bg-cover bg-no-repeat lg:w-[180px] 
-          lg:min-h-[100vh] w-full h-auto p-4 transition-all 
+          lg:h-screen w-full h-auto p-4 transition-all 
           duration-300 ${isExpanded ? 'h-auto' : 'h-full'}`}
       >
         {/* Overlay for the background image */}
@@ -58,7 +58,7 @@ const DashboardLayout = () => {
               </li>
               <li className="flex items-center py-2">
               <GrMoney  className="text-white mr-2" />{/* Trash icon */}
-                <Link to="menus" className="block text-white">Orders </Link>
+                <Link to="orderList" className="block text-white">Orders </Link>
               </li>
             </>
           ) : role === 'user' ?(
