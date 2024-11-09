@@ -1,4 +1,6 @@
-import  { useState } from 'react';
+// PaymentForm.js
+
+import { useState } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import axios from 'axios';
 
@@ -10,7 +12,7 @@ const PaymentForm = ({ totalPrice, handleOrderCompletion }) => {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        const { data } = await axios.post('http://localhost:3000/api/create-payment-intent', { totalPrice });
+        const { data } = await axios.post(`http://localhost:3000/api/create-payment-intent`, { totalPrice });
         const clientSecret = data.clientSecret;
 
         const cardElement = elements.getElement(CardElement);
@@ -21,20 +23,20 @@ const PaymentForm = ({ totalPrice, handleOrderCompletion }) => {
             },
         });
 
- // Handle errors or successful payment
- if (paymentResult.error) {
-    setError(paymentResult.error.message);
-} else if (paymentResult.paymentIntent.status === 'succeeded') {
-    handleOrderCompletion(paymentResult.paymentIntent); // Pass the paymentIntent to handleOrderCompletion
-}
-};
-
+        if (paymentResult.error) {
+            setError(paymentResult.error.message);
+        } else if (paymentResult.paymentIntent.status === 'succeeded') {
+            handleOrderCompletion(paymentResult.paymentIntent);
+        }
+    };
 
     return (
         <form onSubmit={handleSubmit}>
             <CardElement />
-            <button type="submit" disabled={!stripe}>Pay</button>
-            {error && <div>{error}</div>}
+            <button type="submit" disabled={!stripe} className="mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700">
+                Pay
+            </button>
+            {error && <div className="text-red-500 mt-2">{error}</div>}
         </form>
     );
 };

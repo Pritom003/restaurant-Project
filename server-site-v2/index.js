@@ -6,7 +6,7 @@ const axios = require('axios');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const moment = require('moment'); 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 
 // MongoDB URI from environment variables
 const uri = process.env.MONGODB_URI;

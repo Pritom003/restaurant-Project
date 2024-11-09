@@ -28,6 +28,7 @@ const OrderLlist = () => {
         });
     }, []);  // Empty dependency array ensures it runs only once on mount
   
+  
     return (
    <div>
 
@@ -36,7 +37,7 @@ const OrderLlist = () => {
         {/* Monthly Revenue Card */}
         <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
           <h3 className="text-xl font-semibold text-gray-700 mb-4">Monthly Revenue</h3>
-          <p className="text-4xl font-bold text-green-500">${monthlyRevenue.toFixed(2)}</p>
+          <p className="text-4xl font-bold text-green-500">${monthlyRevenue?.toFixed(2)}</p>
         </div>
   
         {/* Weekly Revenue Card */}

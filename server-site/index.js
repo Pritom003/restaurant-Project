@@ -1,33 +1,54 @@
-// src/app.js
 const express = require('express');
-const dotenv = require('dotenv');
-const connectDB = require('./src/config/db');
-const menuRoutes = require('./src/routes/MenuRoutes');
 const cors = require('cors');
+const dotenv = require('dotenv');
+const connectToMongoDB = require('./src/config/db');
+// ========================= 
+const menuRoutes = require('./src/routes/MenuRoutes'); 
+const orderRoutes = require('./src/routes/OrderRoutes');
+const revenueRoutes = require('./src/routes/RevenueRutes');
+const paymentRoutes  = require('./src/routes/PaymentRutes');
 
-// Load environment variables
-dotenv.config();
+
+
+
+dotenv.config(); // Ensure your .env file is loaded
+
+const app = express();
+const port = process.env.PORT || 3000;
+
+// Middleware
+app.use(express.json());
+app.use(cors());
 
 // Connect to MongoDB
-connectDB();
-
-// Create an Express application instance
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-app.use(cors({
-  origin: true, // temporarily allows any origin for testing
-}));
-
-app.use(express.json());
-
-app.use('/api/menu', menuRoutes);
+connectToMongoDB();
+// ==============================================
+// Use the imported routes
+app.use(menuRoutes); // Use the menu routes here
+app.use(orderRoutes); // Use the menu routes here
+app.use(revenueRoutes);
+app.use(paymentRoutes);
 
 
+
+
+
+
+
+// ===========================================
 app.get('/', (req, res) => {
-  res.send('Backend connected');
+  res.send('Welcome to the Restaurant API');
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Something went wrong!' });
 });
+
+// Start server and connect to MongoDB
+app.listen(port, async () => {
+  await connectToMongoDB();
+  console.log(`Server is running on http://localhost:${port}`);
+});
+

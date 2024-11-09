@@ -57,7 +57,7 @@ const OrderTable = () => {
           {orders.map((order) => (
             <tr key={order._id} className="border-b cursor-pointer" onClick={() => handleRowClick(order)}>
               <td className="px-4 py-2">{formatDate(order.createdAt)}</td> {/* Display formatted date */}
-              <td className="px-4 py-2">${order.totalPrice.toFixed(2)}</td>
+              <td className="px-4 py-2">${order.totalPrice?.toFixed(2)}</td>
               <td className="px-4 py-2">{order.paymentStatus ? 'Paid' : 'Pending'}</td>
               <td className="px-4 py-2">
                 <button
@@ -86,7 +86,7 @@ const OrderTable = () => {
           <ul className="list-disc pl-6">
             {selectedOrder.items.map((item, index) => (
               <li key={index}>
-                <p>{item.name} - ${item.price.toFixed(2)} x {item.quantity}</p>
+                <p>{item.name} - ${item.price?.toFixed(2)} x {item.quantity}</p>
               </li>
             ))}
           </ul>

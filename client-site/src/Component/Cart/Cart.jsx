@@ -1,3 +1,5 @@
+// Cart.js
+
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { PiTrashSimpleThin } from "react-icons/pi";
@@ -7,46 +9,36 @@ import { useState } from 'react';
 import PaymentForm from './PaymentForm';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
+const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
 
-const stripePromise = loadStripe("pk_test_51OEXhYE2dfp7aMfhJKJULSpIPPOvKTdRHdXo1ezaHdnCnbnkmMCH5J9hAMAmCRtemyKWnFbOrJaylZnNREk5SZLU00rUmAaV4Z");
+const stripePromise = loadStripe(stripePublicKey);
 
 const Cart = () => {
     const dispatch = useDispatch();
     const { items, totalPrice } = useSelector((state) => state);
     const [showPaymentForm, setShowPaymentForm] = useState(false);
 
-    const removeFromCart = (item) => {
-        dispatch({ type: 'REMOVE_FROM_CART', payload: item });
-    };
-
-    const handlePlaceOrder = () => {
-        setShowPaymentForm(true);
-    };
+    const removeFromCart = (item) => dispatch({ type: 'REMOVE_FROM_CART', payload: item });
+    
+    const handlePlaceOrder = () => setShowPaymentForm(true);
 
     const handleOrderCompletion = async () => {
-        const chefEmail = "njahanpritom65@gmail.com";
         const orderData = {
-            chefEmail,
+            chefEmail: "njahanpritom65@gmail.com",
             userEmail: "fariadamd55@gmail.com",
-            items: items,
-            totalPrice: totalPrice,
+            items,
+            totalPrice,
             paymentStatus: "success",
         };
 
         try {
-            await axios.post('http://localhost:3000/api/orders', orderData)
-
+            await axios.post(`http://localhost:3000/api/orders`, orderData);
             setShowPaymentForm(false);
             Swal.fire('Payment Successful', 'Your order has been placed!', 'success');
             dispatch({ type: 'CLEAR_CART' });
         } catch (error) {
             console.error('Error placing order:', error.message);
-            Swal.fire({
-                title: 'Error!',
-                text: 'There was an issue placing your order. Please try again.',
-                icon: 'error',
-                confirmButtonText: 'Okay'
-            });
+            Swal.fire('Error', 'There was an issue placing your order. Please try again.', 'error');
         }
     };
 
@@ -75,14 +67,12 @@ const Cart = () => {
                 {items.length > 0 && (
                     <div className="text-end">
                         <div className="mt-2 text-lg">Total: ${totalPrice.toFixed(2)}</div>
-                        <div className="">
-                            <button
-                                onClick={handlePlaceOrder}
-                               className='text-lg text-gray-600 hover:text-red-950 hover:underline'
-                            >
-                                Place Order
-                            </button>
-                        </div>
+                        <button
+                            onClick={handlePlaceOrder}
+                            className='text-lg text-gray-600 hover:text-red-950 hover:underline'
+                        >
+                            Place Order
+                        </button>
                     </div>
                 )}
             </div>
