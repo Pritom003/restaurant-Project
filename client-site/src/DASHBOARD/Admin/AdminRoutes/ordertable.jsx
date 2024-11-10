@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
-const OrderTable = () => {
+const OrderTable = ({ updateRevenue }) => {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
@@ -9,41 +10,50 @@ const OrderTable = () => {
     // Fetch orders from the backend
     axios.get('http://localhost:3000/api/orders')
       .then((response) => {
-        setOrders(response.data);  // Set the fetched orders in the state
+        setOrders(response.data);
       })
       .catch((error) => {
         console.error('Error fetching orders:', error);
       });
   }, []);
 
-  // Handle order deletion
+  // Handle order deletion with SweetAlert2 confirmation
   const handleDelete = (id) => {
-    axios.delete(`http://localhost:3000/api/orders/${id}`)
-      .then((response) => {
-        // Remove the deleted order from the state
-        setOrders(orders.filter(order => order._id !== id));
-        alert('Order deleted successfully');
-      })
-      .catch((error) => {
-        console.error('Error deleting order:', error);
-        alert('Failed to delete order');
-      });
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to delete this order?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios.delete(`http://localhost:3000/api/orders/${id}`)
+          .then(() => {
+            setOrders(orders.filter(order => order._id !== id));
+            Swal.fire('Deleted!', 'Order has been deleted.', 'success');
+            updateRevenue();  // Call the function to update revenue after deletion
+          })
+          .catch((error) => {
+            console.error('Error deleting order:', error);
+            Swal.fire('Error!', 'Failed to delete order.', 'error');
+          });
+      }
+    });
   };
 
-  // Format the date in a readable format
   const formatDate = (date) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(date).toLocaleDateString(undefined, options);
   };
 
-  // Show details of a specific order
   const handleRowClick = (order) => {
-    setSelectedOrder(order);  // Set the selected order to display its details
+    setSelectedOrder(order);
   };
 
   return (
     <div className="overflow-x-auto mt-8">
-      {/* Orders Table */}
       <table className="min-w-full bg-white shadow-md rounded-lg">
         <thead>
           <tr className="border-b">
@@ -56,13 +66,13 @@ const OrderTable = () => {
         <tbody>
           {orders.map((order) => (
             <tr key={order._id} className="border-b cursor-pointer" onClick={() => handleRowClick(order)}>
-              <td className="px-4 py-2">{formatDate(order.createdAt)}</td> {/* Display formatted date */}
+              <td className="px-4 py-2">{formatDate(order.createdAt)}</td>
               <td className="px-4 py-2">${order.totalPrice?.toFixed(2)}</td>
               <td className="px-4 py-2">{order.paymentStatus ? 'Paid' : 'Pending'}</td>
               <td className="px-4 py-2">
                 <button
                   onClick={(e) => {
-                    e.stopPropagation();  // Prevent triggering row click when clicking delete
+                    e.stopPropagation();
                     handleDelete(order._id);
                   }}
                   className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
@@ -75,7 +85,6 @@ const OrderTable = () => {
         </tbody>
       </table>
 
-      {/* Order Details Modal */}
       {selectedOrder && (
         <div className="mt-8 p-6 bg-white shadow-lg rounded-lg">
           <h3 className="text-xl font-semibold mb-4">Order Details</h3>
