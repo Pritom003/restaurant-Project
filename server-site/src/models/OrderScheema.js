@@ -4,7 +4,7 @@ const OrderSchema = new mongoose.Schema(
   {
     userEmail: { type: String, required: true },
     chefEmail: { type: String, required: true },
-    paymentStatus: { type: String, default: 'pending' },
+    paymentStatus: { type: String, },
     items: [
       {
         name: String,

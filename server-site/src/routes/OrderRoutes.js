@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const axios = require('axios'); // To send HTTP requests to Zapier
+const Order = require('../models/OrderScheema'); // Adjust path as needed
+const axios = require('axios');
 
 // POST request to create a new order
 router.post('/api/orders', async (req, res) => {
@@ -11,24 +12,20 @@ router.post('/api/orders', async (req, res) => {
   }
 
   try {
-    // Create a new order object (without using Mongoose here)
-    const newOrder = {
+    // Create a new order document
+    const newOrder = new Order({
       userEmail,
       chefEmail,
-      paymentStatus: paymentStatus || 'pending',  // Default to 'pending' if no payment status is provided
+      paymentStatus: paymentStatus ,
       items,
       totalPrice,
-      createdAt: new Date(),
-    };
+    });
 
-    // Simulate saving the order (since we're not using Mongoose)
-    // In a real scenario, you might save this data in your database
-    const savedOrder = newOrder;  // We directly assign newOrder as the savedOrder for this example
+    const savedOrder = await newOrder.save();
 
-    // Check if payment status is 'successful'
+    // If payment is successful, send data to Zapier
     if (paymentStatus === 'success') {
-      // Send order data to Zapier Webhook
-      const zapierWebhookUrl = 'https://hooks.zapier.com/hooks/catch/20636785/25h17fq/';  // Replace with your Zapier webhook URL
+      const zapierWebhookUrl = 'https://hooks.zapier.com/hooks/catch/20636785/25h17fq/'; // Replace with your Zapier URL
       const zapierPayload = {
         userEmail: savedOrder.userEmail,
         chefEmail: savedOrder.chefEmail,
@@ -36,12 +33,10 @@ router.post('/api/orders', async (req, res) => {
         totalPrice: savedOrder.totalPrice,
         createdAt: savedOrder.createdAt,
       };
-
-      // Send the POST request to Zapier
       await axios.post(zapierWebhookUrl, zapierPayload);
     }
 
-    return res.status(201).json({
+    res.status(201).json({
       message: 'Order placed successfully',
       data: savedOrder,
     });
@@ -51,26 +46,22 @@ router.post('/api/orders', async (req, res) => {
   }
 });
 
-// GET request to fetch all orders (Note: This is a placeholder for your actual database query)
+// GET request to fetch all orders
 router.get('/api/orders', async (req, res) => {
   try {
-    // Simulate fetching orders (this would normally come from your database)
-    const orders = [
-      { userEmail: 'test@example.com', items: [{ name: 'Burger', price: 10 }], totalPrice: 20 },
-      { userEmail: 'another@example.com', items: [{ name: 'Pizza', price: 15 }], totalPrice: 30 },
-    ];
+    const orders = await Order.find().sort({ createdAt: -1 });
     res.status(200).json(orders);
   } catch (error) {
-    res.status(400).json({ message: 'Error retrieving orders', error });
+    console.error('Error retrieving orders:', error);
+    res.status(500).json({ message: 'Error retrieving orders', error });
   }
 });
 
-// DELETE request to delete an order by ID (Placeholder for your actual database query)
+// DELETE request to delete an order by ID
 router.delete('/api/orders/:id', async (req, res) => {
   try {
     const orderId = req.params.id;
-    // In a real scenario, delete the order from your database using the order ID
-    const deletedOrder = { orderId, message: 'Order deleted successfully' };
+    const deletedOrder = await Order.findByIdAndDelete(orderId);
 
     if (!deletedOrder) {
       return res.status(404).json({ message: 'Order not found' });
