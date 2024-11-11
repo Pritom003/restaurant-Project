@@ -1,9 +1,9 @@
 import headingbg from '../../../assets/—Pngtree—vintage yellow brown texture royal_1411071.jpg';
 import chefsticker from '../../../assets/—Pngtree—chef hat cartoon white sticker_6065074.png';
 
-const Heading = () => {
+const Heading = ({ customStyle, overlayOpacity = 0.4, headingText = "DEEDAR" }) => {
     return (
-        <div className="relative h-20 w-44 flex items-center justify-center text-white text-2xl">
+        <div className={`relative h-20 w-44 flex items-center justify-center text-white text-2xl ${customStyle}`}>
             {/* Background Image */}
             <div
                 className="absolute inset-0"
@@ -15,14 +15,14 @@ const Heading = () => {
                 }}
             ></div>
             {/* Black Overlay */}
-            <div className="absolute inset-0 bg-black opacity-40"></div>
+            <div className="absolute inset-0" style={{ backgroundColor: 'black', opacity: overlayOpacity }}></div>
             {/* Heading Text */}
-            <h2 className="font-chewy text-3xl relative z-10">DEEDAR</h2>
+            <h2 className="font-chewy text-3xl relative z-10">{headingText}</h2>
             {/* Chef Hat Sticker */}
             <img
                 src={chefsticker}
                 alt="Chef Hat"
-                className="absolute top-0 left-0 w-16 opacity-90 h-16" // Adjust size as needed
+                className="absolute top-0 left-0 w-12 opacity-90 h-12" // Adjust size as needed
                 style={{
                     transform: 'translate(-40%, -70%) rotate(-19deg)', // Rotate the hat
                 }}
