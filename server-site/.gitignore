@@ -30,3 +30,4 @@ coverage/
 
 # Ignore miscellaneous files
 *.tgz
+.vercel

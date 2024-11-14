@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
-import MenuData from "./Menudatea";
+import MenuData from "../../../Hooks/Menudatea"; // Make sure this returns the correct menu data structure
 import Loader from "../../../Component/Shared/Loader/Loader";
 import Heading from "./Heading";
 
-const MenuBox = ({ addToCart }) => { // Accept addToCart as a prop
+const MenuBox = ({ addToCart }) => {
   const { menuData, loading, error } = MenuData();
   const [expandedCategories, setExpandedCategories] = useState([]);
   const [isAllergiesExpanded, setIsAllergiesExpanded] = useState(false);
@@ -18,7 +18,7 @@ const MenuBox = ({ addToCart }) => { // Accept addToCart as a prop
   };
 
   return (
-    <div >
+    <div>
       {/* heading */}
       <div>
         <div className="flex justify-center mb-4 pt-8">
@@ -68,8 +68,7 @@ const MenuBox = ({ addToCart }) => { // Accept addToCart as a prop
         {/* menu */}
         {loading && <div className="flex justify-center align-middle items-center"><Loader /></div>}
         {error && <p>Error loading menu: {error}</p>}
-        {!loading &&
-          !error &&
+        {!loading && !error &&
           menuData.map((menu) => (
             <div key={menu.category} className="mb-4">
               <div
@@ -87,25 +86,42 @@ const MenuBox = ({ addToCart }) => { // Accept addToCart as a prop
                 className={`transition-all duration-500 ease-in-out overflow-hidden`}
                 style={{
                   maxHeight: expandedCategories.includes(menu.category)
-                    ? `${menu.items.length * 50}px` // Keep dynamic height based on items
+                    ? `${menu.items.length * 80}px` // Adjust for height of items
                     : '0px',
                 }}
               >
                 <div className="pl-4 pt-2">
                   {menu.items.map((item, index) => (
-                    <div
-                      key={item.name}
-                      className={`flex py-2 justify-between mb-1 text-xl ${index !== menu.items.length - 1 ? 'border-b-2 border-dotted border-red-900' : ''}`}
-                    >
-                      <span className="text-red-900 font-semibold">
-                        {item.name}
-                      </span>
-                      <button 
-                        className="hover:underline" 
-                        onClick={() => addToCart(item)} // Add item to cart
-                      >
-                        + ${item.price}
-                      </button>
+                    <div key={item.name} className="mb-2">
+                      {/* Check if the item is from Set Menu */}
+                      {menu.category === "Set Menu" ? (
+                        <div className="border-b-2 border-dotted border-red-900 pb-2">
+                          <span className="text-red-900 font-semibold text-xl">{item.name} - ${item.price}</span>
+                          {/* Display included items in a single line */}
+                          <div className="text-xs text-gray-600 mt-1">
+                            <span className="font-semibold">Included Items:</span> 
+                            {item.itemsIncluded.map((includedItem, idx) => (
+                              <span key={includedItem.name}>
+                                {includedItem.name} ({includedItem.quantity}){idx < item.itemsIncluded.length - 1 ? ', ' : ''}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div
+                          className={`flex py-2 justify-between mb-1 text-xl ${index !== menu.items.length - 1 ? 'border-b-2 border-dotted border-red-900' : ''}`}
+                        >
+                          <span className="text-red-900 font-semibold">
+                            {item.name}
+                          </span>
+                          <button 
+                            className="hover:underline" 
+                            onClick={() => addToCart(item)} // Add item to cart
+                          >
+                            + ${item.price}
+                          </button>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
