@@ -1,23 +1,19 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-
+// import ReactToPrint from 'react-to-print';
+import ReactToPrint from 'react-to-print';
 const OrderTable = ({ updateRevenue }) => {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const orderDetailsRef = useRef();
 
   useEffect(() => {
-    // Fetch orders from the backend
     axios.get('http://localhost:3000/api/orders')
-      .then((response) => {
-        setOrders(response.data);
-      })
-      .catch((error) => {
-        console.error('Error fetching orders:', error);
-      });
+      .then((response) => setOrders(response.data))
+      .catch((error) => console.error('Error fetching orders:', error));
   }, []);
 
-  // Handle order deletion with SweetAlert2 confirmation
   const handleDelete = (id) => {
     Swal.fire({
       title: 'Are you sure?',
@@ -33,7 +29,7 @@ const OrderTable = ({ updateRevenue }) => {
           .then(() => {
             setOrders(orders.filter(order => order._id !== id));
             Swal.fire('Deleted!', 'Order has been deleted.', 'success');
-            updateRevenue();  // Call the function to update revenue after deletion
+            updateRevenue();
           })
           .catch((error) => {
             console.error('Error deleting order:', error);
@@ -48,9 +44,7 @@ const OrderTable = ({ updateRevenue }) => {
     return new Date(date).toLocaleDateString(undefined, options);
   };
 
-  const handleRowClick = (order) => {
-    setSelectedOrder(order);
-  };
+  const handleRowClick = (order) => setSelectedOrder(order);
 
   return (
     <div className="overflow-x-auto mt-8">
@@ -69,7 +63,7 @@ const OrderTable = ({ updateRevenue }) => {
               <td className="px-4 py-2">{formatDate(order.createdAt)}</td>
               <td className="px-4 py-2">${order.totalPrice?.toFixed(2)}</td>
               <td className="px-4 py-2">{order.paymentStatus ? 'Paid' : 'Pending'}</td>
-              <td className="px-4 py-2">
+              <td className="px-4 py-2 flex space-x-2">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -79,6 +73,15 @@ const OrderTable = ({ updateRevenue }) => {
                 >
                   Delete
                 </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedOrder(order);
+                  }}
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                >
+                  Select for Print
+                </button>
               </td>
             </tr>
           ))}
@@ -86,7 +89,7 @@ const OrderTable = ({ updateRevenue }) => {
       </table>
 
       {selectedOrder && (
-        <div className="mt-8 p-6 bg-white shadow-lg rounded-lg">
+        <div ref={orderDetailsRef} className="mt-8 p-6 bg-white shadow-lg rounded-lg">
           <h3 className="text-xl font-semibold mb-4">Order Details</h3>
           <p><strong>User Email:</strong> {selectedOrder.userEmail}</p>
           <p><strong>Order Date:</strong> {formatDate(selectedOrder.createdAt)}</p>
@@ -99,6 +102,15 @@ const OrderTable = ({ updateRevenue }) => {
               </li>
             ))}
           </ul>
+          <ReactToPrint
+            trigger={() => (
+              <button className="mt-4  text-amber-950 px-4 py-2 underline rounded-md hover:bg-green-600">
+                Print Order
+              </button>
+            )}
+            content={() => orderDetailsRef.current}
+            documentTitle={`Order_${selectedOrder?._id}`}
+          />
         </div>
       )}
     </div>

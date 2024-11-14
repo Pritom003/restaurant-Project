@@ -48,7 +48,7 @@ const Home = () => {
                             Login <FaUserLock />
                         </h3>
                         <div className='px-5'>
-                        <Link to='/' className='text-lg text-gray-600 hover:text-red-950 hover:underline'>
+                        <Link to='/regi' className='text-lg text-gray-600 hover:text-red-950 hover:underline'>
                              Log in 
                             </Link>
                         </div>
