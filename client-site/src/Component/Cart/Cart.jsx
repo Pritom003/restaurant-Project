@@ -24,7 +24,7 @@ const Cart = () => {
 
     const handleOrderCompletion = async () => {
         const orderData = {
-            chefEmail: "njahanpritom65@gmail.com",
+            chefEmail: "mkrefat5@gmail.com",
             userEmail: "fariadamd55@gmail.com",
             items,
             totalPrice,

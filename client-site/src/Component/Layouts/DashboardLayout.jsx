@@ -1,7 +1,7 @@
 import { Link, Outlet } from "react-router-dom";
 import { useState } from 'react';
 import { FaUser, FaPlus, FaTrash, FaHome } from 'react-icons/fa'; // Import the icons you want to use
-import backgroundimg from '../../assets/—Pngtree—vintage yellow brown texture royal_1411071.jpg';
+import backgroundimg from '../../assets/vintage.jpg';
 import Heading from "../../Pages/Home/MenuBox/Heading";
 import { GrMoney } from "react-icons/gr";
 import { RiMenuSearchFill } from "react-icons/ri";

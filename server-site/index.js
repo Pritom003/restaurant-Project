@@ -7,6 +7,7 @@ const menuRoutes = require('./src/routes/MenuRoutes');
 const orderRoutes = require('./src/routes/OrderRoutes');
 const revenueRoutes = require('./src/routes/RevenueRutes');
 const paymentRoutes  = require('./src/routes/PaymentRutes');
+const userRoutes  = require('./src/routes/UsersRoutes');
 
 
 
@@ -18,7 +19,10 @@ const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173', // Allow only this origin
+  credentials: true,              // Enable credentials
+}));
 
 // Connect to MongoDB
 connectToMongoDB();
@@ -28,11 +32,7 @@ app.use(menuRoutes); // Use the menu routes here
 app.use(orderRoutes); // Use the menu routes here
 app.use(revenueRoutes);
 app.use(paymentRoutes);
-
-
-
-
-
+app.use(userRoutes);
 
 
 // ===========================================

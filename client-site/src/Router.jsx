@@ -9,6 +9,9 @@ import AdminProfile from "./DASHBOARD/Admin/AdminRoutes/AdminProfile";
 import Addmenu from "./DASHBOARD/Admin/AdminRoutes/Addmenu";
 import AllMenulist from "./DASHBOARD/Admin/AdminRoutes/AllMenulist";
 import OrderLlist from "./DASHBOARD/Admin/AdminRoutes/OrderLlist";
+import SignUp from "./Component/SignUp/SignUp";
+import Login from "./Component/LogIn/LogIn";
+// import PhoneAuth from "./Component/SignUp/SignUp";
 
 const router = createBrowserRouter([
   {
@@ -21,7 +24,7 @@ const router = createBrowserRouter([
     path: "/dashboard",
     element: <DashboardLayout role="admin" />, // Temporary hardcoded role
     children: [
-      { path: "profile", element: <AdminProfile/> },
+      { path: "profile", element: <AdminProfile /> },
       { path: "add-menu", element: <Addmenu /> },
       { path: "menus", element: <AllMenulist /> },
       { path: "orderList", element: <OrderLlist /> },
@@ -29,8 +32,11 @@ const router = createBrowserRouter([
       // { path: "user-list", element: <UserList /> },
       // { path: "employee-list", element: <EmployeeList /> },
       // { path: "payment-history", element: <PaymentHistory /> },
+
     ],
-  },
+
+  }, { path: 'signup', element: <SignUp /> },
+  { path: 'login', element: <Login/> }
 ]);
 
 export default router;

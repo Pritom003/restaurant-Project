@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import Footer from '../Footer/Footer';
-import background from '../../assets/—Pngtree—vintage yellow brown texture royal_1411071.jpg';
+import background from '../../assets/vintage.jpg';
 
 const Layout = () => {
     return (
