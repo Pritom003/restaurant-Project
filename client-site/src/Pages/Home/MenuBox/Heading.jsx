@@ -1,5 +1,5 @@
-import headingbg from '../../../assets/—Pngtree—vintage yellow brown texture royal_1411071.jpg';
-import chefsticker from '../../../assets/—Pngtree—chef hat cartoon white sticker_6065074.png';
+import headingbg from '../../../assets/vintage.jpg';
+import chefsticker from '../../../assets/chef.png';
 
 const Heading = ({ customStyle, overlayOpacity = 0.4, headingText = "DEEDAR" }) => {
     return (
