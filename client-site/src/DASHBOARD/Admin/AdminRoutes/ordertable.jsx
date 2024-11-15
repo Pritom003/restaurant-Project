@@ -132,6 +132,7 @@ const OrderTable = ({ updateRevenue }) => {
         </div>
 
         {/* Print Preview Section */}
+  <div>
         {selectedOrder && (
           <div
             ref={orderDetailsRef}
@@ -162,17 +163,22 @@ const OrderTable = ({ updateRevenue }) => {
                 </li>
               ))}
             </ul>
-            <ReactToPrint
-              trigger={() => (
-                <button className="mt-4 text-amber-950 px-4 py-2 underline rounded-md hover:bg-green-600">
-                  Print Order
-                </button>
-              )}
-              content={() => orderDetailsRef.current}
-              documentTitle={`Order_${selectedOrder?._id}`}
-            />
+         
           </div>
+        )}  
+
+
+<ReactToPrint
+        trigger={() => (
+          <button className="mt-4 text-amber-950 px-4 py-2 underline rounded-md hover:bg-green-600">
+            Print Order
+          </button>
         )}
+        content={() => orderDetailsRef.current}
+        documentTitle={`Order_${selectedOrder?._id}`}
+      />
+  </div>
+    
       </div>
     </div>
   );
