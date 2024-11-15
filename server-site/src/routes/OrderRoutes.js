@@ -25,7 +25,7 @@ router.post('/api/orders', async (req, res) => {
 
     // If payment is successful, send data to Zapier
     if (paymentStatus === 'success' || paymentStatus === 'pending' ) {
-      const zapierWebhookUrl = 'https://hooks.zapier.com/hooks/catch/20636785/25h17fq/'; // Replace with your Zapier URL
+      const zapierWebhookUrl = 'https://hooks.zapier.com/hooks/catch/20636785/25h17fq/';
       const zapierPayload = {
         userEmail: savedOrder.userEmail,
         chefEmail: savedOrder.chefEmail,
@@ -74,6 +74,40 @@ router.delete('/api/orders/:id', async (req, res) => {
   } catch (error) {
     console.error('Error deleting order:', error);
     res.status(500).json({ error: 'Failed to delete order' });
+  }
+});
+router.patch('/api/orders/:id/payment-status', async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const updatedOrder = await Order.findByIdAndUpdate(
+      orderId,
+      { paymentStatus: 'success' },
+      { new: true }
+    );
+
+    if (!updatedOrder) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    // Notify Zapier of the status update
+    const zapierWebhookUrl = 'https://hooks.zapier.com/hooks/catch/20636785/25h17fq/';
+    const zapierPayload = {
+      userEmail: updatedOrder.userEmail,
+      chefEmail: updatedOrder.chefEmail,
+      items: updatedOrder.items,
+      totalPrice: updatedOrder.totalPrice,
+      paymentStatus: updatedOrder.paymentStatus,
+      createdAt: updatedOrder.createdAt,
+    };
+    await axios.post(zapierWebhookUrl, zapierPayload);
+
+    res.status(200).json({
+      message: 'Payment status updated successfully',
+      data: updatedOrder,
+    });
+  } catch (error) {
+    console.error('Error updating payment status:', error);
+    res.status(500).json({ error: 'Failed to update payment status' });
   }
 });
 
