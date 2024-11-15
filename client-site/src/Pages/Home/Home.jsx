@@ -17,7 +17,7 @@ const Home = () => {
     };
 
     const { user, logOut } = useAuth()
-console.log(user.role);
+console.log(user?.role);
     const[role] = useRole()
 
     const handleLogOut = () => {

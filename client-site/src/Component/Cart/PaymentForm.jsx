@@ -31,14 +31,18 @@ const PaymentForm = ({ totalPrice, handleOrderCompletion }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} >
             <CardElement />
-            <button type="submit" disabled={!stripe} className="mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700">
+           <div className=' grid justify-center align-middle gap-2'> 
+           <button type="submit" disabled={!stripe} 
+            className="mt-4  text-lg w-44 text-amber-950 border-2 px-6 border-rose-950">
                 Pay
             </button>
-            {error && <div className="text-red-500 mt-2">{error}</div>}
+            {error && <div className="text-red-500 mt-2 text-xs">{error}</div>}
+
+           </div>
         </form>
-    );
+    )
 };
 
 export default PaymentForm;
