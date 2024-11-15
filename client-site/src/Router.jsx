@@ -30,7 +30,7 @@ const router = createBrowserRouter([
         path: "/dashboard",
         element: <DashboardLayout role="admin" />,
         children: [
-          { path: "profile", element: <AdminProfile /> },
+          { path: "", element: <AdminProfile/> },
           { path: "add-menu", element: <Addmenu /> },
           { path: "menus", element: <AllMenulist /> },
           { path: "orderList", element: <OrderLlist /> },

@@ -36,7 +36,7 @@ const PaymentForm = ({ totalPrice, handleOrderCompletion }) => {
            <div className=' grid justify-center align-middle gap-2'> 
            <button type="submit" disabled={!stripe} 
             className="mt-4  text-lg w-44 text-amber-950 border-2 px-6 border-rose-950">
-                Pay
+                Pay 
             </button>
             {error && <div className="text-red-500 mt-2 text-xs">{error}</div>}
 

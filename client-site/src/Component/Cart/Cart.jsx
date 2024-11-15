@@ -7,10 +7,10 @@ import { useState } from 'react';
 import PaymentForm from './PaymentForm';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
-import { FaPoundSign, } from 'react-icons/fa';
+import { FaPoundSign } from 'react-icons/fa';
 import { BsStripe } from "react-icons/bs";
-const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
 
+const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
 const stripePromise = loadStripe(stripePublicKey);
 
 const Cart = () => {
@@ -20,12 +20,12 @@ const Cart = () => {
     const [paymentMethod, setPaymentMethod] = useState('stripe');  // Default to Stripe
 
     const removeFromCart = (item) => dispatch({ type: 'REMOVE_FROM_CART', payload: item });
-    
+
     const handlePlaceOrder = () => {
         if (paymentMethod === 'stripe') {
-            setShowPaymentForm(true);
-        } else {
-            handleOrderCompletion();  // If cash on delivery is selected, complete the order directly
+            setShowPaymentForm(true);  // Show Stripe payment form
+        } else if (paymentMethod === 'cash') {
+            handleOrderCompletion();  // Complete the order directly for Cash on Delivery
         }
     };
 
@@ -35,11 +35,13 @@ const Cart = () => {
             userEmail: "fariadamd55@gmail.com",
             items,
             totalPrice,
-            paymentMethod,  // Include the payment method in the order
-            paymentStatus: paymentMethod === 'stripe' ? 'success' :paymentMethod === 'cash' ? 'pending':'',  // Payment status for cash on delivery
+            // Pass the selected payment method
+            paymentStatus: paymentMethod === 'stripe' ? 'success' : 'pending', // Payment status for different methods
+            paymentMethod,
         };
-
+console.log(orderData);
         try {
+            // Send the order data to the backend
             await axios.post(`http://localhost:3000/api/orders`, orderData);
             setShowPaymentForm(false);
             Swal.fire('Order Placed', `Your order has been placed with ${paymentMethod === 'stripe' ? 'Stripe' : 'Cash on Delivery'}!`, 'success');
@@ -78,68 +80,66 @@ const Cart = () => {
 
                         {/* Payment Method Selector */}
                         <div className="mt-4 flex flex-wrap lg:flex-col lg:items-start lg:gap-4 items-center justify-between">
-    {/* Stripe Option */}
-    <label className='text-lg flex items-center text-black'>
-        <input
-            type="radio"
-            name="paymentMethod"
-            value="stripe"
-            checked={paymentMethod === 'stripe'}
-            onChange={() => setPaymentMethod('stripe')}
-            className="hidden" // Hide the default radio button
-        />
-        <span
-            className={`inline-block w-6 h-6 mr-2 border-2 border-gray-500 rounded-sm ${paymentMethod === 'stripe' ? 'bg-red-950' : ''} ${paymentMethod === 'stripe' ? 'border-blue-500' : 'border-gray-500'} `}
-        >
-            {paymentMethod === 'stripe' && (
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-4 h-4 text-white mx-auto mt-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                </svg>
-            )}
-        </span>
-        <span className="flex justify-center align-middle items-center gap-1">
-            <BsStripe className="text-2x" /> Stripe
-        </span>
-    </label>
+                            {/* Stripe Option */}
+                            <label className='text-lg flex items-center text-black'>
+                                <input
+                                    type="radio"
+                                    name="paymentMethod"
+                                    value="stripe"
+                                    checked={paymentMethod === 'stripe'}
+                                    onChange={() => setPaymentMethod('stripe')}
+                                    className="hidden" // Hide the default radio button
+                                />
+                                <span
+                                    className={`inline-block w-6 h-6 mr-2 border-2 border-gray-500 rounded-sm ${paymentMethod === 'stripe' ? 'bg-red-950' : ''} ${paymentMethod === 'stripe' ? 'border-blue-500' : 'border-gray-500'}`}
+                                >
+                                    {paymentMethod === 'stripe' && (
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="w-4 h-4 text-white mx-auto mt-1"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    )}
+                                </span>
+                                <span className="flex justify-center align-middle items-center gap-1">
+                                    <BsStripe className="text-2x" /> Stripe
+                                </span>
+                            </label>
 
-    {/* Cash on Delivery Option */}
-    <label className='text-lg flex items-center text-black'>
-        <input
-            type="radio"
-            name="paymentMethod"
-            value="cash"
-            checked={paymentMethod === 'cash'}
-            onChange={() => setPaymentMethod('cash')}
-            className="hidden" // Hide the default radio button
-        />
-        <span
-            className={`inline-block w-6 h-6 mr-2 border-2 border-gray-500 rounded-sm ${paymentMethod === 'cash' ? 'bg-red-950' : ''} ${paymentMethod === 'cash' ? 'border-blue-500' : 'border-gray-500'}`}
-        >
-            {paymentMethod === 'cash' && (
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-4 h-4 text-white mx-auto mt-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                </svg>
-            )}
-        </span>
-        <span className="flex justify-center align-middle items-center gap-1">
-            <FaPoundSign /> Cash on Delivery
-        </span>
-    </label>
-</div>
-
-
+                            {/* Cash on Delivery Option */}
+                            <label className='text-lg flex items-center text-black'>
+                                <input
+                                    type="radio"
+                                    name="paymentMethod"
+                                    value="cash"
+                                    checked={paymentMethod === 'cash'}
+                                    onChange={() => setPaymentMethod('cash')}
+                                    className="hidden" // Hide the default radio button
+                                />
+                                <span
+                                    className={`inline-block w-6 h-6 mr-2 border-2 border-gray-500 rounded-sm ${paymentMethod === 'cash' ? 'bg-red-950' : ''} ${paymentMethod === 'cash' ? 'border-blue-500' : 'border-gray-500'}`}
+                                >
+                                    {paymentMethod === 'cash' && (
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="w-4 h-4 text-white mx-auto mt-1"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    )}
+                                </span>
+                                <span className="flex justify-center align-middle items-center gap-1">
+                                    <FaPoundSign /> Cash on Delivery
+                                </span>
+                            </label>
+                        </div>
 
                         <button
                             onClick={handlePlaceOrder}
