@@ -62,7 +62,7 @@ const OrderTable = ({ updateRevenue }) => {
             <tr key={order._id} className="border-b cursor-pointer" onClick={() => handleRowClick(order)}>
               <td className="px-4 py-2">{formatDate(order.createdAt)}</td>
               <td className="px-4 py-2">${order.totalPrice?.toFixed(2)}</td>
-              <td className="px-4 py-2">{order.paymentStatus ? 'Paid' : 'Pending'}</td>
+              <td className="px-4 py-2">{order.paymentStatus}</td>
               <td className="px-4 py-2 flex space-x-2">
                 <button
                   onClick={(e) => {
@@ -94,6 +94,8 @@ const OrderTable = ({ updateRevenue }) => {
           <p><strong>User Email:</strong> {selectedOrder.userEmail}</p>
           <p><strong>Order Date:</strong> {formatDate(selectedOrder.createdAt)}</p>
           <p><strong>Total Price:</strong> ${selectedOrder.totalPrice?.toFixed(2)}</p>
+          <p><strong>Payment:</strong>{selectedOrder.paymentStatus==='success'?"paid" :'cash on delivery '}</p>
+
           <h4 className="font-semibold mt-4">Items:</h4>
           <ul className="list-disc pl-6">
             {selectedOrder.items.map((item, index) => (

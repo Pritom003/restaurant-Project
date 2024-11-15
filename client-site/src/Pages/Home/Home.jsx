@@ -17,7 +17,7 @@ const Home = () => {
     };
 
     const { user, logOut } = useAuth()
-
+console.log(user.role);
     const[role] = useRole()
 
     const handleLogOut = () => {
@@ -50,16 +50,16 @@ const Home = () => {
                             </h3>
                             <div className="px-5">
                                 {user ? (
-                                    user.role === 'admin' ? (
-                                        <Link to='/dashboard' className='text-lg text-gray-600 hover:text-red-950 hover:underline'>
+                                      <div className='flex justify-between'>
+  <Link to='/dashboard' className='text-lg text-gray-600 underline  hover:text-red-950 hover:underline'>
                                             Dashboard
                                         </Link>
-                                    ) : (
-                                        <Link onClick={handleLogOut} className='text-lg text-gray-600 hover:text-red-950 hover:underline'>
+                                        <Link onClick={handleLogOut} className='text-lg text-gray-600 underline hover:text-red-950 hover:underline'>
                                             Logout
                                         </Link>
+                                      </div>
                                     )
-                                ) : (
+                                : (
                                     <Link to='/login' className='text-lg text-gray-600 hover:text-red-950 hover:underline'>
                                         Login
                                     </Link>

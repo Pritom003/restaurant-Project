@@ -16,7 +16,7 @@ router.post('/api/orders', async (req, res) => {
     const newOrder = new Order({
       userEmail,
       chefEmail,
-      paymentStatus: paymentStatus ,
+      paymentStatus ,
       items,
       totalPrice,
     });
@@ -24,7 +24,7 @@ router.post('/api/orders', async (req, res) => {
     const savedOrder = await newOrder.save();
 
     // If payment is successful, send data to Zapier
-    if (paymentStatus === 'success') {
+    if (paymentStatus === 'success' || paymentStatus === 'pending' ) {
       const zapierWebhookUrl = 'https://hooks.zapier.com/hooks/catch/20636785/25h17fq/'; // Replace with your Zapier URL
       const zapierPayload = {
         userEmail: savedOrder.userEmail,

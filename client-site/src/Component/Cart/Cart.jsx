@@ -1,5 +1,3 @@
-// Cart.js
-
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { PiTrashSimpleThin } from "react-icons/pi";
@@ -9,6 +7,8 @@ import { useState } from 'react';
 import PaymentForm from './PaymentForm';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
+import { FaPoundSign, } from 'react-icons/fa';
+import { BsStripe } from "react-icons/bs";
 const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
 
 const stripePromise = loadStripe(stripePublicKey);
@@ -17,10 +17,17 @@ const Cart = () => {
     const dispatch = useDispatch();
     const { items, totalPrice } = useSelector((state) => state);
     const [showPaymentForm, setShowPaymentForm] = useState(false);
+    const [paymentMethod, setPaymentMethod] = useState('stripe');  // Default to Stripe
 
     const removeFromCart = (item) => dispatch({ type: 'REMOVE_FROM_CART', payload: item });
     
-    const handlePlaceOrder = () => setShowPaymentForm(true);
+    const handlePlaceOrder = () => {
+        if (paymentMethod === 'stripe') {
+            setShowPaymentForm(true);
+        } else {
+            handleOrderCompletion();  // If cash on delivery is selected, complete the order directly
+        }
+    };
 
     const handleOrderCompletion = async () => {
         const orderData = {
@@ -28,13 +35,14 @@ const Cart = () => {
             userEmail: "fariadamd55@gmail.com",
             items,
             totalPrice,
-            paymentStatus: "success",
+            paymentMethod,  // Include the payment method in the order
+            paymentStatus: paymentMethod === 'stripe' ? 'success' :paymentMethod === 'cash' ? 'pending':'',  // Payment status for cash on delivery
         };
 
         try {
             await axios.post(`http://localhost:3000/api/orders`, orderData);
             setShowPaymentForm(false);
-            Swal.fire('Payment Successful', 'Your order has been placed!', 'success');
+            Swal.fire('Order Placed', `Your order has been placed with ${paymentMethod === 'stripe' ? 'Stripe' : 'Cash on Delivery'}!`, 'success');
             dispatch({ type: 'CLEAR_CART' });
         } catch (error) {
             console.error('Error placing order:', error.message);
@@ -43,7 +51,7 @@ const Cart = () => {
     };
 
     return (
-        <div>
+        <div className='text-black'>
             <h3 className='border border-l-2 pl-2 text-xl border-l-red-900 flex gap-2 text-black justify-between items-center'>
                 Cart <TiShoppingCart />
             </h3>
@@ -66,10 +74,76 @@ const Cart = () => {
 
                 {items.length > 0 && (
                     <div className="text-end">
-                        <div className="mt-2 text-lg">Total: ${totalPrice.toFixed(2)}</div>
+                        <div className="mt-2 text-lg ">Total: ${totalPrice.toFixed(2)}</div>
+
+                        {/* Payment Method Selector */}
+                        <div className="mt-4 flex flex-wrap lg:flex-col lg:items-start lg:gap-4 items-center justify-between">
+    {/* Stripe Option */}
+    <label className='text-lg flex items-center text-black'>
+        <input
+            type="radio"
+            name="paymentMethod"
+            value="stripe"
+            checked={paymentMethod === 'stripe'}
+            onChange={() => setPaymentMethod('stripe')}
+            className="hidden" // Hide the default radio button
+        />
+        <span
+            className={`inline-block w-6 h-6 mr-2 border-2 border-gray-500 rounded-sm ${paymentMethod === 'stripe' ? 'bg-red-950' : ''} ${paymentMethod === 'stripe' ? 'border-blue-500' : 'border-gray-500'} `}
+        >
+            {paymentMethod === 'stripe' && (
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-4 h-4 text-white mx-auto mt-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                </svg>
+            )}
+        </span>
+        <span className="flex justify-center align-middle items-center gap-1">
+            <BsStripe className="text-2x" /> Stripe
+        </span>
+    </label>
+
+    {/* Cash on Delivery Option */}
+    <label className='text-lg flex items-center text-black'>
+        <input
+            type="radio"
+            name="paymentMethod"
+            value="cash"
+            checked={paymentMethod === 'cash'}
+            onChange={() => setPaymentMethod('cash')}
+            className="hidden" // Hide the default radio button
+        />
+        <span
+            className={`inline-block w-6 h-6 mr-2 border-2 border-gray-500 rounded-sm ${paymentMethod === 'cash' ? 'bg-red-950' : ''} ${paymentMethod === 'cash' ? 'border-blue-500' : 'border-gray-500'}`}
+        >
+            {paymentMethod === 'cash' && (
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-4 h-4 text-white mx-auto mt-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                </svg>
+            )}
+        </span>
+        <span className="flex justify-center align-middle items-center gap-1">
+            <FaPoundSign /> Cash on Delivery
+        </span>
+    </label>
+</div>
+
+
+
                         <button
                             onClick={handlePlaceOrder}
-                            className='text-lg text-gray-600 hover:text-red-950 hover:underline'
+                            className='text-lg text-gray-600 hover:text-red-950 hover:underline mt-2'
                         >
                             Place Order
                         </button>
@@ -77,7 +151,7 @@ const Cart = () => {
                 )}
             </div>
 
-            {showPaymentForm && (
+            {showPaymentForm && paymentMethod === 'stripe' && (
                 <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-lg max-w-md w-full">
                         <h2 className="text-xl font-semibold mb-4">Complete Your Payment</h2>

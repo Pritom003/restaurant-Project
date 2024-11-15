@@ -1,19 +1,20 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useState, useContext } from "react";
-import { FaUser, FaPlus, FaTrash, FaHome, FaSignOutAlt } from "react-icons/fa";
+import { FaUser, FaPlus,  FaHome, FaSignOutAlt } from "react-icons/fa";
 import backgroundimg from "../../assets/vintage.jpg";
 import Heading from "../../Pages/Home/MenuBox/Heading";
 import { GrMoney } from "react-icons/gr";
 import { RiMenuSearchFill } from "react-icons/ri";
 import { AuthContext } from "../../providers/AuthProviders";
 // import { AuthContext } from "../../context/AuthProvider"; // Import AuthContext
-
+import useRole from '../../Hooks/useRole.js';
 const DashboardLayout = () => {
   const { logOut, user } = useContext(AuthContext); // Access logOut and user from AuthContext
   const [isExpanded, setIsExpanded] = useState(false);
   const navigate = useNavigate(); // Initialize useNavigate
-  const role = "admin"; // Replace with dynamic role if needed
-
+  // const role = "Admin"; // Replace with dynamic role if needed
+  const[role] = useRole()
+console.log(role,'from dashboard');
   const toggleMenu = () => {
     setIsExpanded(!isExpanded);
   };
@@ -64,7 +65,7 @@ const DashboardLayout = () => {
               Profile
             </Link>
           </li>
-          {role === "admin" ? (
+          {role === "Admin" ? (
             <>
               <li className="flex items-center py-2">
                 <FaPlus className="text-white mr-2" />
@@ -122,7 +123,7 @@ const DashboardLayout = () => {
       {/* Main content area */}
       <div className="flex-1 p-6 md:mt-0 mt-4">
         <h2 className="text-2xl font-bold mb-4 text-center">
-          {role === "admin" ? "Admin Dashboard" : "User Dashboard"}
+          {role === "Admin" ? "Admin Dashboard" : "User Dashboard"}
         </h2>
         <Outlet className="bg-gray-400" /> {/* Child routes will render here */}
       </div>
