@@ -2,72 +2,94 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS } from 'chart.js/auto';
-import Calendar from 'react-calendar'; // Import the calendar component
-import 'react-calendar/dist/Calendar.css'; // Import default styles
+import { FaCalendarDay, FaCalendarWeek, FaCalendarAlt } from 'react-icons/fa';
 
 const AdminProfile = () => {
-  const [monthlyRevenue, setMonthlyRevenue] = useState(0);
+  const [dailyRevenue, setDailyRevenue] = useState([]);
   const [weeklyRevenue, setWeeklyRevenue] = useState(0);
+  const [monthlyRevenue, setMonthlyRevenue] = useState([]);
   const [yearlyRevenue, setYearlyRevenue] = useState(0);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [dailyRevenue, setDailyRevenue] = useState(null);
 
-  const updateRevenue = () => {
-    // Fetch updated monthly revenue
-    axios.get('http://localhost:3000/api/revenue/monthly')
-      .then((response) => {
-        setMonthlyRevenue(response.data.revenue);
-      })
-      .catch((error) => {
-        console.error('Error fetching monthly revenue:', error);
-      });
+  const fetchRevenueData = async () => {
+    try {
+      // Fetch daily, weekly, monthly, and yearly revenue
+      const dailyResponse = await axios.get('http://localhost:3000/api/revenue/daily');
+      const weeklyResponse = await axios.get('http://localhost:3000/api/revenue/weekly');
+      const monthlyResponse = await axios.get('http://localhost:3000/api/revenue/monthly');
+      const yearlyResponse = await axios.get('http://localhost:3000/api/revenue/yearly');
 
-    // Fetch updated weekly revenue
-    axios.get('http://localhost:3000/api/revenue/weekly')
-      .then((response) => {
-        setWeeklyRevenue(response.data.revenue);
-      })
-      .catch((error) => {
-        console.error('Error fetching weekly revenue:', error);
-      });
-
-    // Fetch updated yearly revenue
-    axios.get('http://localhost:3000/api/revenue/yearly')
-      .then((response) => {
-        setYearlyRevenue(response.data.revenue);
-      })
-      .catch((error) => {
-        console.error('Error fetching yearly revenue:', error);
-      });
-  };
-
-  // Fetch daily revenue for the selected date
-  const fetchDailyRevenue = (date) => {
-    const formattedDate = date.toISOString().split('T')[0]; // Format the date (YYYY-MM-DD)
-    axios.get(`http://localhost:3000/api/revenue/daily/${formattedDate}`)
-      .then((response) => {
-        setDailyRevenue(response.data.revenue);
-      })
-      .catch((error) => {
-        console.error('Error fetching daily revenue:', error);
-      });
+      // Set state based on API responses
+      setDailyRevenue(dailyResponse.data.revenue || []);
+      setWeeklyRevenue(weeklyResponse.data.revenue || 0);
+      setMonthlyRevenue(monthlyResponse.data.revenue || []);
+      setYearlyRevenue(yearlyResponse.data.revenue || 0);
+    } catch (error) {
+      console.error('Error fetching revenue data:', error);
+    }
   };
 
   useEffect(() => {
-    // Initial fetch of revenue data
-    updateRevenue();
+    fetchRevenueData();
   }, []);
 
-  // Line chart data with exact dates
-  const lineChartData = {
-    labels: ['2024', '2024-11', '2024-11-14'], // Example date labels (replace with dynamic date data)
+  // Format daily data with weekdays
+  const dailyLabels = Array.isArray(dailyRevenue) && dailyRevenue.length > 0 
+    ? dailyRevenue?.map((day) => {
+        const date = new Date(day.date);
+        return `${date.toLocaleDateString('en-US', { weekday: 'short' })}, ${date.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+        })}`;
+      })
+    : [];
+
+  // Line chart data for daily trends
+  const dailyChartData = {
+    labels: dailyLabels,
     datasets: [
       {
-        label: 'Revenue',
-        data: [yearlyRevenue, monthlyRevenue, weeklyRevenue], // Replace with real revenue data
-        fill: false,
-        borderColor: '#36A2EB',
-        tension: 0.1,
+        label: 'Daily Revenue',
+        data: Array.isArray(dailyRevenue) && dailyRevenue.length > 0 
+          ? dailyRevenue?.map((day) => day.totalRevenue)
+          : [],
+        borderColor: '#4CAF50',
+        tension: 0.4,
+        fill: true,
+        backgroundColor: 'rgba(76, 175, 80, 0.2)',
+      },
+    ],
+  };
+
+  // Line chart data for weekly trends
+  const weeklyChartData = {
+    labels: ['Week 1'],  // Single label for week
+    datasets: [
+      {
+        label: 'Weekly Revenue',
+        data: [weeklyRevenue || 0],  // Default to 0 if no data
+        borderColor: '#2196F3',
+        tension: 0.4,
+        fill: true,
+        backgroundColor: 'rgba(33, 150, 243, 0.2)',
+      },
+    ],
+  };
+
+  // Line chart data for monthly trends
+  const monthlyChartData = {
+    labels: Array.isArray(monthlyRevenue) && monthlyRevenue.length > 0 
+      ? monthlyRevenue?.map((month) => month.monthName)
+      : [],
+    datasets: [
+      {
+        label: 'Monthly Revenue',
+        data: Array.isArray(monthlyRevenue) && monthlyRevenue.length > 0 
+          ? monthlyRevenue?.map((month) => month.totalRevenue)
+          : [],
+        borderColor: '#FFC107',
+        tension: 0.4,
+        fill: true,
+        backgroundColor: 'rgba(255, 193, 7, 0.2)',
       },
     ],
   };
@@ -80,63 +102,65 @@ const AdminProfile = () => {
     },
   };
 
-  // Handle date selection from the calendar
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-    fetchDailyRevenue(date); // Fetch revenue for the selected day
-  };
-
   return (
-    <div>
-   <div className='flex'>
-   <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-        <h3 className="text-xl font-semibold text-gray-700 mb-4">Revenue Overview</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="flex flex-col items-center">
-            <h4 className="text-lg font-semibold text-gray-700 mb-2">Yearly Revenue</h4>
-            <p className="text-4xl font-bold text-green-500">${yearlyRevenue?.toFixed(2)}</p>
-          </div>
-          <div className="flex flex-col items-center">
-            <h4 className="text-lg font-semibold text-gray-700 mb-2">Monthly Revenue</h4>
-            <p className="text-4xl font-bold text-green-500">${monthlyRevenue?.toFixed(2)}</p>
-          </div>
-          <div className="flex flex-col items-center">
-            <h4 className="text-lg font-semibold text-gray-700 mb-2">Weekly Revenue</h4>
-            <p className="text-4xl font-bold text-blue-500">${weeklyRevenue?.toFixed(2)}</p>
+    <div className="p-6">
+      {/* Revenue Overview Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
+          <FaCalendarDay className="text-4xl text-blue-500 mr-4" />
+          <div>
+            <h4 className="text-lg font-semibold text-gray-700">Daily Revenue</h4>
+            <p className="text-2xl font-bold text-green-500">
+              ${Array.isArray(dailyRevenue) && dailyRevenue.length > 0 
+                ? dailyRevenue?.reduce((sum, day) => sum + day.totalRevenue, 0).toFixed(2)
+                : '0.00'}
+            </p>
           </div>
         </div>
-    
-      </div>
-      <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-        <h3 className="text-xl font-semibold text-gray-700 mb-4">Select a Date</h3>
-        <div className="flex justify-center mb-4">
-          <Calendar
-            onChange={handleDateChange} 
-            value={selectedDate}
-          />
-        </div>
-        {dailyRevenue !== null && (
-          <div className="text-center">
-            <h4 className="text-lg font-semibold text-gray-700 mb-2">Revenue for {selectedDate.toLocaleDateString()}</h4>
-            <p className="text-4xl font-bold text-red-500">${dailyRevenue?.toFixed(2)}</p>
+        <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
+          <FaCalendarWeek className="text-4xl text-indigo-500 mr-4" />
+          <div>
+            <h4 className="text-lg font-semibold text-gray-700">Weekly Revenue</h4>
+            <p className="text-2xl font-bold text-green-500">
+              ${weeklyRevenue ? weeklyRevenue.toFixed(2) : '0.00'}
+            </p>
           </div>
-        )}
-      </div>
-
-
-   </div>
-
-
-
-
-      <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-        <h3 className="text-xl font-semibold text-gray-700 mb-4">Revenue Trend (Line Chart)</h3>
-        <div className="flex justify-center">
-          <Line data={lineChartData} options={options} />
+        </div>
+        <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
+          <FaCalendarAlt className="text-4xl text-yellow-500 mr-4" />
+          <div>
+            <h4 className="text-lg font-semibold text-gray-700">Monthly Revenue</h4>
+            <p className="text-2xl font-bold text-green-500">
+              ${Array.isArray(monthlyRevenue) && monthlyRevenue.length > 0
+                ? monthlyRevenue?.reduce((sum, month) => sum + month.totalRevenue, 0).toFixed(2)
+                : '0.00'}
+            </p>
+          </div>
+        </div>
+        <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
+          <FaCalendarAlt className="text-4xl text-red-500 mr-4" />
+          <div>
+            <h4 className="text-lg font-semibold text-gray-700">Yearly Revenue</h4>
+            <p className="text-2xl font-bold text-green-500">${yearlyRevenue?.toFixed(2) || '0.00'}</p>
+          </div>
         </div>
       </div>
 
-    
+      {/* Charts */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h4 className="text-lg font-semibold text-gray-700 mb-4">Daily Trends</h4>
+          <Line data={dailyChartData} options={options} />
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h4 className="text-lg font-semibold text-gray-700 mb-4">Weekly Trends</h4>
+          <Line data={weeklyChartData} options={options} />
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h4 className="text-lg font-semibold text-gray-700 mb-4">Monthly Trends</h4>
+          <Line data={monthlyChartData} options={options} />
+        </div>
+      </div>
     </div>
   );
 };
