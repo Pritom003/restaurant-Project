@@ -119,99 +119,108 @@ const AdminProfile = () => {
   const handleNextMonth = () => setMonthOffset(prevOffset => prevOffset + 1);
 
   return (
-    <div className="container mx-auto p-4 text-black">
-{/* <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8"> */}
-<div className="mb-8">
-  <div className="p-4 bg-blue-100 rounded shadow w-96 my-10 text-center grid align-middle items-center  justify-center">
-    <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
-      <FaDollarSign className="mr-2 font-semibold text-black" /> Today's Revenue
-    </h2>
-    <div className="flex lg:flex-col items-center lg:justify-start justify-between gap-2">
-      <p className="text-5xl lg:text-4xl text-black font-bold">${dailyRevenue?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0).toFixed(2)}</p>
-    </div>
-    <p className="text-xl  text-black">{new Date().toLocaleDateString()}</p>
-  </div>
-{/* weekly  */}
-<div className='flex gap-2 lg:flex-row flex-col justify-center align-middle items-center '>
-<div className="p-4 bg-green-100 max-h-56 rounded shadow">
-    <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
-      <FaChartLine className="mr-2 font-semibold text-black" /> Weekly Revenue
-    </h2>
-    <div className="flex lg:flex-col items-center lg:justify-start justify-between gap-2">
-      <p className="text-5xl lg:text-4xl text-black font-bold">${weeklyRevenue?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0).toFixed(2)}</p>
-      <div className="flex items-center justify-start lg:gap-8 gap-10">
-        <button onClick={handlePreviousWeek} className="bg-green-900 text-white px-2 py-1 rounded">&lt;</button>
-        <button onClick={handleNextWeek} className="bg-green-900 text-white px-2 py-1 rounded">&gt;</button>
+    <div className="container mx-auto p-4 text-black grid justify-center align-middle items-center">
+      <div className="mb-8 ">
+        <div className="p-4 bg-blue-100 rounded shadow w-96 my-10 text-center grid align-middle items-center justify-center">
+          <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
+            <FaDollarSign className="mr-2 font-semibold text-black" /> Today's Revenue
+          </h2>
+          <div className="flex lg:flex-col items-center lg:justify-start justify-between gap-2">
+            <p className="text-5xl lg:text-4xl text-black font-bold">${dailyRevenue?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0).toFixed(2)}</p>
+          </div>
+          <p className="text-xl  text-black">{new Date().toLocaleDateString()}</p>
+        </div>
+
+        {/* Weekly Revenue */}
+        <div className='flex gap-2 lg:flex-row flex-col justify-center align-middle items-center'>
+          <div className="p-4 bg-green-100 max-h-56 rounded shadow">
+            <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
+              <FaChartLine className="mr-2 font-semibold text-black" /> Weekly Revenue
+            </h2>
+            <div className="flex lg:flex-col items-center lg:justify-start justify-between gap-2">
+              <p className="text-5xl lg:text-4xl text-black font-bold">${weeklyRevenue?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0).toFixed(2)}</p>
+              <div className="flex items-center justify-start lg:gap-8 gap-10">
+                <button 
+                  onClick={handlePreviousWeek} 
+                  className="bg-green-900 text-white px-2 py-1 rounded"
+                >
+                  &lt;
+                </button>
+                <button 
+                  onClick={handleNextWeek} 
+                  className={`bg-green-900 text-white px-2 py-1 rounded ${weekOffset === 0 ? 'cursor-not-allowed opacity-50' : ''}`}
+                  disabled={weekOffset === 0} // Disable if on current week
+                >
+                  &gt;
+                </button>
+              </div>
+            </div>
+            <p className="text-green-950 text-2xl">{`From ${getWeekDateRange(weekOffset).start} to ${getWeekDateRange(weekOffset).end}`}</p>
+          </div>
+          <div className="w-full md:max-w-[600px] p-4">
+            <h3 className="text-lg font-bold mb-4">Weekly Revenue Graph</h3>
+            <Line 
+              data={createChartData(formatWeekLabels(weeklyRevenue), daysOfWeek, 'Revenue', 'line', '#26630b')}
+              options={{ responsive: true }}
+            />
+          </div>
+        </div>
+
+        {/* Monthly Revenue */}
+        <div className='flex gap-2 lg:flex-row flex-col justify-center align-middle items-center'>
+          <div className="p-4 w-full bg-purple-100 max-h-56 rounded shadow">
+            <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
+              <FaCalendarAlt className="mr-2 font-semibold text-black" /> Monthly Revenue
+            </h2>
+            <div className="flex lg:flex-col items-center lg:justify-start justify-between gap-2">
+              <p className="text-5xl lg:text-4xl text-black font-bold">${monthlyRevenue?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0).toFixed(2)}</p>
+              <div className="flex items-center justify-start lg:gap-8 gap-10">
+                <button 
+                  onClick={handlePreviousMonth} 
+                  className="bg-purple-900 text-white px-2 py-1 rounded"
+                >
+                  &lt;
+                </button>
+                <button 
+                  onClick={handleNextMonth} 
+                  className={`bg-purple-900 text-white px-2 py-1 rounded ${monthOffset === 0 ? 'cursor-not-allowed opacity-50' : ''}`}
+                  disabled={monthOffset === 0} // Disable if on current month
+                >
+                  &gt;
+                </button>
+              </div>
+            </div>
+            <p className="text-purple-950 text-2xl">{getMonthName(monthOffset)}</p>
+          </div>
+          <div className="w-full md:max-w-[600px] p-4">
+            <h3 className="text-lg font-bold mb-4">Monthly Revenue Graph</h3>
+            <Bar 
+              data={createChartData(formatMonthlyLabels(monthlyRevenue), Array.from({ length: 31 }, (_, i) => `Day ${i + 1}`), 'Revenue', 'bar', '#3b004c')}
+              options={{ responsive: true }}
+            />
+          </div>
+        </div>
+
+        {/* Yearly Revenue */}
+        <div className="flex gap-2 lg:flex-row flex-col justify-center align-middle items-center">
+          <div className="p-4 w-full bg-yellow-100 max-h-56 rounded shadow">
+            <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
+              <FaCalendarAlt className="mr-2 font-semibold text-black" /> Yearly Revenue
+            </h2>
+            <div className="flex lg:flex-col items-center lg:justify-start justify-between gap-2">
+              <p className="text-5xl lg:text-4xl text-black font-bold">${yearlyRevenue?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0).toFixed(2)}</p>
+            </div>
+          </div>
+          <div className="w-full md:max-w-[600px] p-4">
+            <h3 className="text-lg font-bold mb-4">Yearly Revenue Graph</h3>
+            <Bar 
+              data={createChartData(formatYearlyData(yearlyRevenue), formatYearlyLabels(), 'Revenue', 'bar', '#6a4b3e')}
+              options={{ responsive: true }}
+            />
+          </div>
+        </div>
       </div>
     </div>
-    <p className="text-green-950 text-2xl">{`From ${getWeekDateRange(weekOffset).start} to ${getWeekDateRange(weekOffset).end}`}</p>
-  </div>
-  <div className="w-full md:max-w-[600px] p-4">
-  <h3 className="text-lg font-bold mb-4">Weekly Revenue Graph</h3>
-  <Line data={createChartData(formatWeekLabels(weeklyRevenue), daysOfWeek, 'Weekly Revenue', 'line', '#26630b')} />
-</div>
-
-
-</div>
-{/* monthly */}
-<div className='flex  lg:flex-row flex-col justify-center align-middle items-center gap-2'>
- <div className="p-4 bg-yellow-100 max-h-56 rounded shadow w-full">
-    <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
-      <FaCalendarAlt className="mr-2 font-semibold text-black" /> Monthly Revenue
-    </h2>
-    <div className="flex lg:flex-col items-center lg:justify-start justify-between gap-2">
-      <p className="text-5xl lg:text-4xl text-black font-bold">${monthlyRevenue?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0).toFixed(2)}</p>
-      <div className="flex items-center justify-start lg:gap-8 gap-10">
-        <button onClick={handlePreviousMonth} className="bg-yellow-900 text-white px-2 py-1 rounded">&lt;</button>
-        <button onClick={handleNextMonth} className="bg-yellow-900 text-white px-2 py-1 rounded">&gt;</button>
-      </div>
-    </div>
-    <p className="text-yellow-950 text-2xl">{getMonthName(monthOffset)}</p>
-  </div>
-  <div className="w-full md:max-w-[600px] p-4">
-  <h3 className="text-lg font-bold mb-4">Monthly Revenue Graph</h3>
-  <Line data={createChartData(formatMonthlyLabels(monthlyRevenue), Array.from({ length: new Date().getDate() }, (_, i) => i + 1), 'Monthly Revenue', 'line', '#d9c427')} />
-</div>
- </div>
-{/* yearly */}
-<div className='flex  lg:flex-row flex-col justify-center align-middle items-center gap-2'>
-<div className="p-4 bg-red-100 w-full rounded shadow">
-    <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
-      <FaChartLine className="mr-2 font-semibold text-black" /> Yearly Revenue
-    </h2>
-    <div className="flex lg:flex-col items-center lg:justify-start justify-between gap-2">
-      <p className="text-5xl lg:text-4xl text-black font-bold">${yearlyRevenue?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0).toFixed(2)}</p>
-    </div>
-  </div>
-  <div className="p-4 ">
-        <h3 className="text-lg font-bold mb-4">Yearly Revenue Graph</h3>
-        <Bar data={createChartData(formatYearlyData(yearlyRevenue), formatYearlyLabels(), 'Yearly Revenue', 'bar')} />
-      </div>
-</div>
-</div>
-
-
-
-    
-      {/* <div className="grid lg:grid-cols-2 gap-4"> */}
-      {/* <div className="w-full md:max-w-[600px] p-4">
-  <h3 className="text-lg font-bold mb-4">Weekly Revenue Graph</h3>
-  <Line data={createChartData(formatWeekLabels(weeklyRevenue), daysOfWeek, 'Weekly Revenue', 'line', '#26630b')} />
-</div>
-
-<div className="w-full md:max-w-[600px] p-4">
-  <h3 className="text-lg font-bold mb-4">Monthly Revenue Graph</h3>
-  <Line data={createChartData(formatMonthlyLabels(monthlyRevenue), Array.from({ length: new Date().getDate() }, (_, i) => i + 1), 'Monthly Revenue', 'line', '#d9c427')} />
-</div>
-
-        <div className="p-4 ">
-        <h3 className="text-lg font-bold mb-4">Yearly Revenue Graph</h3>
-        <Bar data={createChartData(formatYearlyData(yearlyRevenue), formatYearlyLabels(), 'Yearly Revenue', 'bar')} />
-      </div> */}
-      </div>
-
-     
- 
   );
 };
 
