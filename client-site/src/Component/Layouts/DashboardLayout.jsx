@@ -31,11 +31,11 @@ console.log(role,'from dashboard');
   };
 
   return (
-    <div className="grid lg:flex bg-gray-100">
+    <div className="grid lg:flex lg:h-full bg-gray-100">
       <nav
         style={{ backgroundImage: `url(${backgroundimg})`, position: "relative" }}
-        className={`bg-cover bg-no-repeat lg:w-[180px] 
-          lg:h-screen w-full h-auto p-4 transition-all 
+        className={`bg-cover  lg:w-[180px] 
+          w-full lg:h-[1900px] p-4 transition-all 
           duration-300 ${isExpanded ? "h-auto" : "h-full"}`}
       >
         {/* Overlay for the background image */}

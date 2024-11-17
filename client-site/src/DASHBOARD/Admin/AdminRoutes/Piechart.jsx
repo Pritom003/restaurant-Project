@@ -1,23 +1,34 @@
-import { useEffect, useState } from 'react';
-import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
+import { useEffect, useState } from "react";
+import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
 
 const PieCharts = () => {
   const [paymentData, setPaymentData] = useState([]);
 
   useEffect(() => {
-    fetch(" http://localhost:3000/api/orders/payment-methods")
-      .then(res => res.json())
-      .then(data => {
-        const formattedData = data.map(item => ({
-          name: item._id, // 'Cash' or 'Stripe'
-          value: item.count
-        }));
+    fetch("http://localhost:3000/api/orders/payment-methods")
+      .then((res) => res.json())
+      .then((data) => {
+        let cashCount = 0;
+        let stripeCount = 0;
+
+        data.forEach((item) => {
+          if (item._id === "cash") {
+            cashCount += item.count;
+          } else {
+            stripeCount += item.count;
+          }
+        });
+
+        const formattedData = [
+          { name: "Cash", value: cashCount },
+          { name: "Stripe", value: stripeCount },
+        ];
+
         setPaymentData(formattedData);
       });
   }, []);
-  
 
-  const COLORS = ["#0088FE", "#FFBB28"];
+  const COLORS = ["#0088FE", "#FFBB28"]; // Colors for "Cash" and "Stripe"
 
   return (
     <PieChart width={400} height={400}>
