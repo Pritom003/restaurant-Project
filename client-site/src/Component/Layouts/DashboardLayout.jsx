@@ -8,6 +8,7 @@ import { RiMenuSearchFill } from "react-icons/ri";
 import { AuthContext } from "../../providers/AuthProviders";
 // import { AuthContext } from "../../context/AuthProvider"; // Import AuthContext
 import useRole from '../../Hooks/useRole.js';
+import Footer from "../Footer/Footer.jsx";
 const DashboardLayout = () => {
   const { logOut, user } = useContext(AuthContext); // Access logOut and user from AuthContext
   const [isExpanded, setIsExpanded] = useState(false);
@@ -126,7 +127,9 @@ console.log(role,'from dashboard');
           {role === "Admin" ? "Admin Dashboard" : "User Dashboard"}
         </h2>
         <Outlet className="bg-gray-400" /> {/* Child routes will render here */}
+    
       </div>
+  
     </div>
   );
 };
