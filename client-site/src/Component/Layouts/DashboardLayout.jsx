@@ -1,21 +1,20 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useState, useContext } from "react";
-import { FaUser, FaPlus,  FaHome, FaSignOutAlt } from "react-icons/fa";
+import { FaUser, FaPlus, FaHome, FaSignOutAlt } from "react-icons/fa";
 import backgroundimg from "../../assets/vintage.jpg";
 import Heading from "../../Pages/Home/MenuBox/Heading";
 import { GrMoney } from "react-icons/gr";
 import { RiMenuSearchFill } from "react-icons/ri";
 import { AuthContext } from "../../providers/AuthProviders";
-// import { AuthContext } from "../../context/AuthProvider"; // Import AuthContext
-import useRole from '../../Hooks/useRole.js';
+import useRole from "../../Hooks/useRole.js";
 import Footer from "../Footer/Footer.jsx";
+
 const DashboardLayout = () => {
-  const { logOut, user } = useContext(AuthContext); // Access logOut and user from AuthContext
+  const { logOut, user } = useContext(AuthContext);
   const [isExpanded, setIsExpanded] = useState(false);
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
   const role = "Admin"; // Replace with dynamic role if needed
-  // const[role] = useRole()
-console.log(role,'from dashboard');
+
   const toggleMenu = () => {
     setIsExpanded(!isExpanded);
   };
@@ -24,36 +23,29 @@ console.log(role,'from dashboard');
     try {
       await logOut();
       console.log("Logout successful");
-      navigate("/login"); // Redirect to login page after logout
+      navigate("/login");
     } catch (error) {
       console.error("Error during logout:", error.message);
     }
   };
 
   return (
-    <div className="grid lg:flex lg:h-full bg-gray-100">
+    <div className="lg:flex lg:h-screen h-full bg-gray-100">
+      {/* Sidebar for large devices */}
       <nav
-        style={{ backgroundImage: `url(${backgroundimg})`, position: "relative" }}
-        className={`bg-cover  lg:w-[180px] 
-          w-full lg:h-[1900px] p-4 transition-all 
-          duration-300 ${isExpanded ? "h-auto" : "h-full"}`}
-      >
-        {/* Overlay for the background image */}
-        <div className="absolute inset-0 bg-black opacity-50"></div>
-
-        <button
-          className="block lg:hidden p-2 text-white focus:outline-none z-10"
-          onClick={toggleMenu}
-          aria-label="Toggle menu"
+          
+          style={{ backgroundImage: `url(${backgroundimg})` }}
+          className="lg:fixed lg:flex pl-4 lg:flex-col hidden top-0 left-0 h-full w-44 bg-cover bg-repeat relative"
         >
-          <span className="text-2xl">&#9660;</span> {/* Down arrow icon */}
-        </button>
-
-        <div className="pt-5 flex justify-center items-center">
-          <Heading customStyle="h-12" />
+          {/* Overlay for background */}
+          <div className="absolute inset-0 bg-black opacity-50"></div>
+  
+          {/* Sidebar content */}
+          
+        <div className="pt-10 pl-1 flex justify-center  items-center z-10 relative">
+          <Heading customStyle="h-12 " />
         </div>
-
-        <ul className={`mt-4 relative z-10 ${isExpanded ? "block" : "hidden lg:block"}`}>
+        <ul className="mt-4 relative z-10">
           <li className="flex items-center py-2">
             <FaHome className="text-white mr-2" />
             <Link to="/" className="block text-white">
@@ -95,7 +87,7 @@ console.log(role,'from dashboard');
             </>
           ) : role === "user" ? (
             <>
-              {/* Add user-specific links here */}
+              {/* User-specific links */}
             </>
           ) : (
             <Link
@@ -105,8 +97,6 @@ console.log(role,'from dashboard');
               Log in
             </Link>
           )}
-
-          {/* Logout button */}
           {user && (
             <li className="flex items-center py-2">
               <FaSignOutAlt className="text-white mr-2" />
@@ -121,15 +111,79 @@ console.log(role,'from dashboard');
         </ul>
       </nav>
 
+      {/* Top Navbar for medium devices and smaller */}
+      <nav className="lg:hidden block bg-gray-800 text-white p-4">
+        <div className="flex justify-between items-center">
+          <button
+            onClick={toggleMenu}
+            aria-label="Toggle menu"
+            className="text-2xl focus:outline-none"
+          >
+            {isExpanded ? "▲" : "▼"} {/* Toggle arrow */}
+          </button>
+          <Heading customStyle="h-8 text-white" />
+        </div>
+        {isExpanded && (
+          <ul className="flex justify-around mt-4">
+            <li>
+              <Link to="/" className="flex flex-col items-center">
+                <FaHome />
+                <span className="text-sm">Home</span>
+              </Link>
+            </li>
+            <li>
+              <Link to="" className="flex flex-col items-center">
+                <FaUser />
+                <span className="text-sm">Profile</span>
+              </Link>
+            </li>
+            {role === "Admin" && (
+              <>
+                <li>
+                  <Link to="add-menu" className="flex flex-col items-center">
+                    <FaPlus />
+                    <span className="text-sm">Add Menu</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="menus" className="flex flex-col items-center">
+                    <RiMenuSearchFill />
+                    <span className="text-sm">Dishes</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="orderList" className="flex flex-col items-center">
+                    <GrMoney />
+                    <span className="text-sm">Orders</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="user-list" className="flex flex-col items-center">
+                    <FaUser />
+                    <span className="text-sm">Users</span>
+                  </Link>
+                </li>
+              </>
+            )}
+            {user && (
+              <li>
+                <button onClick={handleLogout} className="flex flex-col items-center">
+                  <FaSignOutAlt />
+                  <span className="text-sm">Logout</span>
+                </button>
+              </li>
+            )}
+          </ul>
+        )}
+      </nav>
+
       {/* Main content area */}
-      <div className="flex-1 p-6 md:mt-0 mt-4">
+      <div className="flex-1 overflow-y-auto p-6 lg:ml-44">
         <h2 className="text-2xl font-bold mb-4 text-center">
           {role === "Admin" ? "Admin Dashboard" : "User Dashboard"}
         </h2>
-        <Outlet className="bg-gray-400" /> {/* Child routes will render here */}
-    
+        <Outlet /> {/* Child routes */}
       </div>
-  
     </div>
   );
 };
