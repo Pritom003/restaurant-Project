@@ -12,8 +12,8 @@ const DashboardLayout = () => {
   const { logOut, user } = useContext(AuthContext); // Access logOut and user from AuthContext
   const [isExpanded, setIsExpanded] = useState(false);
   const navigate = useNavigate(); // Initialize useNavigate
-  // const role = "Admin"; // Replace with dynamic role if needed
-  const[role] = useRole()
+  const role = "Admin"; // Replace with dynamic role if needed
+  // const[role] = useRole()
 console.log(role,'from dashboard');
   const toggleMenu = () => {
     setIsExpanded(!isExpanded);
