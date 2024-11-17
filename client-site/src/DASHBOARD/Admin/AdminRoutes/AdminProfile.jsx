@@ -5,6 +5,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 import { FaDollarSign, FaChartLine, FaCalendarAlt } from 'react-icons/fa';
+import Piecharts from './Piechart';
 
 const AdminProfile = () => {
   const [dailyRevenue, setDailyRevenue] = useState([]);
@@ -121,7 +122,8 @@ const AdminProfile = () => {
   return (
     <div className="container mx-auto p-4 text-black grid justify-center align-middle items-center">
       <div className="mb-8 ">
-        <div className="p-4 bg-blue-100 rounded shadow w-96 my-10 text-center grid align-middle items-center justify-center">
+     <div className='flex'>
+     <div className="p-4 bg-blue-100 rounded shadow w-96 my-10 text-center grid align-middle items-center justify-center">
           <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
             <FaDollarSign className="mr-2 font-semibold text-black" /> Today's Revenue
           </h2>
@@ -130,7 +132,8 @@ const AdminProfile = () => {
           </div>
           <p className="text-xl  text-black">{new Date().toLocaleDateString()}</p>
         </div>
-
+<Piecharts></Piecharts>
+     </div>
         {/* Weekly Revenue */}
         <div className='flex gap-2 lg:flex-row flex-col justify-center align-middle items-center'>
           <div className="p-4 bg-green-100 max-h-56 rounded shadow">
