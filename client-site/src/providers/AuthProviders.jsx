@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { createContext, useEffect, useState } from 'react'
+import { createContext, useEffect, useState } from 'react';
 import {
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
@@ -10,75 +10,86 @@ import {
   signInWithPopup,
   signOut,
   updateProfile,
-} from 'firebase/auth'
-import { app } from '../../firebase.config'
-import { clearCookie } from '../api/aUTH.JS'
+} from 'firebase/auth';
+import { app } from '../../firebase.config';
+import { clearCookie } from '../api/aUTH.JS';
 
-export const AuthContext = createContext(null)
-const auth = getAuth(app)
-const googleProvider = new GoogleAuthProvider()
+export const AuthContext = createContext(null);
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
 
 const AuthProvider = ({ children }) => {
-  
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-
+  // Create user
   const createUser = (email, password) => {
-    setLoading(true)
-    return createUserWithEmailAndPassword(auth, email, password)
-  }
+    setLoading(true);
+    return createUserWithEmailAndPassword(auth, email, password);
+  };
 
+  // Sign in with email and password
   const signIn = async (email, password) => {
-    setLoading(true)
     try {
-      const result = await signInWithEmailAndPassword(auth, email, password)
-      setUser(result.user) // Manually set user if needed
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      // Log the result to ensure it contains the expected data
+      console.log("Sign-in result:", userCredential);
+      return userCredential;  // Return the complete UserCredential
     } catch (error) {
-      console.error("Sign-in error:", error.message)
-    } finally {
-      setLoading(false)
+      console.error("Error during sign-in:", error.message);
+      throw new Error("Login failed");
     }
-  }
+  };
   
-
+  // Sign in with Google
   const signInWithGoogle = () => {
-    setLoading(true)
-    return signInWithPopup(auth, googleProvider)
-  }
+    setLoading(true);
+    return signInWithPopup(auth, googleProvider);
+  };
 
+  // Reset password
   const resetPassword = email => {
-    setLoading(true)
-    return sendPasswordResetEmail(auth, email)
-  }
+    setLoading(true);
+    return sendPasswordResetEmail(auth, email);
+  };
 
+  // Log out
   const logOut = async () => {
-    setLoading(true)
-    await clearCookie()
-    return signOut(auth)
-  }
+    setLoading(true);
+    try {
+      await clearCookie();
+      await signOut(auth);
+      setUser(null); // Ensure user state is cleared immediately
+      console.log('Logged out successfully');
+    } catch (error) {
+      console.error('Logout error:', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  // Update user profile
   const updateUserProfile = (name, photo) => {
     return updateProfile(auth.currentUser, {
       displayName: name,
       photoURL: photo,
-    })
-  }
+    });
+  };
 
+  // Listen for auth state changes
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, currentUser => {
-      if (currentUser) {
-        setUser(currentUser)
-        console.log('User signed in:', currentUser)
-      } else {
-        console.log('No user signed in')
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      currentUser => {
+        setUser(currentUser);
+        setLoading(false);
+      },
+      error => {
+        console.error('Error in onAuthStateChanged:', error);
       }
-      setLoading(false)
-    }, error => {
-      console.error("Error in onAuthStateChanged:", error)
-    })
-    return () => unsubscribe()
-  }, [])
+    );
+    return () => unsubscribe();
+  }, []);
 
   const authInfo = {
     user,
@@ -90,11 +101,9 @@ const AuthProvider = ({ children }) => {
     resetPassword,
     logOut,
     updateUserProfile,
-  }
+  };
 
-  return (
-    <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
-  )
-}
+  return <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>;
+};
 
 export default AuthProvider;

@@ -90,6 +90,7 @@ router.get('/user/:email', async (req, res) => {
     res.status(500).send({ error: "Failed to get user" });
   }
 });
+
 // Delete user by email
 router.delete('/users/:email', async (req, res) => {
   try {

@@ -1,10 +1,14 @@
 import { Outlet } from 'react-router-dom';
 import Footer from '../Footer/Footer';
 import background from '../../assets/vintage.jpg';
+import Navbar from '../Navbar/Navbar';
 
 const Layout = () => {
     return (
-        <div 
+       <div>
+        <Navbar></Navbar>
+
+<div 
             className="min-h-screen flex flex-col bg-cover bg-center bg-fixed"
             style={{ backgroundImage: `url(${background})`, backgroundAttachment: 'fixed' }}
         >
@@ -15,6 +19,7 @@ const Layout = () => {
             {/* Sticky Footer */}
             <Footer />
         </div>
+       </div>
     );
 };
 

@@ -1,168 +1,241 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS } from 'chart.js/auto';
-import { FaCalendarDay, FaCalendarWeek, FaCalendarAlt } from 'react-icons/fa';
+import { Line, Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend } from 'chart.js';
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
+import { FaDollarSign, FaChartLine, FaCalendarAlt } from 'react-icons/fa';
+import Piecharts from './Piechart';
 
 const AdminProfile = () => {
   const [dailyRevenue, setDailyRevenue] = useState([]);
-  const [weeklyRevenue, setWeeklyRevenue] = useState(0);
+  const [weeklyRevenue, setWeeklyRevenue] = useState([]);
   const [monthlyRevenue, setMonthlyRevenue] = useState([]);
-  const [yearlyRevenue, setYearlyRevenue] = useState(0);
+  const [yearlyRevenue, setYearlyRevenue] = useState([]);
+  const [weekOffset, setWeekOffset] = useState(0);
+  const [monthOffset, setMonthOffset] = useState(0);
 
-  const fetchRevenueData = async () => {
-    try {
-      // Fetch daily, weekly, monthly, and yearly revenue
-      const dailyResponse = await axios.get('http://localhost:3000/api/revenue/daily');
-      const weeklyResponse = await axios.get('http://localhost:3000/api/revenue/weekly');
-      const monthlyResponse = await axios.get('http://localhost:3000/api/revenue/monthly');
-      const yearlyResponse = await axios.get('http://localhost:3000/api/revenue/yearly');
+  const daysOfWeek = ["Sat", "Sun", "Mon", "Tues", "Wed", "Thurs", "Fri"];
+  const monthsOfYear = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'June',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ];
 
-      // Set state based on API responses
-      setDailyRevenue(dailyResponse.data.revenue || []);
-      setWeeklyRevenue(weeklyResponse.data.revenue || 0);
-      setMonthlyRevenue(monthlyResponse.data.revenue || []);
-      setYearlyRevenue(yearlyResponse.data.revenue || 0);
-    } catch (error) {
-      console.error('Error fetching revenue data:', error);
-    }
+  const getWeekDateRange = (offset = 0) => {
+    const currentDate = new Date();
+    const firstDayOfWeek = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay() + (offset * 7)));
+    const lastDayOfWeek = new Date(currentDate.setDate(firstDayOfWeek.getDate() + 6));
+    
+    return {
+      start: `${monthsOfYear[firstDayOfWeek.getMonth()]} ${firstDayOfWeek.getDate()}, ${firstDayOfWeek.getFullYear()}`,
+      end: `${monthsOfYear[lastDayOfWeek.getMonth()]} ${lastDayOfWeek.getDate()}, ${lastDayOfWeek.getFullYear()}`,
+    };
   };
+
+  const getMonthName = (offset = 0) => {
+    const currentMonth = new Date().getMonth();
+    return `${monthsOfYear[(currentMonth + offset + 12) % 12]} ${new Date().getFullYear()}`;
+  };
+
+  const getYearMonthLabel = () => `${new Date().getFullYear()} - ${monthsOfYear[new Date().getMonth()]}`;
 
   useEffect(() => {
-    fetchRevenueData();
-  }, []);
+    const fetchData = async () => {
+      try {
+        const [daily, weekly, monthly, yearly] = await Promise.all([
+          axios.get('http://localhost:3000/api/revenue/daily'),
+          axios.get(`http://localhost:3000/api/revenue/weekly?weekOffset=${weekOffset}`),
+          axios.get(`http://localhost:3000/api/revenue/monthly?monthOffset=${monthOffset}`),
+          axios.get('http://localhost:3000/api/revenue/yearly'),
+        ]);
+        setDailyRevenue(daily.data);
+        setWeeklyRevenue(weekly.data);
+        setMonthlyRevenue(monthly.data);
+        setYearlyRevenue(yearly.data);
+      } catch (error) {
+        console.error('Error fetching revenue data:', error);
+      }
+    };
+    fetchData();
+  }, [weekOffset, monthOffset]);
 
-  // Format daily data with weekdays
-  const dailyLabels = Array.isArray(dailyRevenue) && dailyRevenue.length > 0 
-    ? dailyRevenue?.map((day) => {
-        const date = new Date(day.date);
-        return `${date.toLocaleDateString('en-US', { weekday: 'short' })}, ${date.toLocaleDateString('en-US', {
-          month: 'short',
-          day: 'numeric',
-        })}`;
-      })
-    : [];
+  const createChartData = (data, labels, label, chartType = 'line', borderColor = '#26630b') => ({
+    labels: labels,
+    datasets: [{
+      label: label,
+      data: data,
+      borderColor: borderColor, // Use the passed borderColor
+      backgroundColor: chartType === 'line' ? '#3e1c00' : '#7c3f00', // Brown for bar chart
+      fill: chartType === 'line' ? true : false,
+      borderWidth: chartType === 'line' ? 6 : 3,
+    }],
+  });
+  
 
-  // Line chart data for daily trends
-  const dailyChartData = {
-    labels: dailyLabels,
-    datasets: [
-      {
-        label: 'Daily Revenue',
-        data: Array.isArray(dailyRevenue) && dailyRevenue.length > 0 
-          ? dailyRevenue?.map((day) => day.totalRevenue)
-          : [],
-        borderColor: '#4CAF50',
-        tension: 0.4,
-        fill: true,
-        backgroundColor: 'rgba(76, 175, 80, 0.2)',
-      },
-    ],
+  const formatWeekLabels = (weeklyData) => {
+    const revenueByDay = new Array(7).fill(0);
+
+    weeklyData.forEach(item => {
+      const date = new Date(item.date);
+      const localDate = new Date(date.toLocaleString());
+      let dayOfWeek = localDate.getDay();
+
+      if (dayOfWeek === 6) {
+        dayOfWeek = 0; // Saturday becomes 0
+      } else {
+        dayOfWeek += 1; // Shift Sunday to 1, Monday to 2, ..., Friday to 6
+      }
+
+      revenueByDay[dayOfWeek] += item.totalRevenue;
+    });
+
+    return revenueByDay;
   };
 
-  // Line chart data for weekly trends
-  const weeklyChartData = {
-    labels: ['Week 1'],  // Single label for week
-    datasets: [
-      {
-        label: 'Weekly Revenue',
-        data: [weeklyRevenue || 0],  // Default to 0 if no data
-        borderColor: '#2196F3',
-        tension: 0.4,
-        fill: true,
-        backgroundColor: 'rgba(33, 150, 243, 0.2)',
-      },
-    ],
+  const formatMonthlyLabels = (monthlyData) => {
+    const daysInMonth = new Date(2024, 11, 0).getDate();
+    const revenueByDay = new Array(daysInMonth).fill(0);
+    monthlyData.forEach(item => {
+      const dayOfMonth = new Date(item.date).getDate() - 1;
+      revenueByDay[dayOfMonth] = item.totalRevenue;
+    });
+    return revenueByDay;
   };
 
-  // Line chart data for monthly trends
-  const monthlyChartData = {
-    labels: Array.isArray(monthlyRevenue) && monthlyRevenue.length > 0 
-      ? monthlyRevenue?.map((month) => month.monthName)
-      : [],
-    datasets: [
-      {
-        label: 'Monthly Revenue',
-        data: Array.isArray(monthlyRevenue) && monthlyRevenue.length > 0 
-          ? monthlyRevenue?.map((month) => month.totalRevenue)
-          : [],
-        borderColor: '#FFC107',
-        tension: 0.4,
-        fill: true,
-        backgroundColor: 'rgba(255, 193, 7, 0.2)',
-      },
-    ],
+  const formatYearlyLabels = () => monthsOfYear;
+
+  const formatYearlyData = (yearlyData) => {
+    const revenueByMonth = new Array(12).fill(0);
+    yearlyData.forEach(item => {
+      const monthIndex = new Date(item.month).getMonth();
+      revenueByMonth[monthIndex] = item.totalRevenue;
+    });
+    return revenueByMonth;
   };
 
-  const options = {
-    scales: {
-      y: {
-        beginAtZero: true,
-      },
-    },
-  };
+  const handlePreviousWeek = () => setWeekOffset(prevOffset => prevOffset - 1);
+  const handleNextWeek = () => setWeekOffset(prevOffset => prevOffset + 1);
+
+  const handlePreviousMonth = () => setMonthOffset(prevOffset => prevOffset - 1);
+  const handleNextMonth = () => setMonthOffset(prevOffset => prevOffset + 1);
 
   return (
-    <div className="p-6">
-      {/* Revenue Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
-          <FaCalendarDay className="text-4xl text-blue-500 mr-4" />
-          <div>
-            <h4 className="text-lg font-semibold text-gray-700">Daily Revenue</h4>
-            <p className="text-2xl font-bold text-green-500">
-              ${Array.isArray(dailyRevenue) && dailyRevenue.length > 0 
-                ? dailyRevenue?.reduce((sum, day) => sum + day.totalRevenue, 0).toFixed(2)
-                : '0.00'}
-            </p>
-          </div>
+    <div className="container mx-auto p-4 text-black grid justify-center items-center">
+    {/* Revenue Cards */}
+    <div className="flex flex-col lg:flex-row justify-around gap-4">
+      {/* Daily Revenue */}
+      <div className="p-4 bg-blue-100 rounded shadow  text-center grid items-center justify-center">
+        <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
+          <FaDollarSign className="mr-2 font-semibold text-black" /> Today's Revenue
+        </h2>
+        <div className="flex lg:flex-col items-center lg:justify-start justify-between gap-2">
+          <p className="text-5xl lg:text-4xl text-black font-bold">${dailyRevenue?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0).toFixed(2)}</p>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
-          <FaCalendarWeek className="text-4xl text-indigo-500 mr-4" />
-          <div>
-            <h4 className="text-lg font-semibold text-gray-700">Weekly Revenue</h4>
-            <p className="text-2xl font-bold text-green-500">
-              ${weeklyRevenue ? weeklyRevenue.toFixed(2) : '0.00'}
-            </p>
-          </div>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
-          <FaCalendarAlt className="text-4xl text-yellow-500 mr-4" />
-          <div>
-            <h4 className="text-lg font-semibold text-gray-700">Monthly Revenue</h4>
-            <p className="text-2xl font-bold text-green-500">
-              ${Array.isArray(monthlyRevenue) && monthlyRevenue.length > 0
-                ? monthlyRevenue?.reduce((sum, month) => sum + month.totalRevenue, 0).toFixed(2)
-                : '0.00'}
-            </p>
-          </div>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
-          <FaCalendarAlt className="text-4xl text-red-500 mr-4" />
-          <div>
-            <h4 className="text-lg font-semibold text-gray-700">Yearly Revenue</h4>
-            <p className="text-2xl font-bold text-green-500">${yearlyRevenue?.toFixed(2) || '0.00'}</p>
-          </div>
-        </div>
+        <p className="text-xl text-black">{new Date().toLocaleDateString()}</p>
       </div>
-
-      {/* Charts */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h4 className="text-lg font-semibold text-gray-700 mb-4">Daily Trends</h4>
-          <Line data={dailyChartData} options={options} />
+  
+      {/* Weekly Revenue */}
+      <div className="p-4 bg-green-100 rounded shadow  text-center grid items-center justify-center">
+        <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
+          <FaChartLine className="mr-2 font-semibold text-black" /> Weekly Revenue
+        </h2>
+        <p className="text-5xl lg:text-4xl text-black font-bold">${weeklyRevenue?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0).toFixed(2)}</p>
+        <div className="flex items-center justify-center gap-4">
+          <button 
+            onClick={handlePreviousWeek} 
+            className="bg-green-900 text-white px-2 py-1 rounded"
+          >
+            &lt;
+          </button>
+          <button 
+            onClick={handleNextWeek} 
+            className={`bg-green-900 text-white px-2 py-1 rounded ${weekOffset === 0 ? 'cursor-not-allowed opacity-50' : ''}`}
+            disabled={weekOffset === 0}
+          >
+            &gt;
+          </button>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h4 className="text-lg font-semibold text-gray-700 mb-4">Weekly Trends</h4>
-          <Line data={weeklyChartData} options={options} />
+        <p className="text-green-950 text-xs">{`From ${getWeekDateRange(weekOffset).start} to ${getWeekDateRange(weekOffset).end}`}</p>
+      </div>
+  
+      {/* Monthly Revenue */}
+      <div className="p-4 bg-purple-100 rounded shadow  text-center">
+        <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
+          <FaCalendarAlt className="mr-2 font-semibold text-black" /> Monthly Revenue
+        </h2>
+        <p className="text-5xl lg:text-4xl text-black font-bold">${monthlyRevenue?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0).toFixed(2)}</p>
+        <div className="flex items-center justify-center gap-4">
+          <button 
+            onClick={handlePreviousMonth} 
+            className="bg-purple-900 text-white px-2 py-1 rounded"
+          >
+            &lt;
+          </button>
+          <button 
+            onClick={handleNextMonth} 
+            className={`bg-purple-900 text-white px-2 py-1 rounded ${monthOffset === 0 ? 'cursor-not-allowed opacity-50' : ''}`}
+            disabled={monthOffset === 0}
+          >
+            &gt;
+          </button>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h4 className="text-lg font-semibold text-gray-700 mb-4">Monthly Trends</h4>
-          <Line data={monthlyChartData} options={options} />
-        </div>
+        <p className="text-purple-950 text-xl">{getMonthName(monthOffset)}</p>
+      </div>
+  
+      {/* Yearly Revenue */}
+      <div className="p-4 bg-yellow-100 rounded shadow 
+       text-center">
+        <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
+          <FaCalendarAlt className="mr-2 font-semibold text-black" /> Yearly Revenue
+        </h2>
+        <p className="text-5xl lg:text-4xl text-black font-bold">${yearlyRevenue?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0).toFixed(2)}</p>
       </div>
     </div>
+  
+    {/* Charts */}
+    <div className="mt-8 grid lg:grid-cols-2
+     justify-center gap-4">
+      {/* Weekly Chart */}
+      <div className="w-full bg-green-50 p-5 ">
+        <h3 className="text-lg font-bold mb-4">Weekly Revenue Graph</h3>
+        <Line 
+          data={createChartData(formatWeekLabels(weeklyRevenue), daysOfWeek, 'Revenue', 'line', '#26630b')}
+          options={{ responsive: true }}
+        />
+      </div>
+  
+      {/* Monthly Chart */}
+      <div className="w-full bg-yellow-50 p-5">
+        <h3 className="text-lg font-bold mb-4">Monthly Revenue Graph</h3>
+        <Bar 
+          data={createChartData(formatMonthlyLabels(monthlyRevenue), Array.from({ length: 31 }, (_, i) => `D ${i + 1}`), 'Revenue', 'bar', '#3b004c')}
+          options={{ responsive: true }}
+        />
+      </div>
+  
+      {/* Yearly Chart */}
+      <div className="w-full bg-red-50 p-5">
+        <h3 className="text-lg font-bold mb-4">Yearly Revenue Graph</h3>
+        <Bar 
+          data={createChartData(formatYearlyData(yearlyRevenue), formatYearlyLabels(), 'Revenue', 'bar', '#6a4b3e')}
+          options={{ responsive: true }}
+        />
+      </div>
+
+
+         {/* Pie Chart */}
+    <div className="w-full bg-blue-50 p-4" >
+    <h3 className="text-lg font-bold mb-4">Payment Methods comparison</h3>
+
+      <Piecharts />
+    </div>
+    </div>
+  
+ 
+  </div>
+  
   );
 };
+
 
 export default AdminProfile;

@@ -11,13 +11,14 @@ const OrderSchema = new mongoose.Schema(
         price: Number,
         quantity: Number,
         createdAt: { type: Date, default: Date.now },
-        // createdAt: new Date('2024-10-02T00:00:00Z')
+        // createdAt: { type: Date, default: new Date('2024-11-13T00:00:00Z') },
       },
     ],
     paymentStatus: { type: String, required: true }, // Required for tracking payment status
     paymentMethod: { type: String, required: true },
     totalPrice: { type: Number, required: true },
     createdAt: { type: Date, default: Date.now },
+    // createdAt: { type: Date, default: new Date('2024-11-13T00:00:00Z') },
   },
   { timestamps: true }
 );
