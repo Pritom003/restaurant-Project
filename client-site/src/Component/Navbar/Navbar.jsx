@@ -35,8 +35,8 @@ const Navbar = () => {
             <NavLink
               to="/"
               className={({ isActive }) =>
-                `hover:text-gold transition ${
-                  isActive ? "text-gold underline decoration-gold" : ""
+                `hover:text-orange-400 transition ${
+                  isActive ? "text-orange-400 underline decoration-gold" : ""
                 }`
               }
             >
@@ -47,8 +47,8 @@ const Navbar = () => {
             <NavLink
               to="/menus"
               className={({ isActive }) =>
-                `hover:text-gold transition ${
-                  isActive ? "text-gold underline decoration-gold" : ""
+                `hover:text-orange-400 transition ${
+                  isActive ? "text-orange-400 underline decoration-gold" : ""
                 }`
               }
             >
@@ -59,8 +59,8 @@ const Navbar = () => {
             <NavLink
               to="/about"
               className={({ isActive }) =>
-                `hover:text-gold transition ${
-                  isActive ? "text-gold underline decoration-gold" : ""
+                `hover:text-orange-400 transition ${
+                  isActive ? "text-orange-400 underline decoration-gold" : ""
                 }`
               }
             >
@@ -71,8 +71,8 @@ const Navbar = () => {
             <NavLink
               to="/contact"
               className={({ isActive }) =>
-                `hover:text-gold transition ${
-                  isActive ? "text-gold underline decoration-gold" : ""
+                `hover:text-orange-400 transition ${
+                  isActive ? "text-orange-400 underline decoration-gold" : ""
                 }`
               }
             >
@@ -87,8 +87,8 @@ const Navbar = () => {
                 <NavLink
                   to="/dashboard"
                   className={({ isActive }) =>
-                    `hover:text-gold transition ${
-                      isActive ? "text-gold underline decoration-gold" : ""
+                    `hover:text-orange-400 transition ${
+                      isActive ? "text-orange-400 underline decoration-gold" : ""
                     }`
                   }
                 >
@@ -98,7 +98,7 @@ const Navbar = () => {
               <li>
                 <button
                   onClick={logOut}
-                  className="hover:text-gold transition"
+                  className="hover:text-orange-400 transition"
                 >
                   Logout
                 </button>
@@ -109,8 +109,8 @@ const Navbar = () => {
               <NavLink
                 to="/login"
                 className={({ isActive }) =>
-                  `hover:text-gold transition ${
-                    isActive ? "text-gold underline decoration-gold" : ""
+                  `hover:text-orange-400 transition ${
+                    isActive ? "text-orange-400 underline decoration-gold" : ""
                   }`
                 }
               >
