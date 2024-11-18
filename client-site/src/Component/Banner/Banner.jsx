@@ -1,8 +1,11 @@
 import video from '../../assets/9574814-hd_1920_1080_25fps.mp4';
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from '../../providers/AuthProviders';
+import { useContext } from 'react';
 
 const Banner = () => {
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
     return (
       <div className="relative w-full h-screen overflow-hidden">
         {/* Video Background */}
@@ -30,14 +33,22 @@ const Banner = () => {
           <p className="text-xl md:text-2xl">Fine Dining at Its Best</p>
   
           {/* Button */}
-          <button
+          {user ? <button
+      onClick={() => navigate("/menus")}
+      className="mt-8 px-6 py-3 text-lg 
+        font-semibold border border-orange-400 text-gold
+        hover:bg-gold hover:text-orange-400 transition"
+    >
+      Get Started
+    </button>: <button
       onClick={() => navigate("/login")}
       className="mt-8 px-6 py-3 text-lg 
         font-semibold border border-orange-400 text-gold
         hover:bg-gold hover:text-orange-400 transition"
     >
       Get Started
-    </button>
+    </button>}
+         
         </div>
       </div>
     );
