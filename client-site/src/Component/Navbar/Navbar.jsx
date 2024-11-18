@@ -1,25 +1,14 @@
-import { useState, useEffect } from "react";
+import { useContext } from "react";
 import { NavLink } from "react-router-dom";
-import chef from '../../assets/chef.png';
+import chef from "../../assets/chef.png";
+import { AuthContext } from "../../providers/AuthProviders";
+// import { AuthContext } from "../context/AuthProvider";
 
 const Navbar = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 0);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  const { user, logOut } = useContext(AuthContext);
 
   return (
-    <nav
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        isScrolled ? "bg-[rgba(67,67,55,0.3)] backdrop-blur-md" : "bg-transparent"
-      }`}
-    >
+    <nav className="fixed top-0 left-0 w-full z-50 transition-all duration-300 bg-transparent">
       <div className="container mx-auto flex items-center justify-between px-6 py-4">
         {/* Logo */}
         <div className="text-2xl font-bold text-white font-chewy">
@@ -76,18 +65,45 @@ const Navbar = () => {
               Contact
             </NavLink>
           </li>
-          <li>
-            <NavLink
-              to="/login"
-              className={({ isActive }) =>
-                `hover:text-gold transition ${
-                  isActive ? "text-gold underline decoration-gold" : ""
-                }`
-              }
-            >
-              Login
-            </NavLink>
-          </li>
+
+          {/* Conditional Render: Dashboard or Login */}
+          {user ? (
+            <>
+              <li>
+                <NavLink
+                  to="/dashboard"
+                  className={({ isActive }) =>
+                    `hover:text-gold transition ${
+                      isActive ? "text-gold underline decoration-gold" : ""
+                    }`
+                  }
+                >
+                  Dashboard
+                </NavLink>
+              </li>
+              <li>
+                <button
+                  onClick={logOut}
+                  className="hover:text-gold transition"
+                >
+                  Logout
+                </button>
+              </li>
+            </>
+          ) : (
+            <li>
+              <NavLink
+                to="/login"
+                className={({ isActive }) =>
+                  `hover:text-gold transition ${
+                    isActive ? "text-gold underline decoration-gold" : ""
+                  }`
+                }
+              >
+                Login
+              </NavLink>
+            </li>
+          )}
         </ul>
       </div>
     </nav>
