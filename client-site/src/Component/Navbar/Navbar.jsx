@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import chef from "../../assets/chef.png";
 import { AuthContext } from "../../providers/AuthProviders";
@@ -6,9 +6,23 @@ import { AuthContext } from "../../providers/AuthProviders";
 
 const Navbar = () => {
   const { user, logOut } = useContext(AuthContext);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 transition-all duration-300 bg-transparent">
+    <nav
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+        isScrolled ? "bg-[rgba(67,67,55,0.3)] backdrop-blur-md" : "bg-transparent"
+      }`}
+    >
       <div className="container mx-auto flex items-center justify-between px-6 py-4">
         {/* Logo */}
         <div className="text-2xl font-bold text-white font-chewy">
