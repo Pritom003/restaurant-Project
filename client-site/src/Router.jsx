@@ -5,7 +5,7 @@ import NotFound from "./Pages/NotFound";
 import DashboardLayout from "./Component/Layouts/DashboardLayout";
 import AdminProfile from "./DASHBOARD/Admin/AdminRoutes/AdminProfile";
 import Addmenu from "./DASHBOARD/Admin/AdminRoutes/Addmenu";
-import AllMenulist from "./DASHBOARD/Admin/AdminRoutes/AllMenulist";
+// import AllMenulist from "./DASHBOARD/Admin/AdminRoutes/AllMenulist";
 import OrderLlist from "./DASHBOARD/Admin/AdminRoutes/OrderLlist";
 import SignUp from "./Component/SignUp/SignUp";
 import Login from "./Component/LogIn/LogIn";
@@ -13,6 +13,10 @@ import UserList from "./DASHBOARD/Admin/AdminRoutes/UserList";
 import PrivateRoute from "./providers/PrivateRoute";
 import LandingPage from "./Pages/LandingPage/LandingPage";
 import AllMenuList from "./DASHBOARD/Admin/AdminRoutes/AllMenulist";
+// import Stripelist from "./DASHBOARD/Admin/AdminRoutes/Orders/Stripelist";
+import CashOrder from "./DASHBOARD/Admin/AdminRoutes/Orders/CashOrder";
+import Stripelist from "./DASHBOARD/Admin/AdminRoutes/Orders/Stripelist";
+import PickupOrder from "./DASHBOARD/Admin/AdminRoutes/Orders/PickupOrders";
 // import PrivateRoute from "./PrivateRoute"; // Import the PrivateRoute component
 
 const router = createBrowserRouter([
@@ -36,8 +40,16 @@ const router = createBrowserRouter([
           { path: "", element: <AdminProfile/> },
           { path: "add-menu", element: <Addmenu /> },
           { path: "dishes", element: <AllMenuList /> },
-          { path: "orderList", element: <OrderLlist /> },
+          // { path: "orderList", element: <OrderLlist /> },
           { path: "user-list", element: <UserList /> },
+          {
+            path: "orderList",
+            element: <OrderLlist />, // This will display the order list
+            children: [
+              { path: "strip-order", element: <Stripelist /> },  // Nested under orderList
+              { path: "cash-on-delivery", element: <CashOrder /> }, // Nested under orderList
+              { path: "pickup", element: <PickupOrder /> }, // Nested under orderList
+            ],}
         ],
       },
     ],

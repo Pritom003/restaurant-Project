@@ -24,8 +24,8 @@ const Cart = () => {
     const handlePlaceOrder = () => {
         if (paymentMethod === 'stripe') {
             setShowPaymentForm(true);  // Show Stripe payment form
-        } else if (paymentMethod === 'cash') {
-            handleOrderCompletion();  // Complete the order directly for Cash on Delivery
+        } else if (paymentMethod === 'cash' || paymentMethod === 'pickup') {
+            handleOrderCompletion();  // Complete the order directly for Cash on Delivery or Pick Up
         }
     };
 
@@ -35,16 +35,15 @@ const Cart = () => {
             userEmail: "fariadamd55@gmail.com",
             items,
             totalPrice,
-            // Pass the selected payment method
             paymentStatus: paymentMethod === 'stripe' ? 'success' : 'pending', // Payment status for different methods
             paymentMethod,
         };
-console.log(orderData);
+        console.log(orderData);
         try {
             // Send the order data to the backend
             await axios.post(`http://localhost:3000/api/orders`, orderData);
             setShowPaymentForm(false);
-            Swal.fire('Order Placed', `Your order has been placed with ${paymentMethod === 'stripe' ? 'Stripe' : 'Cash on Delivery'}!`, 'success');
+            Swal.fire('Order Placed', `Your order has been placed with ${paymentMethod === 'stripe' ? 'Stripe' : paymentMethod === 'cash' ? 'Cash on Delivery' : 'Pick Up'}!`, 'success');
             dispatch({ type: 'CLEAR_CART' });
         } catch (error) {
             console.error('Error placing order:', error.message);
@@ -90,21 +89,7 @@ console.log(orderData);
                                     onChange={() => setPaymentMethod('stripe')}
                                     className="hidden" // Hide the default radio button
                                 />
-                                <span
-                                    className={`inline-block w-6 h-6 mr-2 border-2 border-gray-500 rounded-sm ${paymentMethod === 'stripe' ? 'bg-red-950' : ''} ${paymentMethod === 'stripe' ? 'border-blue-500' : 'border-gray-500'}`}
-                                >
-                                    {paymentMethod === 'stripe' && (
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="w-4 h-4 text-white mx-auto mt-1"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                        >
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                    )}
-                                </span>
+                                <span className={`inline-block w-6 h-6 mr-2 border-2 border-gray-500 rounded-sm ${paymentMethod === 'stripe' ? 'bg-red-950' : ''} ${paymentMethod === 'stripe' ? 'border-blue-500' : 'border-gray-500'}`}></span>
                                 <span className="flex justify-center align-middle items-center gap-1">
                                     <BsStripe className="text-2x" /> Stripe
                                 </span>
@@ -120,23 +105,25 @@ console.log(orderData);
                                     onChange={() => setPaymentMethod('cash')}
                                     className="hidden" // Hide the default radio button
                                 />
-                                <span
-                                    className={`inline-block w-6 h-6 mr-2 border-2 border-gray-500 rounded-sm ${paymentMethod === 'cash' ? 'bg-red-950' : ''} ${paymentMethod === 'cash' ? 'border-blue-500' : 'border-gray-500'}`}
-                                >
-                                    {paymentMethod === 'cash' && (
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="w-4 h-4 text-white mx-auto mt-1"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                        >
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                    )}
-                                </span>
+                                <span className={`inline-block w-6 h-6 mr-2 border-2 border-gray-500 rounded-sm ${paymentMethod === 'cash' ? 'bg-red-950' : ''} ${paymentMethod === 'cash' ? 'border-blue-500' : 'border-gray-500'}`}></span>
                                 <span className="flex justify-center align-middle items-center gap-1">
                                     <FaPoundSign /> Cash on Delivery
+                                </span>
+                            </label>
+
+                            {/* Pick Up Option */}
+                            <label className='text-lg flex items-center text-black'>
+                                <input
+                                    type="radio"
+                                    name="paymentMethod"
+                                    value="pickup"
+                                    checked={paymentMethod === 'pickup'}
+                                    onChange={() => setPaymentMethod('pickup')}
+                                    className="hidden" // Hide the default radio button
+                                />
+                                <span className={`inline-block w-6 h-6 mr-2 border-2 border-gray-500 rounded-sm ${paymentMethod === 'pickup' ? 'bg-red-950' : ''} ${paymentMethod === 'pickup' ? 'border-blue-500' : 'border-gray-500'}`}></span>
+                                <span className="flex justify-center align-middle items-center gap-1">
+                                    Pick Up
                                 </span>
                             </label>
                         </div>

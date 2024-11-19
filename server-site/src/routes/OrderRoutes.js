@@ -4,19 +4,19 @@ const Order = require('../models/OrderScheema'); // Adjust path as needed
 const axios = require('axios');
 
 // POST request to create a new order
+// POST request to create a new order
 router.post('/api/orders', async (req, res) => {
-  const { userEmail, chefEmail, paymentStatus,  paymentMethod, items, totalPrice } = req.body;
+  const { userEmail, chefEmail, paymentStatus, paymentMethod, items, totalPrice } = req.body;
 
   if (!userEmail || !items || items.length === 0 || !totalPrice) {
     return res.status(400).json({ error: 'User email, items, and total price are required' });
   }
 
   try {
-    // Create a new order document
     const newOrder = new Order({
       userEmail,
       chefEmail,
-      paymentStatus ,
+      paymentStatus: paymentMethod === 'pickup' ? 'unpaid' : paymentStatus,  
       paymentMethod,
       items,
       totalPrice,
@@ -24,8 +24,8 @@ router.post('/api/orders', async (req, res) => {
 
     const savedOrder = await newOrder.save();
 
-    // If payment is successful, send data to Zapier
-    if (paymentStatus === 'success' || paymentStatus === 'pending' ) {
+    // If payment is successful or pick up, send data to Zapier
+    if (paymentMethod !== 'pickup') {
       const zapierWebhookUrl = 'https://hooks.zapier.com/hooks/catch/20636785/25h17fq/';
       const zapierPayload = {
         userEmail: savedOrder.userEmail,
@@ -117,21 +117,22 @@ router.patch('/api/orders/:id/payment-status', async (req, res) => {
 // GET request to fetch payment method statistics (Cash on Delivery vs Stripe)
 router.get('/api/orders/payment-methods', async (req, res) => {
   try {
-    // Aggregate data by paymentMethod
-    const paymentStats = await Order.aggregate([
-      {
-        $group: {
-          _id: "$paymentMethod", // Group by paymentMethod (e.g., "Cash", "Stripe")
-          count: { $sum: 1 },   // Count the number of orders per payment method
-        },
-      },
-    ]);
+    const { method } = req.query; // Get method from query params
+    const paymentMethods = ['stripe', 'cash', 'pickup'];
 
-    res.status(200).json(paymentStats);
+    // If method is provided and valid, filter; otherwise, return all
+    const query = method && paymentMethods.includes(method) 
+      ? { paymentMethod: method } 
+      : { paymentMethod: { $in: paymentMethods } };
+
+    const orders = await Order.find(query);
+    res.status(200).json(orders);
   } catch (error) {
-    console.error('Error fetching payment method statistics:', error);
-    res.status(500).json({ message: 'Failed to retrieve payment method statistics', error });
+    console.error('Error fetching orders:', error);
+    res.status(500).json({ message: 'Failed to fetch orders', error });
   }
 });
+
+
 
 module.exports = router;

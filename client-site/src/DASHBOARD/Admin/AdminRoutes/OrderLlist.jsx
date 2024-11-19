@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import OrderTable from './OrderTable';
+import { Outlet } from 'react-router-dom';
+// import OrderTable from './OrderTable';
 
 const OrderList = () => {
   const [orders, setOrders] = useState([]);
@@ -15,7 +16,8 @@ const OrderList = () => {
   return (
     <div>
       <div className="overflow-x-auto mt-8">
-        <OrderTable orders={orders} />
+        {/* <OrderTable orders={orders} /> */}
+        <Outlet></Outlet>
       </div>
     </div>
   );
