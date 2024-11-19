@@ -14,19 +14,31 @@ const TableRow = ({ order }) => {
           </div>
         </div>
       </td>
-      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-        <p className="text-gray-900 whitespace-no-wrap">{order?.items?.name}</p>
-      </td>
-      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-        <p className="text-gray-900 whitespace-no-wrap">
-          {order?.items?.price}
-        </p>
-      </td>
-      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-        <p className="text-gray-900 whitespace-no-wrap">
-          {order?.items?.quantity}
-        </p>
-      </td>
+      {order?.items.map((food, idx) => (
+        <td
+          key={idx}
+          className="px-5 py-5 border-b border-gray-200 bg-white text-sm"
+        >
+          <p className="text-gray-900 whitespace-no-wrap">{food?.name}</p>
+        </td>
+      ))}
+
+      {order?.items.map((food, idx) => (
+        <td
+          key={idx}
+          className="px-5 py-5 border-b border-gray-200 bg-white text-sm"
+        >
+          <p className="text-gray-900 whitespace-no-wrap">{food?.price}</p>
+        </td>
+      ))}
+      {order?.items.map((food, idx) => (
+        <td
+          key={idx}
+          className="px-5 py-5 border-b border-gray-200 bg-white text-sm"
+        >
+          <p className="text-gray-900 whitespace-no-wrap">{food?.quantity}</p>
+        </td>
+      ))}
       <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
         <p className="text-gray-900 whitespace-no-wrap">
           {order?.paymentMethod}

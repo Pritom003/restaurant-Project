@@ -13,7 +13,9 @@ const DashboardLayout = () => {
   const { logOut, user } = useContext(AuthContext);
   const [isExpanded, setIsExpanded] = useState(false);
   const navigate = useNavigate();
-  const role = "user"; // Replace with dynamic role if needed
+  const [role] = useRole(); // Replace with dynamic role if needed
+
+  console.log(role);
 
   const toggleMenu = () => {
     setIsExpanded(!isExpanded);
@@ -51,15 +53,15 @@ const DashboardLayout = () => {
               Home
             </Link>
           </li>
-          
+
           {role === "Admin" ? (
             <>
-            <li className="flex items-center py-2">
-            <FaUser className="text-white mr-2" />
-            <Link to="" className="block text-white">
-              Profile
-            </Link>
-          </li>
+              <li className="flex items-center py-2">
+                <FaUser className="text-white mr-2" />
+                <Link to="" className="block text-white">
+                  Profile
+                </Link>
+              </li>
               <li className="flex items-center py-2">
                 <FaPlus className="text-white mr-2" />
                 <Link to="add-menu" className="block text-white">
@@ -84,13 +86,25 @@ const DashboardLayout = () => {
                   All Users
                 </Link>
               </li>
+              <li className="flex items-center py-2">
+                <FaSignOutAlt className="text-white mr-2" />
+                <Link to="profile" className="block text-white">
+                  Profile
+                </Link>
+              </li>
             </>
-          ) : role === "user" ? (
+          ) : role === "guest" ? (
             <>
               <li className="flex items-center py-2">
                 <FaUser className="text-white mr-2" />
                 <Link to="my-orders" className="block text-white">
                   My Orders
+                </Link>
+              </li>
+              <li className="flex items-center py-2">
+                <FaSignOutAlt className="text-white mr-2" />
+                <Link to="profile" className="block text-white">
+                  Profile
                 </Link>
               </li>
             </>
@@ -103,15 +117,19 @@ const DashboardLayout = () => {
             </Link>
           )}
           {user && (
-            <li className="flex items-center py-2">
-              <FaSignOutAlt className="text-white mr-2" />
-              <button
-                onClick={handleLogout}
-                className="block text-white focus:outline-none"
-              >
-                Logout
-              </button>
-            </li>
+            <div>
+              (
+              <li className="flex items-center py-2">
+                <FaSignOutAlt className="text-white mr-2" />
+                <button
+                  onClick={handleLogout}
+                  className="block text-white focus:outline-none"
+                >
+                  Logout
+                </button>
+              </li>
+              )
+            </div>
           )}
         </ul>
       </nav>

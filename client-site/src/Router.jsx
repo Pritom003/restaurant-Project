@@ -15,6 +15,8 @@ import LandingPage from "./Pages/LandingPage/LandingPage";
 import MyOrders from "./DASHBOARD/My Orders/MyOrders";
 import AllMenuList from "./DASHBOARD/Admin/AdminRoutes/AllMenulist";
 import Profile from "./Component/Common/Profile";
+import AdminRoute from "./routes/AdminRoute";
+
 // import PrivateRoute from "./PrivateRoute"; // Import the PrivateRoute component
 
 const router = createBrowserRouter([
@@ -35,12 +37,64 @@ const router = createBrowserRouter([
         path: "/dashboard",
         element: <DashboardLayout role="admin" />,
         children: [
-          { path: "", element: <AdminProfile /> },
-          { path: "add-menu", element: <Addmenu /> },
-          { path: "dishes", element: <AllMenuList /> },
-          { path: "orderList", element: <OrderLlist /> },
-          { path: "user-list", element: <UserList /> },
-          { path: "my-orders", element: <MyOrders /> },
+          {
+            path: "",
+            element: (
+              <PrivateRoute>
+                <AdminRoute>
+                  <AdminProfile />
+                </AdminRoute>
+              </PrivateRoute>
+            ),
+          },
+          {
+            path: "add-menu",
+            element: (
+              <PrivateRoute>
+                <AdminRoute>
+                  <Addmenu />
+                </AdminRoute>
+              </PrivateRoute>
+            ),
+          },
+          {
+            path: "dishes",
+            element: (
+              <PrivateRoute>
+                <AdminRoute>
+                  <AllMenuList />
+                </AdminRoute>
+              </PrivateRoute>
+            ),
+          },
+          {
+            path: "orderList",
+            element: (
+              <PrivateRoute>
+                <AdminRoute>
+                  <OrderLlist />
+                </AdminRoute>
+              </PrivateRoute>
+            ),
+          },
+          {
+            path: "user-list",
+            element: (
+              <PrivateRoute>
+                <AdminRoute>
+                  <UserList />
+                </AdminRoute>
+              </PrivateRoute>
+            ),
+          },
+          {
+            path: "my-orders",
+            element: (
+              <PrivateRoute>
+                <MyOrders />
+              </PrivateRoute>
+            ),
+          },
           { path: "profile", element: <Profile /> },
         ],
       },
