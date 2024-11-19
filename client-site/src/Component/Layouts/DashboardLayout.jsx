@@ -52,14 +52,15 @@ const DashboardLayout = () => {
               Home
             </Link>
           </li>
-          <li className="flex items-center py-2">
+          
+          {role === "Admin" ? (
+            <>
+            <li className="flex items-center py-2">
             <FaUser className="text-white mr-2" />
             <Link to="" className="block text-white">
               Profile
             </Link>
           </li>
-          {role === "Admin" ? (
-            <>
               <li className="flex items-center py-2">
                 <FaPlus className="text-white mr-2" />
                 <Link to="add-menu" className="block text-white">
@@ -68,7 +69,7 @@ const DashboardLayout = () => {
               </li>
               <li className="flex items-center py-2">
                 <RiMenuSearchFill className="text-white mr-2" />
-                <Link to="menus" className="block text-white">
+                <Link to="dishes" className="block text-white">
                   All Dishes
                 </Link>
               </li>

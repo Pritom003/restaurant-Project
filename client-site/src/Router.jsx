@@ -12,6 +12,7 @@ import Login from "./Component/LogIn/LogIn";
 import UserList from "./DASHBOARD/Admin/AdminRoutes/UserList";
 import PrivateRoute from "./providers/PrivateRoute";
 import LandingPage from "./Pages/LandingPage/LandingPage";
+import AllMenuList from "./DASHBOARD/Admin/AdminRoutes/AllMenulist";
 // import PrivateRoute from "./PrivateRoute"; // Import the PrivateRoute component
 
 const router = createBrowserRouter([
@@ -34,7 +35,7 @@ const router = createBrowserRouter([
         children: [
           { path: "", element: <AdminProfile/> },
           { path: "add-menu", element: <Addmenu /> },
-          { path: "menus", element: <AllMenulist /> },
+          { path: "dishes", element: <AllMenuList /> },
           { path: "orderList", element: <OrderLlist /> },
           { path: "user-list", element: <UserList /> },
         ],
