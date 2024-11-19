@@ -12,6 +12,7 @@ import Login from "./Component/LogIn/LogIn";
 import UserList from "./DASHBOARD/Admin/AdminRoutes/UserList";
 import PrivateRoute from "./providers/PrivateRoute";
 import LandingPage from "./Pages/LandingPage/LandingPage";
+import MyOrders from "./DASHBOARD/My Orders/MyOrders";
 // import PrivateRoute from "./PrivateRoute"; // Import the PrivateRoute component
 
 const router = createBrowserRouter([
@@ -20,7 +21,7 @@ const router = createBrowserRouter([
     element: <Layout />,
     errorElement: <NotFound />,
     children: [
-      { path: "/", element: <LandingPage/> },
+      { path: "/", element: <LandingPage /> },
       { path: "/menus", element: <Home /> },
     ],
   },
@@ -32,11 +33,12 @@ const router = createBrowserRouter([
         path: "/dashboard",
         element: <DashboardLayout role="admin" />,
         children: [
-          { path: "", element: <AdminProfile/> },
+          { path: "", element: <AdminProfile /> },
           { path: "add-menu", element: <Addmenu /> },
           { path: "menus", element: <AllMenulist /> },
           { path: "orderList", element: <OrderLlist /> },
           { path: "user-list", element: <UserList /> },
+          { path: "my-orders", element: <MyOrders /> },
         ],
       },
     ],

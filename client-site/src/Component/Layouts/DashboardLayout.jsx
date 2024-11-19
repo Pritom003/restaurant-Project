@@ -13,7 +13,7 @@ const DashboardLayout = () => {
   const { logOut, user } = useContext(AuthContext);
   const [isExpanded, setIsExpanded] = useState(false);
   const navigate = useNavigate();
-  const role = "Admin"; // Replace with dynamic role if needed
+  const role = "user"; // Replace with dynamic role if needed
 
   const toggleMenu = () => {
     setIsExpanded(!isExpanded);
@@ -33,15 +33,14 @@ const DashboardLayout = () => {
     <div className="lg:flex lg:h-screen h-full bg-gray-100">
       {/* Sidebar for large devices */}
       <nav
-          
-          style={{ backgroundImage: `url(${backgroundimg})` }}
-          className="lg:fixed lg:flex pl-4 lg:flex-col hidden top-0 left-0 h-full w-44 bg-cover bg-repeat relative"
-        >
-          {/* Overlay for background */}
-          <div className="absolute inset-0 bg-black opacity-50"></div>
-  
-          {/* Sidebar content */}
-          
+        style={{ backgroundImage: `url(${backgroundimg})` }}
+        className="lg:fixed lg:flex pl-4 lg:flex-col hidden top-0 left-0 h-full w-44 bg-cover bg-repeat relative"
+      >
+        {/* Overlay for background */}
+        <div className="absolute inset-0 bg-black opacity-50"></div>
+
+        {/* Sidebar content */}
+
         <div className="pt-10 pl-1 flex justify-center  items-center z-10 relative">
           <Heading customStyle="h-12 " />
         </div>
@@ -87,7 +86,12 @@ const DashboardLayout = () => {
             </>
           ) : role === "user" ? (
             <>
-              {/* User-specific links */}
+              <li className="flex items-center py-2">
+                <FaUser className="text-white mr-2" />
+                <Link to="my-orders" className="block text-white">
+                  My Orders
+                </Link>
+              </li>
             </>
           ) : (
             <Link
@@ -167,7 +171,10 @@ const DashboardLayout = () => {
             )}
             {user && (
               <li>
-                <button onClick={handleLogout} className="flex flex-col items-center">
+                <button
+                  onClick={handleLogout}
+                  className="flex flex-col items-center"
+                >
                   <FaSignOutAlt />
                   <span className="text-sm">Logout</span>
                 </button>
