@@ -20,7 +20,8 @@ const MenuItem = ({ to, icon, label }) => (
 const OrderSubMenu = ({ isOpen, toggleSubMenu }) => (
   isOpen && (
     <ul className="pl-6 mt-2 space-y-2 ">
-      <MenuItem to="orderList/strip-order" icon={<FaCashRegister />} label="Strip Order" />
+      <MenuItem to="orderList/strip-order"
+       icon={<FaCashRegister />} label="Strip Order" />
       <MenuItem to="orderList/cash-on-delivery" icon={<GrMoney />} label="Cash on Delivery" />
       <MenuItem to="orderList/pickup" icon={<RiTruckFill />} label="Pickup" />
     </ul>
