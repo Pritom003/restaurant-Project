@@ -16,6 +16,7 @@ const OrderSchema = new mongoose.Schema(
     ],
     paymentStatus: { type: String, required: true }, // Required for tracking payment status
     paymentMethod: { type: String, required: true },
+    orderType: { type: String, required: true },
     totalPrice: { type: Number, required: true },
     createdAt: { type: Date, default: Date.now },
     // createdAt: { type: Date, default: new Date('2024-11-13T00:00:00Z') },

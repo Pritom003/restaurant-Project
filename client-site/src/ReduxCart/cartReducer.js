@@ -1,6 +1,8 @@
 const initialState = {
     items: JSON.parse(localStorage.getItem('cartItems')) || [],
-    totalPrice: 0,
+    totalPrice: JSON.parse(localStorage.getItem('cartItems')) 
+        ? JSON.parse(localStorage.getItem('cartItems')).reduce((total, item) => total + item.price * (item.quantity || 1), 0)
+        : 0,
 };
 
 const cartReducer = (state = initialState, action) => {
@@ -25,7 +27,7 @@ const cartReducer = (state = initialState, action) => {
             return {
                 ...state,
                 items: updatedItems,
-                totalPrice: state.totalPrice + action.payload.price,
+                totalPrice: updatedItems.reduce((total, item) => total + item.price * (item.quantity || 1), 0),
             };
         case 'REMOVE_FROM_CART':
             const itemIndex = state.items.findIndex(item => item.name === action.payload.name);

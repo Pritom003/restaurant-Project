@@ -6,7 +6,7 @@ const axios = require('axios');
 // POST request to create a new order
 // POST request to create a new order
 router.post('/api/orders', async (req, res) => {
-  const { userEmail, chefEmail, paymentStatus, paymentMethod, items, totalPrice } = req.body;
+  const { userEmail, chefEmail, paymentStatus, paymentMethod, items, totalPrice, orderType } = req.body;
 
   if (!userEmail || !items || items.length === 0 || !totalPrice) {
     return res.status(400).json({ error: 'User email, items, and total price are required' });
@@ -16,27 +16,28 @@ router.post('/api/orders', async (req, res) => {
     const newOrder = new Order({
       userEmail,
       chefEmail,
-      paymentStatus: paymentMethod === 'pickup' ? 'unpaid' : paymentStatus,  
+      paymentStatus,
       paymentMethod,
+      orderType,
       items,
       totalPrice,
+      
     });
-
     const savedOrder = await newOrder.save();
-
-    // If payment is successful or pick up, send data to Zapier
-    if (paymentMethod !== 'pickup') {
-      const zapierWebhookUrl = 'https://hooks.zapier.com/hooks/catch/20636785/25h17fq/';
-      const zapierPayload = {
-        userEmail: savedOrder.userEmail,
-        chefEmail: savedOrder.chefEmail,
-        items: savedOrder.items,
-        totalPrice: savedOrder.totalPrice,
-        createdAt: savedOrder.createdAt,
-      };
-      await axios.post(zapierWebhookUrl, zapierPayload);
-    }
-
+    const returnval=false
+if(returnval){
+  const zapierWebhookUrl = 'https://hooks.zapier.com/hooks/catch/20636785/25h17fq/';
+  const zapierPayload = {
+    userEmail: savedOrder.userEmail,
+    chefEmail: savedOrder.chefEmail,
+    items: savedOrder.items,
+    totalPrice: savedOrder.totalPrice,
+    createdAt: savedOrder.createdAt,
+  };
+  
+  await axios.post(zapierWebhookUrl, zapierPayload);
+  
+}
     res.status(201).json({
       message: 'Order placed successfully',
       data: savedOrder,
@@ -91,16 +92,16 @@ router.patch('/api/orders/:id/payment-status', async (req, res) => {
     }
 
     // Notify Zapier of the status update
-    const zapierWebhookUrl = 'https://hooks.zapier.com/hooks/catch/20636785/25h17fq/';
-    const zapierPayload = {
-      userEmail: updatedOrder.userEmail,
-      chefEmail: updatedOrder.chefEmail,
-      items: updatedOrder.items,
-      totalPrice: updatedOrder.totalPrice,
-      paymentStatus: updatedOrder.paymentStatus,
-      createdAt: updatedOrder.createdAt,
-    };
-    await axios.post(zapierWebhookUrl, zapierPayload);
+    // const zapierWebhookUrl = 'https://hooks.zapier.com/hooks/catch/20636785/25h17fq/';
+    // const zapierPayload = {
+    //   userEmail: updatedOrder.userEmail,
+    //   chefEmail: updatedOrder.chefEmail,
+    //   items: updatedOrder.items,
+    //   totalPrice: updatedOrder.totalPrice,
+    //   paymentStatus: updatedOrder.paymentStatus,
+    //   createdAt: updatedOrder.createdAt,
+    // };
+    // await axios.post(zapierWebhookUrl, zapierPayload);
 
     res.status(200).json({
       message: 'Payment status updated successfully',

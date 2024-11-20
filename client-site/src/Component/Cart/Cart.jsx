@@ -9,46 +9,111 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import { FaPoundSign } from 'react-icons/fa';
 import { BsStripe } from "react-icons/bs";
+import LocationCheck from './LocationCheck';
+import OutOfRangeModal from './OutofRangle';
+import useAuth from '../../Hooks/useAuth';
+// import OutOfRangeModal from './OutOfRangeModal';
 
 const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
 const stripePromise = loadStripe(stripePublicKey);
 
 const Cart = () => {
     const dispatch = useDispatch();
+    const {user }=useAuth()
     const { items, totalPrice } = useSelector((state) => state);
     const [showPaymentForm, setShowPaymentForm] = useState(false);
-    const [paymentMethod, setPaymentMethod] = useState('stripe');  // Default to Stripe
-
+    const [orderType, setOrderType] = useState(); // Default to online
+    const [paymentStatus, setPaymentStatus] = useState(null);  // Default to Stripe
+    const [paymentMethod, setPaymentMethod] = useState('');
     const removeFromCart = (item) => dispatch({ type: 'REMOVE_FROM_CART', payload: item });
-
+    const [isInRange, setIsInRange] = useState(true); 
+    const [showModal, setShowModal] = useState(false);
+console.log(user?.email);
+    // Handle placing an order
     const handlePlaceOrder = () => {
-        if (paymentMethod === 'stripe') {
-            setShowPaymentForm(true);  // Show Stripe payment form
-        } else if (paymentMethod === 'cash' || paymentMethod === 'pickup') {
-            handleOrderCompletion();  // Complete the order directly for Cash on Delivery or Pick Up
+        if (!orderType) {
+            Swal.fire('Error', 'Please select an order type.', 'error');
+            return;
+        }
+    
+        if (orderType === 'online') {
+            if (!paymentMethod) {
+                Swal.fire('Error', 'Please select a payment method.', 'error');
+                return;
+            }
+    
+            if (paymentMethod === 'stripe') {
+                setShowPaymentForm(true);
+                setPaymentStatus('success'); // Stripe payment status
+            } else if (paymentMethod === 'cash') {
+                setPaymentStatus('pending'); // Cash on delivery status
+                handleOrderCompletion(); // Complete order with cash
+            }
+        } else if (orderType === 'pickup') {
+            setPaymentMethod('pickup');
+            setPaymentStatus('unpaid'); // Status for pickup orders
+            handleOrderCompletion(); // Complete order directly for pickup
         }
     };
+    
+    
 
+    // Send order data to backend
+ 
     const handleOrderCompletion = async () => {
+        if (!paymentMethod || !paymentStatus) {
+            Swal.fire('Error', 'Payment method or status is missing.', 'error');
+            return;
+        }
+    
         const orderData = {
             chefEmail: "mkrefat5@gmail.com",
-            userEmail: "fariadamd55@gmail.com",
+            userEmail: user.email,
             items,
             totalPrice,
-            paymentStatus: paymentMethod === 'stripe' ? 'success' : 'pending', // Payment status for different methods
+            paymentStatus,
             paymentMethod,
+            orderType,
         };
+    
         console.log(orderData);
+    
         try {
-            // Send the order data to the backend
-            await axios.post(`http://localhost:3000/api/orders`, orderData);
+            await axios.post('http://localhost:3000/api/orders', orderData);
             setShowPaymentForm(false);
             Swal.fire('Order Placed', `Your order has been placed with ${paymentMethod === 'stripe' ? 'Stripe' : paymentMethod === 'cash' ? 'Cash on Delivery' : 'Pick Up'}!`, 'success');
             dispatch({ type: 'CLEAR_CART' });
         } catch (error) {
-            console.error('Error placing order:', error.message);
+            console.error(error);
             Swal.fire('Error', 'There was an issue placing your order. Please try again.', 'error');
         }
+    };
+    
+ 
+
+    // Handle payment method selection
+    const handlePaymentMethodChange = (method) => {
+        setPaymentMethod(method === paymentMethod ? '' : method); // This toggles the method
+    };
+    
+
+    // Handle order type selection (Online or Pickup)
+    const handleOrderTypeChange = (type) => {
+        if (type === 'online' && !isInRange) {
+            setShowModal(true);  // Show modal if out of range
+        } else {
+            setOrderType(type);
+        }
+    };
+
+    // Handle location check
+    const handleLocationCheck = (inRange) => {
+        setIsInRange(inRange);
+    };
+
+    // Close modal for out of range message
+    const closeModal = () => {
+        setShowModal(false);
     };
 
     return (
@@ -75,62 +140,96 @@ const Cart = () => {
 
                 {items.length > 0 && (
                     <div className="text-end">
-                        <div className="mt-2 text-lg ">Total: ${totalPrice.toFixed(2)}</div>
+                        <div className="mt-2 text-lg">Total: ${totalPrice.toFixed(2)}</div>
 
-                        {/* Payment Method Selector */}
-                        <div className="mt-4 flex flex-wrap lg:flex-col lg:items-start lg:gap-4 items-center justify-between">
-                            {/* Stripe Option */}
-                            <label className='text-lg flex items-center text-black'>
+                        {/* Order Type Selector */}
+                        <div className="mt-4 flex gap-4">
+                        
+
+                            {/* Order Type Radio Buttons */}
+                            {!isInRange ?
+                              <label className='text-lg flex items-center text-black'>
+                              <input
+                                  type="radio"
+                                  name="orderType"
+                                  value="online"
+                                  checked={orderType === 'online'}
+                                  onChange={() =>    setShowModal(true)}
+                                  className="hidden"
+                                
+                              />
+                              <span className={`inline-block w-6 h-6 mr-2 border-2 border-gray-500 rounded-sm ${orderType === 'online' ? 'bg-red-950' : ''}`}></span>
+                              <span>Online</span>
+                          </label> :  <label className='text-lg flex items-center text-black'>
                                 <input
                                     type="radio"
-                                    name="paymentMethod"
-                                    value="stripe"
-                                    checked={paymentMethod === 'stripe'}
-                                    onChange={() => setPaymentMethod('stripe')}
-                                    className="hidden" // Hide the default radio button
+                                    name="orderType"
+                                    value="online"
+                                    checked={orderType === 'online'}
+                                    onChange={() => handleOrderTypeChange('online')}
+                                    className="hidden"
+                                    
                                 />
-                                <span className={`inline-block w-6 h-6 mr-2 border-2 border-gray-500 rounded-sm ${paymentMethod === 'stripe' ? 'bg-red-950' : ''} ${paymentMethod === 'stripe' ? 'border-blue-500' : 'border-gray-500'}`}></span>
-                                <span className="flex justify-center align-middle items-center gap-1">
-                                    <BsStripe className="text-2x" /> Stripe
-                                </span>
+                                <span className={`inline-block w-6 h-6 mr-2 border-2 border-gray-500 rounded-sm ${orderType === 'online' ? 'bg-red-950' : ''}`}></span>
+                                <span>Online</span>
                             </label>
+                            
+                            }
+                          
 
-                            {/* Cash on Delivery Option */}
                             <label className='text-lg flex items-center text-black'>
                                 <input
                                     type="radio"
-                                    name="paymentMethod"
-                                    value="cash"
-                                    checked={paymentMethod === 'cash'}
-                                    onChange={() => setPaymentMethod('cash')}
-                                    className="hidden" // Hide the default radio button
-                                />
-                                <span className={`inline-block w-6 h-6 mr-2 border-2 border-gray-500 rounded-sm ${paymentMethod === 'cash' ? 'bg-red-950' : ''} ${paymentMethod === 'cash' ? 'border-blue-500' : 'border-gray-500'}`}></span>
-                                <span className="flex justify-center align-middle items-center gap-1">
-                                    <FaPoundSign /> Cash on Delivery
-                                </span>
-                            </label>
-
-                            {/* Pick Up Option */}
-                            <label className='text-lg flex items-center text-black'>
-                                <input
-                                    type="radio"
-                                    name="paymentMethod"
+                                    name="orderType"
                                     value="pickup"
-                                    checked={paymentMethod === 'pickup'}
-                                    onChange={() => setPaymentMethod('pickup')}
-                                    className="hidden" // Hide the default radio button
+                                    checked={orderType === 'pickup' }
+                                    onChange={() => handleOrderTypeChange('pickup')}
+                                    className="hidden"
                                 />
-                                <span className={`inline-block w-6 h-6 mr-2 border-2 border-gray-500 rounded-sm ${paymentMethod === 'pickup' ? 'bg-red-950' : ''} ${paymentMethod === 'pickup' ? 'border-blue-500' : 'border-gray-500'}`}></span>
-                                <span className="flex justify-center align-middle items-center gap-1">
-                                    Pick Up
-                                </span>
+                                <span className={`inline-block w-6 h-6 mr-2 border-2 border-gray-500 rounded-sm ${orderType === 'pickup' ? 'bg-red-950' : ''}`}></span>
+                                <span>Pick Up</span>
                             </label>
                         </div>
 
+                        {/* Payment Method Selector (Only for Online Orders) */}
+                        {orderType === 'online' && (
+                            <div className="mt-4 flex flex-wrap lg:flex-col lg:items-start lg:gap-4 items-center justify-between">
+                                <label className='text-lg flex items-center text-black'>
+                                    <input
+                                        type="radio"
+                                        name="paymentMethod"
+                                        value="stripe"
+                                        checked={paymentMethod === 'stripe'}
+                                        onChange={() => handlePaymentMethodChange('stripe')}
+                                        className="hidden"
+                                    />
+                                    <span className={`inline-block w-6 h-6 mr-2 border-2 border-gray-500 rounded-sm ${paymentMethod === 'stripe' ? 'bg-red-950' : ''}`}></span>
+                                    <span className="flex justify-center align-middle items-center gap-1">
+                                        <BsStripe className="text-2x" /> Stripe
+                                    </span>
+                                </label>
+
+                                <label className='text-lg flex items-center text-black'>
+                                    <input
+                                        type="radio"
+                                        name="paymentMethod"
+                                        value="cash"
+                                        checked={paymentMethod === 'cash'}
+                                        onChange={() => handlePaymentMethodChange('cash')}
+                                        className="hidden"
+                                    />
+                                    <span className={`inline-block w-6 h-6 mr-2 border-2 border-gray-500 rounded-sm ${paymentMethod === 'cash' ? 'bg-red-950' : ''}`}></span>
+                                    <span className="flex justify-center align-middle items-center gap-1">
+                                        <FaPoundSign /> Cash on Delivery
+                                    </span>
+                                </label>
+                            </div>
+                        )}
+    <LocationCheck onLocationCheck={handleLocationCheck} />
                         <button
                             onClick={handlePlaceOrder}
                             className='text-lg text-gray-600 hover:text-red-950 hover:underline mt-2'
+                            // disabled={isOrderPlaced || !isValidOrder}
                         >
                             Place Order
                         </button>
@@ -138,6 +237,7 @@ const Cart = () => {
                 )}
             </div>
 
+            {/* Payment Form for Stripe */}
             {showPaymentForm && paymentMethod === 'stripe' && (
                 <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-lg max-w-md w-full">
@@ -154,6 +254,9 @@ const Cart = () => {
                     </div>
                 </div>
             )}
+
+            {/* Out of Range Modal */}
+            {showModal && <OutOfRangeModal onClose={closeModal} />}
         </div>
     );
 };

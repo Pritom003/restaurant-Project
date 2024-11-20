@@ -7,7 +7,7 @@ import Heading from "../../Pages/Home/MenuBox/Heading";
 import backgroundimg from "../../assets/vintage.jpg";
 import { AuthContext } from "../../providers/AuthProviders";
 import useRole from "../../Hooks/useRole.js";
-
+import { ImStatsDots } from "react-icons/im";
 const MenuItem = ({ to, icon, label }) => (
   <li className="flex items-center gap-2 text-xl text-white mr-2">
     {icon}
@@ -22,7 +22,7 @@ const OrderSubMenu = ({ isOpen, toggleSubMenu }) => (
     <ul className="pl-6 mt-2 space-y-2 ">
       <MenuItem to="orderList/strip-order"
        icon={<FaCashRegister />} label="Strip Order" />
-      <MenuItem to="orderList/cash-on-delivery" icon={<GrMoney />} label="Cash on Delivery" />
+      <MenuItem to="orderList/cash-on-delivery" icon={<GrMoney />} label="Cash" />
       <MenuItem to="orderList/pickup" icon={<RiTruckFill />} label="Pickup" />
     </ul>
   )
@@ -33,7 +33,7 @@ const DashboardLayout = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [orderSubMenuOpen, setOrderSubMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const role = "Admin"; // Replace with dynamic role if needed
+  const [ role ]= useRole(); // Replace with dynamic role if needed
 
   const toggleMenu = () => setIsExpanded(!isExpanded);
   const toggleOrderSubMenu = () => setOrderSubMenuOpen(!orderSubMenuOpen);
@@ -49,12 +49,12 @@ const DashboardLayout = () => {
   };
 
   return (
-    <div className="lg:flex lg:h-screen h-full bg-gray-100">
+    <div className="lg:flex lg:min-h-screen h-full bg-gray-100">
       {/* Sidebar for large devices */}
       <nav
         style={{ backgroundImage: `url(${backgroundimg})` }}
-        className="lg:fixed lg:flex lg:flex-col
-         pl-4 hidden lg:w-48 h-full bg-cover bg-center relative"
+        className="lg:fixed lg:flex lg:flex-col lg:min-h-screen
+         pl-4 hidden lg:w-48 h-full bg-cover bg-center relative "
       >
         {/* Overlay */}
         <div className="absolute inset-0 bg-black 
@@ -62,11 +62,13 @@ const DashboardLayout = () => {
         <div className="pt-10 z-10 relative">
           <Heading customStyle="h-12 text-white text-center" />
         </div>
-        <ul className="mt-4 z-10 relative space-y-4">
+        <ul className="mt-4 z-10 relative space-y-4 overflow-y-auto  mb-20">
           <MenuItem to="/" icon={<FaHome />} label="Home" />
           
           {role === "Admin" && (
             <>
+              <MenuItem to="" icon={<ImStatsDots /> }
+               label="Stats" />
               <MenuItem to="add-menu" icon={<FaPlus />}
                label="Add Menu" />
               <MenuItem to="dishes"
