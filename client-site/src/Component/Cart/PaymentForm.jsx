@@ -26,7 +26,9 @@ const PaymentForm = ({ totalPrice, handleOrderCompletion }) => {
         if (paymentResult.error) {
             setError(paymentResult.error.message);
         } else if (paymentResult.paymentIntent.status === 'succeeded') {
-            handleOrderCompletion(paymentResult.paymentIntent);
+            handleOrderCompletion('stripe', 'success');
+            // handleOrderCompletion(paymentResult.paymentIntent );
+      
         }
     };
 

@@ -13,7 +13,7 @@ const LocationCheck = ({ onLocationCheck }) => {
                 (position) => {
                     const { latitude, longitude } = position.coords;
                     const distance = calculateDistance(latitude, longitude, YourLOCATION.lat, YourLOCATION.lng);
-                    const inRange = distance <= 4; // 4 km range
+                    const inRange = distance <= 9; // 4 km range
                     setIsInRange(inRange);
                     setError(null); // Clear any previous error
                     onLocationCheck(inRange);

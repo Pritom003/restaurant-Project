@@ -12,7 +12,7 @@ import { BsStripe } from "react-icons/bs";
 import LocationCheck from './LocationCheck';
 import OutOfRangeModal from './OutofRangle';
 import useAuth from '../../Hooks/useAuth';
-// import OutOfRangeModal from './OutOfRangeModal';
+
 
 const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
 const stripePromise = loadStripe(stripePublicKey);
@@ -30,65 +30,70 @@ const Cart = () => {
     const [showModal, setShowModal] = useState(false);
 console.log(user?.email);
     // Handle placing an order
-    const handlePlaceOrder = () => {
-        if (!orderType) {
-            Swal.fire('Error', 'Please select an order type.', 'error');
-            return;
-        }
+  // Handle placing an order
+  const handlePlaceOrder = () => {
+    // if (!orderType) {
+    //     Swal.fire('Error', 'Please select an order type.', 'error');
+    //     return;
+    // }
+
+    if (orderType === 'online') {
     
-        if (orderType === 'online') {
-            if (!paymentMethod) {
-                Swal.fire('Error', 'Please select a payment method.', 'error');
-                return;
-            }
-    
-            if (paymentMethod === 'stripe') {
-                setShowPaymentForm(true);
-                setPaymentStatus('success'); // Stripe payment status
-            } else if (paymentMethod === 'cash') {
-                setPaymentStatus('pending'); // Cash on delivery status
-                handleOrderCompletion(); // Complete order with cash
-            }
-        } else if (orderType === 'pickup') {
-            setPaymentMethod('pickup');
-            setPaymentStatus('unpaid'); // Status for pickup orders
-            handleOrderCompletion(); // Complete order directly for pickup
+        if (paymentMethod === 'stripe') {
+            setShowPaymentForm(true);
+           
+        } else if (paymentMethod === 'cash') {
+            handleOrderCompletion('cash', 'pending'); // Complete order with Cash
         }
+    } else if (orderType === 'pickup') {
+        handleOrderCompletion('pickup', 'unpaid'); // Complete order for Pickup
+    }
+};
+
+const handleOrderCompletion = async (method, status) => {
+
+
+    const orderData = {
+        chefEmail: "mkrefat5@gmail.com",
+        userEmail: user?.email || "guest@example.com", // Fallback email for testing
+        items,
+        totalPrice,
+        paymentStatus: status,
+        paymentMethod: method,
+        orderType,
     };
+
+    try {
+        await axios.post('http://localhost:3000/api/orders', orderData);
+        setShowPaymentForm(false);
+        Swal.fire(
+            'Order Placed',
+            `Your order has been placed with ${
+                method === 'stripe' ? 'Stripe' : method === 'cash' ? 'Cash on Delivery' : 'Pick Up'
+            }!`,
+            'success'
+        );
+        dispatch({ type: 'CLEAR_CART' });
+    } catch (error) {
+        console.error(error);
+        Swal.fire('Error', 'There was an issue placing your order. Please try again.', 'error');
+    }
+};
+
+// Payment Form in JSX
+{showPaymentForm && (
+    <Elements stripe={stripePromise}>
+        <PaymentForm
+            totalPrice={totalPrice}
+            handleOrderCompletion={handleOrderCompletion}
+        
+        />
+    </Elements>
+)}
+
     
     
 
-    // Send order data to backend
- 
-    const handleOrderCompletion = async () => {
-        if (!paymentMethod || !paymentStatus) {
-            Swal.fire('Error', 'Payment method or status is missing.', 'error');
-            return;
-        }
-    
-        const orderData = {
-            chefEmail: "mkrefat5@gmail.com",
-            userEmail: user.email,
-            items,
-            totalPrice,
-            paymentStatus,
-            paymentMethod,
-            orderType,
-        };
-    
-        console.log(orderData);
-    
-        try {
-            await axios.post('http://localhost:3000/api/orders', orderData);
-            setShowPaymentForm(false);
-            Swal.fire('Order Placed', `Your order has been placed with ${paymentMethod === 'stripe' ? 'Stripe' : paymentMethod === 'cash' ? 'Cash on Delivery' : 'Pick Up'}!`, 'success');
-            dispatch({ type: 'CLEAR_CART' });
-        } catch (error) {
-            console.error(error);
-            Swal.fire('Error', 'There was an issue placing your order. Please try again.', 'error');
-        }
-    };
-    
  
 
     // Handle payment method selection
