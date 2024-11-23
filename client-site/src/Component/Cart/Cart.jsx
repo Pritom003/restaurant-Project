@@ -23,19 +23,14 @@ const Cart = () => {
     const { items, totalPrice } = useSelector((state) => state);
     const [showPaymentForm, setShowPaymentForm] = useState(false);
     const [orderType, setOrderType] = useState(); // Default to online
-    const [paymentStatus, setPaymentStatus] = useState(null);  // Default to Stripe
+    
     const [paymentMethod, setPaymentMethod] = useState('');
     const removeFromCart = (item) => dispatch({ type: 'REMOVE_FROM_CART', payload: item });
     const [isInRange, setIsInRange] = useState(true); 
     const [showModal, setShowModal] = useState(false);
 console.log(user?.email);
-    // Handle placing an order
-  // Handle placing an order
+
   const handlePlaceOrder = () => {
-    // if (!orderType) {
-    //     Swal.fire('Error', 'Please select an order type.', 'error');
-    //     return;
-    // }
 
     if (orderType === 'online') {
     
