@@ -1,25 +1,56 @@
-import { Link, Outlet, useNavigate } from "react-router-dom";
+/* eslint-disable react/prop-types */
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useState, useContext } from "react";
-import { FaUser, FaPlus, FaHome, FaSignOutAlt } from "react-icons/fa";
-import backgroundimg from "../../assets/vintage.jpg";
-import Heading from "../../Pages/Home/MenuBox/Heading";
+import {
+  FaUser,
+  FaPlus,
+  FaHome,
+  FaSignOutAlt,
+  FaCashRegister,
+} from "react-icons/fa";
 import { GrMoney } from "react-icons/gr";
-import { RiMenuSearchFill } from "react-icons/ri";
+import { RiMenuSearchFill, RiTruckFill } from "react-icons/ri";
+import { ImStatsDots } from "react-icons/im";
+import Heading from "../../Pages/Home/MenuBox/Heading";
+import backgroundimg from "../../assets/vintage.jpg";
 import { AuthContext } from "../../providers/AuthProviders";
 import useRole from "../../Hooks/useRole.js";
-import Footer from "../Footer/Footer.jsx";
+
+const MenuItem = ({ to, icon, label }) => (
+  <li className="flex items-center gap-2 text-xl text-white mr-2">
+    {icon}
+    <NavLink to={to} className="text-white mt-4">
+      {label}
+    </NavLink>
+  </li>
+);
+
+const OrderSubMenu = ({ isOpen }) =>
+  isOpen && (
+    <ul className="pl-6 mt-2 space-y-2">
+      <MenuItem
+        to="orderList/strip-order"
+        icon={<FaCashRegister />}
+        label="Strip Order"
+      />
+      <MenuItem
+        to="orderList/cash-on-delivery"
+        icon={<GrMoney />}
+        label="Cash"
+      />
+      <MenuItem to="orderList/pickup" icon={<RiTruckFill />} label="Pickup" />
+    </ul>
+  );
 
 const DashboardLayout = () => {
   const { logOut, user } = useContext(AuthContext);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [orderSubMenuOpen, setOrderSubMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const [role] = useRole(); // Replace with dynamic role if needed
+  const [role] = useRole(); // Fetch user role dynamically
 
-  console.log(role);
-
-  const toggleMenu = () => {
-    setIsExpanded(!isExpanded);
-  };
+  const toggleMenu = () => setIsExpanded(!isExpanded);
+  const toggleOrderSubMenu = () => setOrderSubMenuOpen(!orderSubMenuOpen);
 
   const handleLogout = async () => {
     try {
@@ -32,160 +63,89 @@ const DashboardLayout = () => {
   };
 
   return (
-    <div className="lg:flex lg:h-screen h-full bg-gray-100">
+    <div className="lg:flex lg:min-h-screen h-full bg-gray-100">
       {/* Sidebar for large devices */}
       <nav
         style={{ backgroundImage: `url(${backgroundimg})` }}
-        className="lg:fixed lg:flex pl-4 lg:flex-col hidden top-0 left-0 h-full w-44 bg-cover bg-repeat relative"
+        className="lg:fixed lg:flex lg:flex-col lg:min-h-screen pl-4 hidden lg:w-48 h-full bg-cover bg-center relative"
       >
-        {/* Overlay for background */}
-        <div className="absolute inset-0 bg-black opacity-50"></div>
-
-        {/* Sidebar content */}
-
-        <div className="pt-10 pl-1 flex justify-center  items-center z-10 relative">
-          <Heading customStyle="h-12 " />
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-black opacity-60"></div>
+        <div className="pt-10 z-10 relative">
+          <Heading customStyle="h-12 text-white text-center" />
         </div>
-        <ul className="mt-4 relative z-10">
-          <li className="flex items-center py-2">
-            <FaHome className="text-white mr-2" />
-            <Link to="/" className="block text-white">
-              Home
-            </Link>
-          </li>
+        <ul className="mt-4 z-10 relative space-y-4 overflow-y-auto mb-20">
+          <MenuItem to="/" icon={<FaHome />} label="Home" />
 
-          {role === "Admin" ? (
+          {role === "Admin" && (
             <>
-              <li className="flex items-center py-2">
-                <FaUser className="text-white mr-2" />
-                <Link to="" className="block text-white">
-                  Profile
-                </Link>
-              </li>
-              <li className="flex items-center py-2">
-                <FaPlus className="text-white mr-2" />
-                <Link to="add-menu" className="block text-white">
-                  Add Menu
-                </Link>
-              </li>
-              <li className="flex items-center py-2">
-                <RiMenuSearchFill className="text-white mr-2" />
-                <Link to="dishes" className="block text-white">
-                  All Dishes
-                </Link>
-              </li>
-              <li className="flex items-center py-2">
-                <GrMoney className="text-white mr-2" />
-                <Link to="orderList" className="block text-white">
-                  Orders
-                </Link>
-              </li>
-              <li className="flex items-center py-2">
-                <FaUser className="text-white mr-2" />
-                <Link to="user-list" className="block text-white">
-                  All Users
-                </Link>
-              </li>
-              <li className="flex items-center py-2">
-                <FaSignOutAlt className="text-white mr-2" />
-                <Link to="profile" className="block text-white">
-                  Profile
-                </Link>
-              </li>
-            </>
-          ) : role === "guest" ? (
-            <>
-              <li className="flex items-center py-2">
-                <FaUser className="text-white mr-2" />
-                <Link to="my-orders" className="block text-white">
-                  My Orders
-                </Link>
-              </li>
-              <li className="flex items-center py-2">
-                <FaSignOutAlt className="text-white mr-2" />
-                <Link to="profile" className="block text-white">
-                  Profile
-                </Link>
-              </li>
-            </>
-          ) : (
-            <Link
-              to="/"
-              className="text-lg text-gray-600 hover:text-red-950 hover:underline"
-            >
-              Log in
-            </Link>
-          )}
-          {user && (
-            <div>
-              (
-              <li className="flex items-center py-2">
-                <FaSignOutAlt className="text-white mr-2" />
-                <button
-                  onClick={handleLogout}
-                  className="block text-white focus:outline-none"
+              <MenuItem to="" icon={<ImStatsDots />} label="Stats" />
+              <MenuItem to="add-menu" icon={<FaPlus />} label="Add Menu" />
+              <MenuItem
+                to="dishes"
+                icon={<RiMenuSearchFill />}
+                label="All Dishes"
+              />
+              <li>
+                <div
+                  onClick={toggleOrderSubMenu}
+                  className="flex items-center cursor-pointer text-xl mt-4 text-white"
                 >
-                  Logout
-                </button>
+                  <GrMoney className="mr-2" />
+                  Orders
+                </div>
+                <OrderSubMenu isOpen={orderSubMenuOpen} />
               </li>
-              )
-            </div>
+              <MenuItem to="user-list" icon={<FaUser />} label="All Users" />
+              <MenuItem to="profile" icon={<FaUser />} label="Profile" />
+            </>
+          )}
+
+          {role === "guest" && (
+            <>
+              <MenuItem to="my-orders" icon={<FaUser />} label="My Orders" />
+              <MenuItem to="profile" icon={<FaUser />} label="Profile" />
+            </>
+          )}
+
+          {user && (
+            <li className="flex items-center py-2">
+              <FaSignOutAlt className="text-white mr-2" />
+              <button
+                onClick={handleLogout}
+                className="block text-white focus:outline-none"
+              >
+                Logout
+              </button>
+            </li>
           )}
         </ul>
       </nav>
 
-      {/* Top Navbar for medium devices and smaller */}
-      <nav className="lg:hidden block bg-gray-800 text-white p-4">
+      {/* Navbar for medium and smaller devices */}
+      <nav className="lg:hidden bg-gray-800 text-white p-4">
         <div className="flex justify-between items-center">
           <button
             onClick={toggleMenu}
             aria-label="Toggle menu"
             className="text-2xl focus:outline-none"
           >
-            {isExpanded ? "▲" : "▼"} {/* Toggle arrow */}
+            {isExpanded ? "▲" : "▼"}
           </button>
           <Heading customStyle="h-8 text-white" />
         </div>
         {isExpanded && (
-          <ul className="flex justify-around mt-4">
-            <li>
-              <Link to="/" className="flex flex-col items-center">
-                <FaHome />
-                <span className="text-sm">Home</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="" className="flex flex-col items-center">
-                <FaUser />
-                <span className="text-sm">Profile</span>
-              </Link>
-            </li>
+          <ul className="flex justify-around mt-4 space-x-4">
+            <MenuItem to="/" icon={<FaHome />} label="Home" />
             {role === "Admin" && (
               <>
-                <li>
-                  <Link to="add-menu" className="flex flex-col items-center">
-                    <FaPlus />
-                    <span className="text-sm">Add Menu</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link to="menus" className="flex flex-col items-center">
-                    <RiMenuSearchFill />
-                    <span className="text-sm">Dishes</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link to="orderList" className="flex flex-col items-center">
-                    <GrMoney />
-                    <span className="text-sm">Orders</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link to="user-list" className="flex flex-col items-center">
-                    <FaUser />
-                    <span className="text-sm">Users</span>
-                  </Link>
-                </li>
+                <MenuItem to="add-menu" icon={<FaPlus />} label="Add Menu" />
+                <MenuItem
+                  to="dishes"
+                  icon={<RiMenuSearchFill />}
+                  label="Dishes"
+                />
+                <MenuItem to="user-list" icon={<FaUser />} label="Users" />
               </>
             )}
             {user && (
@@ -203,12 +163,12 @@ const DashboardLayout = () => {
         )}
       </nav>
 
-      {/* Main content area */}
+      {/* Main Content */}
       <div className="flex-1 overflow-y-auto p-6 lg:ml-44">
         <h2 className="text-2xl font-bold mb-4 text-center">
           {role === "Admin" ? "Admin Dashboard" : "User Dashboard"}
         </h2>
-        <Outlet /> {/* Child routes */}
+        <Outlet />
       </div>
     </div>
   );

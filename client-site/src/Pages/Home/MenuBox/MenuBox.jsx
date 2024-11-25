@@ -50,25 +50,31 @@ const MenuBox = ({ addToCart }) => {
           </div>
           <div
             className={`transition-all duration-500 ease-in-out overflow-hidden`}
-            style={{ maxHeight: isAllergiesExpanded ? '200px' : '0px' }}
+            style={{ maxHeight: isAllergiesExpanded ? "200px" : "0px" }}
           >
             {isAllergiesExpanded && (
               <p className="text-xs text-center mt-2 px-4 w-full">
-                If you have any food allergies or intolerances, please contact the
-                takeaway before you place any order. We will try our best to
-                accommodate your requirements. However, please be aware we cook a
-                variety of menu items that contain allergens. Customers with severe
-                allergies and intolerances, please be aware that there may be traces
-                of a range of allergens in our food preparation areas. 01507 609898.
+                If you have any food allergies or intolerances, please contact
+                the takeaway before you place any order. We will try our best to
+                accommodate your requirements. However, please be aware we cook
+                a variety of menu items that contain allergens. Customers with
+                severe allergies and intolerances, please be aware that there
+                may be traces of a range of allergens in our food preparation
+                areas. 01507 609898.
               </p>
             )}
           </div>
         </div>
 
         {/* menu */}
-        {loading && <div className="flex justify-center align-middle items-center"><Loader /></div>}
+        {loading && (
+          <div className="flex justify-center align-middle items-center">
+            <Loader />
+          </div>
+        )}
         {error && <p>Error loading menu: {error}</p>}
-        {!loading && !error &&
+        {!loading &&
+          !error &&
           menuData.map((menu) => (
             <div key={menu.category} className="mb-4">
               <div
@@ -87,7 +93,7 @@ const MenuBox = ({ addToCart }) => {
                 style={{
                   maxHeight: expandedCategories.includes(menu.category)
                     ? `${menu.items.length * 80}px` // Adjust for height of items
-                    : '0px',
+                    : "0px",
                 }}
               >
                 <div className="pl-4 pt-2">
@@ -96,29 +102,40 @@ const MenuBox = ({ addToCart }) => {
                       {/* Check if the item is from Set Menu */}
                       {menu.category === "Set Menu" ? (
                         <div className="border-b-2 border-dotted border-red-900 pb-2">
-                          <span className="text-red-900 font-semibold text-xl">{item.name} - ${item.price}</span>
+                          <span className="text-red-900 font-semibold text-xl">
+                            {item.name} - ${item.price}
+                          </span>
                           {/* Display included items in a single line */}
                           <div className="text-xs text-gray-600 mt-1">
-                            <span className="font-semibold">Included Items:</span> 
+                            <span className="font-semibold">
+                              Included Items:
+                            </span>
                             {item.itemsIncluded.map((includedItem, idx) => (
                               <span key={includedItem.name}>
-                                {includedItem.name} ({includedItem.quantity}){idx < item.itemsIncluded.length - 1 ? ', ' : ''}
+                                {includedItem.name} ({includedItem.quantity})
+                                {idx < item.itemsIncluded.length - 1
+                                  ? ", "
+                                  : ""}
                               </span>
                             ))}
                           </div>
                         </div>
                       ) : (
                         <div
-                          className={`flex py-2 justify-between mb-1 text-xl ${index !== menu.items.length - 1 ? 'border-b-2 border-dotted border-red-900' : ''}`}
+                          className={`flex py-2 justify-between mb-1 text-xl ${
+                            index !== menu.items.length - 1
+                              ? "border-b-2 border-dotted border-red-900"
+                              : ""
+                          }`}
                         >
                           <span className="text-red-900 font-semibold">
                             {item.name}
                           </span>
-                          <button 
-                            className="hover:underline" 
+                          <button
+                            className="hover:underline"
                             onClick={() => addToCart(item)} // Add item to cart
                           >
-                            + ${item.price}
+                            + £{item.price}
                           </button>
                         </div>
                       )}

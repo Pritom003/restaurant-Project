@@ -79,54 +79,69 @@ router.put('/menu/item', async (req, res) => {
   }
 });
 
-// Delete menu item
-router.delete('/menu/item', async (req, res) => {
-  const { category, itemName } = req.body;
+// DELETE route to delete menu item
+router.delete('/api/menu/:category/item/:name', async (req, res) => {
+  const { category, name } = req.params;
 
   try {
     const menu = await MenuItem.findOne({ category });
 
     if (!menu) {
-      return res.status(404).json({ error: 'Category not found' });
+      return res.status(404).json({ message: 'Category not found.' });
     }
 
-    // Remove the item by filtering out the item
-    const initialItemCount = menu.items.length;
-    menu.items = menu.items.filter(item => item.name !== itemName);
-
-    if (menu.items.length === initialItemCount) {
-      return res.status(404).json({ error: 'Item not found' });
+    const itemIndex = menu.items.findIndex(item => item.name === name);
+    if (itemIndex !== -1) {
+      menu.items.splice(itemIndex, 1); // Remove item from the array
+      await menu.save(); // Save the updated menu document
+      res.status(200).json({ message: 'Item deleted successfully.' });
+    } else {
+      res.status(404).json({ message: 'Item not found.' });
     }
-
-    const updatedMenu = await menu.save(); // Save the updated menu
-    res.status(200).json({ message: 'Menu item deleted successfully', data: updatedMenu });
   } catch (error) {
     console.error('Error deleting item:', error);
-    res.status(500).json({ error: 'Failed to delete item' });
+    res.status(500).json({ message: 'Error deleting item.', error });
   }
 });
 
-// Update category name
-router.put('/menu/category', async (req, res) => {
-  const { oldCategory, newCategory } = req.body;
+
+// PUT route to update menu item
+
+
+// Update item in the menu
+router.put('/api/menu/:category/:itemName', async (req, res) => {
+  const { category, itemName } = req.params;
+  const { name, price } = req.body;
 
   try {
-    const menu = await MenuItem.findOne({ category: oldCategory });
+    // Find the category and update the item
+    const menu = await MenuItem.findOne({ category });
 
     if (!menu) {
       return res.status(404).json({ message: 'Category not found' });
     }
 
-    menu.category = newCategory;
-    await menu.save(); // Save updated category name
-    res.status(200).json({ message: 'Category updated successfully' });
+    const itemIndex = menu.items.findIndex((item) => item.name === itemName);
+
+    if (itemIndex === -1) {
+      return res.status(404).json({ message: 'Item not found' });
+    }
+
+    // Update the item
+    menu.items[itemIndex] = { name, price };
+    await menu.save();
+
+    res.status(200).json(menu);
   } catch (error) {
-    console.error('Error updating category:', error);
-    res.status(500).json({ message: 'Error updating category.' });
+    console.error(error);
+    res.status(500).json({ message: 'Error updating item' });
   }
 });
 
 
 
-
 module.exports = router;
+
+
+
+
