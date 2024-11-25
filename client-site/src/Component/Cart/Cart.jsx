@@ -45,7 +45,7 @@ console.log(user?.email);
     }
 };
 
-const handleOrderCompletion = async (method, status) => {
+const handleOrderCompletion = async (method, status,paymentIntent) => {
 
 
     const orderData = {
