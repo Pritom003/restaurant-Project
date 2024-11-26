@@ -7,7 +7,11 @@ import {
   FaHome,
   FaSignOutAlt,
   FaCashRegister,
+  FaHistory,
+  FaClock,
+  FaUsers,
 } from "react-icons/fa";
+import { IoNotificationsOutline } from "react-icons/io5";
 import { GrMoney } from "react-icons/gr";
 import { RiMenuSearchFill, RiTruckFill } from "react-icons/ri";
 import { ImStatsDots } from "react-icons/im";
@@ -15,6 +19,8 @@ import Heading from "../../Pages/Home/MenuBox/Heading";
 import backgroundimg from "../../assets/vintage.jpg";
 import { AuthContext } from "../../providers/AuthProviders";
 import useRole from "../../Hooks/useRole.js";
+import { FaBowlFood } from "react-icons/fa6";
+
 const MenuItem = ({ to, icon, label }) => (
   <li className="flex items-center gap-2 text-xl text-white mr-2">
     {icon}
@@ -70,7 +76,7 @@ const DashboardLayout = () => {
       >
         {/* Overlay */}
         <div className="absolute inset-0 bg-black opacity-60"></div>
-        <div className="pt-10 z-10 relative">
+        <div className="pt-10 z-10 relative hidden ">
           <Heading customStyle="h-12 text-white text-center" />
         </div>
         <ul className="mt-4 z-10 relative space-y-4 overflow-y-auto mb-20">
@@ -78,13 +84,12 @@ const DashboardLayout = () => {
 
           {role === "Admin" && (
             <>
+             <MenuItem to="profile" icon={<FaUser />} label="Profile" />
               <MenuItem to="" icon={<ImStatsDots />} label="Stats" />
               <MenuItem to="add-menu" icon={<FaPlus />} label="Add Menu" />
-              <MenuItem
-                to="dishes"
-                icon={<RiMenuSearchFill />}
-                label="All Dishes"
-              />
+              <MenuItem to="New-Orders" icon={<IoNotificationsOutline />} label="NEW" />
+              <MenuItem to="Preparing-list" icon={<FaClock />} label="Countdown" />
+              <MenuItem to="dishes" icon={<RiMenuSearchFill />} label="All Dishes" />
               <li>
                 <div
                   onClick={toggleOrderSubMenu}
@@ -95,15 +100,16 @@ const DashboardLayout = () => {
                 </div>
                 <OrderSubMenu isOpen={orderSubMenuOpen} />
               </li>
-              <MenuItem to="user-list" icon={<FaUser />} label="All Users" />
-              <MenuItem to="profile" icon={<FaUser />} label="Profile" />
+              <MenuItem to="user-list" icon={<FaUsers />} label="All Users" />
+             
             </>
           )}
 
           {role === "guest" && (
             <>
-              <MenuItem to="my-orders" icon={<FaUser />} label="My Orders" />
               <MenuItem to="profile" icon={<FaUser />} label="Profile" />
+              <MenuItem to="my-orders" icon={<FaHistory />} label="Order History" />
+              <MenuItem to="upocomming-order" icon={<FaBowlFood />} label="My Orders" />
             </>
           )}
 
@@ -131,20 +137,30 @@ const DashboardLayout = () => {
           >
             {isExpanded ? "▲" : "▼"}
           </button>
-          <Heading customStyle="h-8 text-white" />
         </div>
         {isExpanded && (
-          <ul className="flex justify-around mt-4 space-x-4">
+          <ul className="flex flex-wrap gap-6 mt-4 space-x-4">
             <MenuItem to="/" icon={<FaHome />} label="Home" />
             {role === "Admin" && (
               <>
+                <MenuItem to="profile" icon={<FaUser />} label="Profile" />
+                <MenuItem to="" icon={<ImStatsDots />} label="Stats" />
                 <MenuItem to="add-menu" icon={<FaPlus />} label="Add Menu" />
-                <MenuItem
-                  to="dishes"
-                  icon={<RiMenuSearchFill />}
-                  label="Dishes"
-                />
-                <MenuItem to="user-list" icon={<FaUser />} label="Users" />
+                <MenuItem to="New-Orders" icon={<IoNotificationsOutline />} label="NEW" />
+                <MenuItem to="Preparing-list" icon={<FaClock />} label="Countdown" />
+                <MenuItem to="dishes" icon={<RiMenuSearchFill />} label="All Dishes" />
+                <li>
+                  <div
+                    onClick={toggleOrderSubMenu}
+                    className="flex items-center cursor-pointer text-xl mt-4 text-white"
+                  >
+                    <GrMoney className="mr-2" />
+                    Orders
+                  </div>
+                  <OrderSubMenu isOpen={orderSubMenuOpen} />
+                </li>
+                <MenuItem to="user-list" icon={<FaUsers/>} label="All Users" />
+              
               </>
             )}
             {user && (
@@ -163,7 +179,7 @@ const DashboardLayout = () => {
       </nav>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto p-6 lg:ml-44">
+      <div className="flex-1 overflow-y-auto p-6 lg:ml-48">
         <h2 className="text-2xl font-bold mb-4 text-center">
           {role === "Admin" ? "Admin Dashboard" : "User Dashboard"}
         </h2>
