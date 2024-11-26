@@ -5,8 +5,8 @@ import TableRow from "./TableRow";
 const MyOrders = () => {
   const { user } = useAuth();
   const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState(null); // Error state
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!user?.email) return; // Ensure user email is available
@@ -19,18 +19,18 @@ const MyOrders = () => {
         } else {
           setOrders([]); // Fallback to empty array if not an array
         }
-        setLoading(false); // Set loading to false after data is fetched
+        setLoading(false);
       })
       .catch((err) => {
         console.error("Error fetching orders:", err);
-        setOrders([]); // Fallback to empty array in case of error
-        setLoading(false); // Set loading to false after error
+        setOrders([]);
+        setLoading(false);
         setError("Failed to load orders. Please try again later.");
       });
   }, [user?.email]);
 
-  if (loading) return <p>Loading...</p>; // Show loading state while fetching
-  if (error) return <p className="text-red-600">{error}</p>; // Show error message if any
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p className="text-red-600">{error}</p>;
 
   return (
     <div className="container mx-auto px-4 sm:px-8">
@@ -40,42 +40,24 @@ const MyOrders = () => {
             <table className="min-w-full leading-normal">
               <thead>
                 <tr>
-                  <th
-                    scope="col"
-                    className="px-5 py-3 bg-white border-b border-gray-200 text-gray-800 text-left text-sm uppercase font-normal"
-                  >
-                    Your Email
+                  <th className="px-5 py-3 bg-white border-b border-gray-200 text-gray-800 text-left text-sm uppercase font-normal">
+                    Item Name
                   </th>
-                  <th
-                    scope="col"
-                    className="px-5 py-3 bg-white border-b border-gray-200 text-gray-800 text-left text-sm uppercase font-normal"
-                  >
-                    Food Name
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-5 py-3 bg-white border-b border-gray-200 text-gray-800 text-left text-sm uppercase font-normal"
-                  >
-                    Food Price
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-5 py-3 bg-white border-b border-gray-200 text-gray-800 text-left text-sm uppercase font-normal"
-                  >
+                  <th className="px-5 py-3 bg-white border-b border-gray-200 text-gray-800 text-left text-sm uppercase font-normal">
                     Quantity
                   </th>
-                  <th
-                    scope="col"
-                    className="px-5 py-3 bg-white border-b border-gray-200 text-gray-800 text-left text-sm uppercase font-normal"
-                  >
-                    Payment Method
+                  <th className="px-5 py-3 bg-white border-b border-gray-200 text-gray-800 text-left text-sm uppercase font-normal">
+                    Price
+                  </th>
+                  <th className="px-5 py-3 bg-white border-b border-gray-200 text-gray-800 text-left text-sm uppercase font-normal">
+                    Date
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {orders.length === 0 ? (
                   <tr>
-                    <td colSpan="5" className="text-center py-4">
+                    <td colSpan="4" className="text-center py-4">
                       No orders found.
                     </td>
                   </tr>

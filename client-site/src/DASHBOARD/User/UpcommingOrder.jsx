@@ -110,7 +110,7 @@ const UpcomingOrders = () => {
                   <p>{order.status}</p>
                 </div>
                 <p><strong>User Email:</strong> {order.userEmail}</p>
-                <p><strong>Total Price:</strong> ${order.totalPrice}</p>
+                <p><strong>Total Price:</strong> £{(order.totalPrice)?.toFixed(2)}</p>
                 <p><strong>Preparation Time:</strong> {order.time} minutes</p>
                 <h5 className="font-medium mt-3">Items:</h5>
                 <ul>

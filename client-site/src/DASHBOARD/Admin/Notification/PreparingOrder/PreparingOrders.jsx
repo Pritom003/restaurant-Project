@@ -146,13 +146,13 @@ const PreparingOrders = () => {
             >
               <h4 className="text-xl font-semibold mb-2">Order #{order._id}</h4>
               <p><strong>User Email:</strong> {order.userEmail}</p>
-              <p><strong>Total Price:</strong> ${order.totalPrice}</p>
+              <p><strong>Total Price:</strong> £{order.totalPrice}</p>
               <p><strong>Preparation Time:</strong> {order.time} minutes</p>
               <h5 className="font-medium mt-3">Items:</h5>
               <ul>
                 {order.items.map((item, index) => (
                   <li key={index}>
-                    {item.name} (x{item.quantity}) - ${item.price}
+                    {item.name} (x{item.quantity}) -£{item.price}
                   </li>
                 ))}
               </ul>

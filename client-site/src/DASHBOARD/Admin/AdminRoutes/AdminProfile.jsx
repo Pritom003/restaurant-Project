@@ -129,7 +129,7 @@ const AdminProfile = () => {
           <FaDollarSign className="mr-2 font-semibold text-black" /> Today's Revenue
         </h2>
         <div className="flex lg:flex-col items-center lg:justify-start justify-between gap-2">
-          <p className="text-5xl lg:text-4xl text-black font-bold">${dailyRevenue?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0).toFixed(2)}</p>
+          <p className="text-5xl lg:text-4xl text-black font-bold">£{dailyRevenue?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0).toFixed(2)}</p>
         </div>
         <p className="text-xl text-black">{new Date().toLocaleDateString()}</p>
       </div>
@@ -139,7 +139,7 @@ const AdminProfile = () => {
         <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
           <FaChartLine className="mr-2 font-semibold text-black" /> Weekly Revenue
         </h2>
-        <p className="text-5xl lg:text-4xl text-black font-bold">${weeklyRevenue?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0).toFixed(2)}</p>
+        <p className="text-5xl lg:text-4xl text-black font-bold">£{weeklyRevenue?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0).toFixed(2)}</p>
         <div className="flex items-center justify-center gap-4">
           <button 
             onClick={handlePreviousWeek} 
@@ -163,7 +163,7 @@ const AdminProfile = () => {
         <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
           <FaCalendarAlt className="mr-2 font-semibold text-black" /> Monthly Revenue
         </h2>
-        <p className="text-5xl lg:text-4xl text-black font-bold">${monthlyRevenue?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0).toFixed(2)}</p>
+        <p className="text-5xl lg:text-4xl text-black font-bold">£{monthlyRevenue?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0).toFixed(2)}</p>
         <div className="flex items-center justify-center gap-4">
           <button 
             onClick={handlePreviousMonth} 
@@ -188,7 +188,7 @@ const AdminProfile = () => {
         <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
           <FaCalendarAlt className="mr-2 font-semibold text-black" /> Yearly Revenue
         </h2>
-        <p className="text-5xl lg:text-4xl text-black font-bold">${yearlyRevenue?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0).toFixed(2)}</p>
+        <p className="text-5xl lg:text-4xl text-black font-bold">£{yearlyRevenue?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0).toFixed(2)}</p>
       </div>
     </div>
   

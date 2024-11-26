@@ -275,7 +275,26 @@ router.patch('/api/orders/:id/cancel', async (req, res) => {
     res.status(500).json({ error: 'Failed to cancel order' });
   }
 });
+// GET request to fetch all orders for a specific user (filtered by email)
+router.get('/api/orders/:email', async (req, res) => {
+  const { email } = req.params;
 
+  if (!email) {
+    return res.status(400).json({ message: "User email is required" });
+  }
+
+  try {
+    // Find orders that match the user's email and sort by creation date
+    const userOrders = await Order.find({
+      userEmail: email,
+      status: { $in: ['Expired', 'Preparing'] } // Use $in to match either 'Expired' or 'Preparing'
+    }).sort({ createdAt: -1 });
+    res.status(200).json(userOrders);
+  } catch (error) {
+    console.error('Error fetching user orders:', error);
+    res.status(500).json({ message: 'Error retrieving user orders', error });
+  }
+});
 
 
 

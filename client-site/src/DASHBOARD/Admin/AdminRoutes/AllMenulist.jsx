@@ -204,7 +204,7 @@ const handleCategoryUpdate = async (oldCategoryName) => {
                   ) : (
                     <div>
                       <h4 className="font-semibold text-lg">{item.name}</h4>
-                      <p>Price: ${item.price}</p>
+                      <p>Price:£{item.price}</p>
                       <div className="flex space-x-2 mt-4">
                         <button
                           onClick={() => handleDelete(category.category, item.name)}
