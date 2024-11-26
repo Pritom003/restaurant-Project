@@ -35,4 +35,22 @@ router.post('/api/create-payment-intent', async (req, res) => {
   }
 });
 
+router.get('/api/orders/payment-methods', async (req, res) => {
+  try {
+    // Aggregate data by paymentMethod
+    const paymentStats = await Order.aggregate([
+      {
+        $group: {
+          _id: "$paymentMethod", // Group by paymentMethod (e.g., "Cash", "Stripe")
+          count: { $sum: 1 },   // Count the number of orders per payment method
+        },
+      },
+    ]);
+    res.status(200).json(paymentStats);
+  } catch (error) {
+    console.error('Error fetching payment method statistics:', error);
+    res.status(500).json({ message: 'Failed to retrieve payment method statistics', error });
+  }
+});
+
 module.exports = router;

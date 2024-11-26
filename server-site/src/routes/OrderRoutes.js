@@ -2,11 +2,11 @@ const express = require('express');
 const router = express.Router();
 const Order = require('../models/OrderScheema'); // Adjust path as needed
 const axios = require('axios');
-
+const io = require('../socket'); 
 // POST request to create a new order
 // POST request to create a new order
 router.post('/api/orders', async (req, res) => {
-  const { userEmail, chefEmail, paymentStatus, paymentMethod, items, totalPrice, orderType } = req.body;
+  const { userEmail, chefEmail,Status, paymentStatus, paymentMethod, items, totalPrice, orderType, spiceLevel } = req.body;
 
   if (!userEmail || !items || items.length === 0 || !totalPrice) {
     return res.status(400).json({ error: 'User email, items, and total price are required' });
@@ -21,23 +21,41 @@ router.post('/api/orders', async (req, res) => {
       orderType,
       items,
       totalPrice,
-      
+      spiceLevel,
+      Status
+
     });
+    console.log(newOrder);
     const savedOrder = await newOrder.save();
-    const returnval=false
-if(returnval){
-  const zapierWebhookUrl = 'https://hooks.zapier.com/hooks/catch/20636785/25h17fq/';
-  const zapierPayload = {
-    userEmail: savedOrder.userEmail,
-    chefEmail: savedOrder.chefEmail,
-    items: savedOrder.items,
-    totalPrice: savedOrder.totalPrice,
-    createdAt: savedOrder.createdAt,
-  };
-  
-  await axios.post(zapierWebhookUrl, zapierPayload);
-  
-}
+
+    // If payment is successful, send data to Zapier
+    // if (paymentStatus === 'success' || paymentStatus === 'pending') {
+    //   const zapierWebhookUrl = 'https://hooks.zapier.com/hooks/catch/20636785/25h17fq/';
+    //   const zapierPayload = {
+    //     userEmail: savedOrder.userEmail,
+    //     chefEmail: savedOrder.chefEmail,
+    //     items: savedOrder.items,
+    //     totalPrice: savedOrder.totalPrice,
+    //     createdAt: savedOrder.createdAt,
+    //   };
+    //   await axios.post(zapierWebhookUrl, zapierPayload);
+    // }
+    // Notify admin of new order
+    io.emit('newOrder', savedOrder);
+    const returnval = false
+    if (returnval) {
+      const zapierWebhookUrl = 'https://hooks.zapier.com/hooks/catch/20636785/25h17fq/';
+      const zapierPayload = {
+        userEmail: savedOrder.userEmail,
+        chefEmail: savedOrder.chefEmail,
+        items: savedOrder.items,
+        totalPrice: savedOrder.totalPrice,
+        createdAt: savedOrder.createdAt,
+      };
+
+      await axios.post(zapierWebhookUrl, zapierPayload);
+
+    }
     res.status(201).json({
       message: 'Order placed successfully',
       data: savedOrder,
@@ -47,7 +65,25 @@ if(returnval){
     res.status(500).json({ error: 'Failed to place order' });
   }
 });
+router.patch('/api/orders/:id', async (req, res) => {
+  const { id } = req.params;
+  const { preparationTime, status } = req.body;
 
+  try {
+    const updatedOrder = await Order.findByIdAndUpdate(
+      id,
+      { preparationTime, status, timeRemaining: preparationTime * 60 },
+      { new: true }
+    );
+
+    // Notify user of confirmed order
+    io.emit('orderConfirmed', updatedOrder);
+
+    res.status(200).json(updatedOrder);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update order' });
+  }
+});
 // GET request to fetch all orders
 router.get('/api/orders', async (req, res) => {
   try {
@@ -122,8 +158,8 @@ router.get('/api/orders/payment-methods', async (req, res) => {
     const paymentMethods = ['stripe', 'cash', 'pickup'];
 
     // If method is provided and valid, filter; otherwise, return all
-    const query = method && paymentMethods.includes(method) 
-      ? { paymentMethod: method } 
+    const query = method && paymentMethods.includes(method)
+      ? { paymentMethod: method }
       : { paymentMethod: { $in: paymentMethods } };
 
     const orders = await Order.find(query);
@@ -131,6 +167,22 @@ router.get('/api/orders/payment-methods', async (req, res) => {
   } catch (error) {
     console.error('Error fetching orders:', error);
     res.status(500).json({ message: 'Failed to fetch orders', error });
+  }
+});
+
+
+
+router.get('/api/orders/:email', async (req, res) => {
+  try {
+    const { email: userEmail } = req.params; // Extract the email from params
+    const result = await Order.find({ userEmail }); // Query using userEmail field
+    if (!result.length) {
+      return res.status(404).json({ message: 'No orders found for this email' });
+    }
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error retrieving orders:', error);
+    res.status(500).json({ message: 'Error retrieving orders', error });
   }
 });
 

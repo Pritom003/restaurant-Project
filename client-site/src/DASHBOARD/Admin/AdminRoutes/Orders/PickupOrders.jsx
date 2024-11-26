@@ -1,8 +1,8 @@
-import { useEffect, useState, useRef } from 'react';
-import axios from 'axios';
-import Swal from 'sweetalert2';
-import ReactToPrint from 'react-to-print';
-import { FaTrash, FaPrint, FaCheckCircle } from 'react-icons/fa';
+import { useEffect, useState, useRef } from "react";
+import axios from "axios";
+import Swal from "sweetalert2";
+import ReactToPrint from "react-to-print";
+import { FaTrash, FaPrint, FaCheckCircle } from "react-icons/fa";
 
 const PickupOrder = () => {
   const [orders, setOrders] = useState([]);
@@ -13,64 +13,70 @@ const PickupOrder = () => {
 
   useEffect(() => {
     axios
-      .get('http://localhost:3000/api/orders/payment-methods?method=pickup')
+      .get("http://localhost:3000/api/orders/payment-methods?method=pickup")
       .then((response) => {
         setOrders(response.data || []);
       })
       .catch((error) => {
-        console.error('Error fetching Cash on delivery orders:', error);
-        Swal.fire('Error', 'Failed to fetch orders. Please try again later.', 'error');
+        console.error("Error fetching Cash on delivery orders:", error);
+        Swal.fire(
+          "Error",
+          "Failed to fetch orders. Please try again later.",
+          "error"
+        );
       });
   }, []);
 
   const handleDelete = (id) => {
     Swal.fire({
-      title: 'Are you sure?',
-      text: 'Do you want to delete this order?',
-      icon: 'warning',
+      title: "Are you sure?",
+      text: "Do you want to delete this order?",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!',
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
         axios
           .delete(`http://localhost:3000/api/orders/${id}`)
           .then(() => {
-            setOrders((prevOrders) => prevOrders.filter((order) => order._id !== id));
-            Swal.fire('Deleted!', 'Order has been deleted.', 'success');
+            setOrders((prevOrders) =>
+              prevOrders.filter((order) => order._id !== id)
+            );
+            Swal.fire("Deleted!", "Order has been deleted.", "success");
             // updateRevenue();
           })
           .catch((error) => {
-            console.error('Error deleting order:', error);
-            Swal.fire('Error!', 'Failed to delete order.', 'error');
+            console.error("Error deleting order:", error);
+            Swal.fire("Error!", "Failed to delete order.", "error");
           });
       }
     });
   };
 
   const handleUpdatePaymentStatus = (id) => {
-    axios        
+    axios
       .patch(`http://localhost:3000/api/orders/${id}/payment-status`, {
-        paymentStatus: 'success',
+        paymentStatus: "success",
       })
       .then(() => {
         setOrders((prevOrders) =>
           prevOrders.map((order) =>
-            order._id === id ? { ...order, paymentStatus: 'success' } : order
+            order._id === id ? { ...order, paymentStatus: "success" } : order
           )
         );
-        Swal.fire('Updated!', 'Payment status has been updated.', 'success');
+        Swal.fire("Updated!", "Payment status has been updated.", "success");
         // updateRevenue();
       })
       .catch((error) => {
-        console.error('Error updating payment status:', error);
-        Swal.fire('Error!', 'Failed to update payment status.', 'error');
+        console.error("Error updating payment status:", error);
+        Swal.fire("Error!", "Failed to update payment status.", "error");
       });
   };
 
   const formatDate = (date) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(date).toLocaleDateString(undefined, options);
   };
 
@@ -78,7 +84,7 @@ const PickupOrder = () => {
 
   return (
     <div className="overflow-x-auto mt-8 text-black">
-      <h2 className="text-2xl font-semibold mb-4">Pick UP  Orders</h2>
+      <h2 className="text-2xl font-semibold mb-4">Pick UP Orders</h2>
       <div className="flex gap-6">
         {/* Table Section */}
         <div className="flex-1">
@@ -88,6 +94,7 @@ const PickupOrder = () => {
                 <th className="px-4 py-2 text-left">Order Date</th>
                 <th className="px-4 py-2 text-left">Total</th>
                 <th className="px-4 py-2 text-left">Payment Status</th>
+                <th className="px-4 py-2 text-left">Spicy Level</th>
                 <th className="px-4 py-2 text-left">Actions</th>
               </tr>
             </thead>
@@ -99,9 +106,14 @@ const PickupOrder = () => {
                     className="border-b cursor-pointer hover:bg-gray-100"
                     onClick={() => handleRowClick(order)}
                   >
-                    <td className="px-4 py-2">{formatDate(order?.createdAt)}</td>
-                    <td className="px-4 py-2">${order?.totalPrice?.toFixed(2)}</td>
+                    <td className="px-4 py-2">
+                      {formatDate(order?.createdAt)}
+                    </td>
+                    <td className="px-4 py-2">
+                      ${order?.totalPrice?.toFixed(2)}
+                    </td>
                     <td className="px-4 py-2">{order?.paymentStatus}</td>
+                    <td className="px-4 py-2">{order?.spiceLevel}</td>
                     <td className="px-4 py-2 flex space-x-4">
                       <button
                         onClick={(e) => {
@@ -123,7 +135,7 @@ const PickupOrder = () => {
                       >
                         <FaPrint size={18} />
                       </button>
-                      {order.paymentStatus === 'unpaid' && (
+                      {order.paymentStatus === "unpaid" && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -141,7 +153,7 @@ const PickupOrder = () => {
               ) : (
                 <tr>
                   <td colSpan="4" className="text-center py-4 text-gray-500">
-                    No  orders found.
+                    No orders found.
                   </td>
                 </tr>
               )}
@@ -161,14 +173,18 @@ const PickupOrder = () => {
                 <strong>User Email:</strong> {selectedOrder?.userEmail}
               </p>
               <p>
-                <strong>Order Date:</strong> {formatDate(selectedOrder?.createdAt)}
+                <strong>Order Date:</strong>{" "}
+                {formatDate(selectedOrder?.createdAt)}
               </p>
               <p>
-                <strong>Total Price:</strong> ${selectedOrder?.totalPrice?.toFixed(2)}
+                <strong>Total Price:</strong> $
+                {selectedOrder?.totalPrice?.toFixed(2)}
               </p>
               <p>
                 <strong>Payment: </strong>
-                {selectedOrder?.paymentStatus === 'success' ? 'Paid' : 'Pending'}
+                {selectedOrder?.paymentStatus === "success"
+                  ? "Paid"
+                  : "Pending"}
               </p>
 
               <h4 className="font-semibold mt-4">Items:</h4>
@@ -176,7 +192,8 @@ const PickupOrder = () => {
                 {selectedOrder?.items?.map((item, index) => (
                   <li key={index}>
                     <p>
-                      {item?.name} - ${item?.price?.toFixed(2)} x {item?.quantity}
+                      {item?.name} - ${item?.price?.toFixed(2)} x{" "}
+                      {item?.quantity}
                     </p>
                   </li>
                 ))}

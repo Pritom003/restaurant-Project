@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import Swal from 'sweetalert2';
+/* eslint-disable react/prop-types */
+import { useState } from "react";
+import Swal from "sweetalert2";
 
 const CategoryCards = ({
   category,
@@ -16,8 +17,8 @@ const CategoryCards = ({
   const [newCategoryName, setNewCategoryName] = useState(category);
 
   const handleCategoryUpdate = () => {
-    if (newCategoryName.trim() === '') {
-      Swal.fire('Error', 'Category name cannot be empty.', 'error');
+    if (newCategoryName.trim() === "") {
+      Swal.fire("Error", "Category name cannot be empty.", "error");
       return;
     }
     onEditCategory(category, newCategoryName);
@@ -68,13 +69,13 @@ const CategoryCards = ({
                 <input
                   type="text"
                   value={editItem.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  onChange={(e) => handleInputChange("name", e.target.value)}
                   className="border bg-white p-2 mb-2 w-full"
                 />
                 <input
                   type="number"
                   value={editItem.price}
-                  onChange={(e) => handleInputChange('price', e.target.value)}
+                  onChange={(e) => handleInputChange("price", e.target.value)}
                   className="border  bg-white p-2 mb-2 w-full"
                 />
                 <button
