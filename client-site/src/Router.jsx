@@ -21,6 +21,7 @@ import AdminRoute from "./routes/AdminRoute";
 import CashOrder from "./DASHBOARD/Admin/AdminRoutes/Orders/CashOrder";
 import Stripelist from "./DASHBOARD/Admin/AdminRoutes/Orders/Stripelist";
 import PickupOrder from "./DASHBOARD/Admin/AdminRoutes/Orders/PickupOrders";
+import AcceptsOrder from "./DASHBOARD/Admin/Notification/AcceptsOrder";
 // import PrivateRoute from "./PrivateRoute"; // Import the PrivateRoute component
 
 const router = createBrowserRouter([
@@ -91,7 +92,7 @@ const router = createBrowserRouter([
           { path: "", element: <AdminProfile /> },
           { path: "add-menu", element: <Addmenu /> },
           { path: "dishes", element: <AllMenuList /> },
-          // { path: "orderList", element: <OrderLlist /> },
+          { path: "New-Orders", element: <AcceptsOrder /> },
           // { path: "user-list", element: <UserList /> },
           {
             path: "orderList",

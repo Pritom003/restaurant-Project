@@ -20,6 +20,7 @@ const OrderSchema = new mongoose.Schema(
     totalPrice: { type: Number, required: true },
     createdAt: { type: Date, default: Date.now },
     spiceLevel: { type: String, },
+    status: { type: String, },
     // createdAt: { type: Date, default: new Date('2024-11-13T00:00:00Z') },
   },
   { timestamps: true }

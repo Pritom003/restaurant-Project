@@ -3,8 +3,7 @@ const router = express.Router();
 const Order = require('../models/OrderScheema'); // Adjust path as needed
 const axios = require('axios');
 
-// POST request to create a new order
-// POST request to create a new order
+
 router.post('/api/orders', async (req, res) => {
   const { userEmail, chefEmail, paymentStatus, paymentMethod, items, totalPrice, orderType, spiceLevel } = req.body;
 
@@ -21,38 +20,15 @@ router.post('/api/orders', async (req, res) => {
       orderType,
       items,
       totalPrice,
-      spiceLevel
-
+      status: 'Pending',
+      spiceLevel,
     });
+
     const savedOrder = await newOrder.save();
 
-    // If payment is successful, send data to Zapier
-    // if (paymentStatus === 'success' || paymentStatus === 'pending') {
-    //   const zapierWebhookUrl = 'https://hooks.zapier.com/hooks/catch/20636785/25h17fq/';
-    //   const zapierPayload = {
-    //     userEmail: savedOrder.userEmail,
-    //     chefEmail: savedOrder.chefEmail,
-    //     items: savedOrder.items,
-    //     totalPrice: savedOrder.totalPrice,
-    //     createdAt: savedOrder.createdAt,
-    //   };
-    //   await axios.post(zapierWebhookUrl, zapierPayload);
-    // }
+    // Emit event to all connected clients
+    req.io.emit('new-order', savedOrder);
 
-    const returnval = false
-    if (returnval) {
-      const zapierWebhookUrl = 'https://hooks.zapier.com/hooks/catch/20636785/25h17fq/';
-      const zapierPayload = {
-        userEmail: savedOrder.userEmail,
-        chefEmail: savedOrder.chefEmail,
-        items: savedOrder.items,
-        totalPrice: savedOrder.totalPrice,
-        createdAt: savedOrder.createdAt,
-      };
-
-      await axios.post(zapierWebhookUrl, zapierPayload);
-
-    }
     res.status(201).json({
       message: 'Order placed successfully',
       data: savedOrder,
@@ -62,7 +38,6 @@ router.post('/api/orders', async (req, res) => {
     res.status(500).json({ error: 'Failed to place order' });
   }
 });
-
 // GET request to fetch all orders
 router.get('/api/orders', async (req, res) => {
   try {
@@ -165,6 +140,33 @@ router.get('/api/orders/:email', async (req, res) => {
   }
 });
 
+// PATCH request to update order time and status
+router.patch('/api/orders/:id', async (req, res) => {
+  const { id } = req.params;
+  const { time, status } = req.body;
 
+  try {
+    const updatedOrder = await Order.findByIdAndUpdate(
+      id,
+      { time, status },
+      { new: true }
+    );
+
+    if (!updatedOrder) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    // Emit notification that the order is confirmed
+    req.io.emit('order-confirmed', updatedOrder);
+
+    res.status(200).json({
+      message: 'Order updated successfully',
+      data: updatedOrder,
+    });
+  } catch (error) {
+    console.error('Error updating order:', error);
+    res.status(500).json({ error: 'Failed to update order' });
+  }
+});
 
 module.exports = router;

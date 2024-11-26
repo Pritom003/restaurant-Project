@@ -6,6 +6,7 @@ import { FaUserCircle } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import useAuth from "../../Hooks/useAuth";
 import useRole from "../../Hooks/useRole";
+import Notifications from "../../DASHBOARD/Admin/Notification/Notifications";
 const Home = () => {
   const dispatch = useDispatch();
   // const isLoggedIn = useSelector((state) => state.auth.isLoggedIn); // Get login status from Redux state
@@ -37,6 +38,10 @@ const Home = () => {
         <div className="bg-[#e8e7e5] min-w-[90vw] lg:min-w-[20vw] px-4 pb-4 pt-4 w-full min-h-56 overflow-y-auto">
           <Cart />
         </div>
+        {/* notification */}
+        {
+          role==='Admin'? <div className="bg-[#e8e7e5] px-4 pb-4 pt-4 w-full"><Notifications/></div>:''
+        }
 
         {/* Conditional Login/Profile */}
         <div className="bg-[#e8e7e5] px-4 pb-4 pt-4 w-full">
