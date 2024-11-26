@@ -119,5 +119,35 @@ router.get('/api/revenue/yearly', async (req, res) => {
     res.status(500).json({ message: 'Server Error' });
   }
 });
+router.get('/api/orders/order-type', async (req, res) => {
+  try {
+    const orderTypes = ['online', 'pickup']; // Possible order types
+
+    const orders = await Order.aggregate([
+      {
+        $match: {
+          orderType: { $in: orderTypes }, // Match orders that are online or pickup
+        },
+      },
+      {
+        $group: {
+          _id: '$orderType', // Group by orderType (online, pickup)
+          count: { $sum: 1 }, // Count the number of orders of each type
+        },
+      },
+    ]);
+
+    // Format the data to match frontend expectations
+    const formattedData = orders.map((order) => ({
+      name: order._id.charAt(0).toUpperCase() + order._id.slice(1), // Capitalize the order type (Online, Pickup)
+      value: order.count,
+    }));
+
+    res.status(200).json(formattedData); // Send the formatted data to the frontend
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    res.status(500).json({ message: 'Failed to fetch orders', error });
+  }
+});
 
 module.exports = router;

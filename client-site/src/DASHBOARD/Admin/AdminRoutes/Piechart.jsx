@@ -2,45 +2,31 @@ import { useEffect, useState } from "react";
 import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
 
 const PieCharts = () => {
-  const [paymentData, setPaymentData] = useState([]);
+  const [orderData, setOrderData] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/orders/payment-methods")
+    fetch("http://localhost:3000/api/orders/order-type")
       .then((res) => res.json())
       .then((data) => {
-        let cashCount = 0;
-        let stripeCount = 0;
-
-        data.forEach((item) => {
-          if (item._id === "cash") {
-            cashCount += item.count;
-          } else {
-            stripeCount += item.count;
-          }
-        });
-
-        const formattedData = [
-          { name: "Cash", value: cashCount },
-          { name: "Stripe", value: stripeCount },
-        ];
-
-        setPaymentData(formattedData);
-      });
+        setOrderData(data); // Set the data for online vs pickup orders
+      })
+      .catch((error) => console.error('Error fetching data:', error));
   }, []);
 
-  const COLORS = ["#0088FE", "#FFBB28"]; // Colors for "Cash" and "Stripe"
+  // Define the colors for the Pie chart
+  const COLORS = ["#0088FE", "#FFBB28"]; // Blue for online, yellow for pickup
 
   return (
     <PieChart width={400} height={400}>
       <Pie
-        data={paymentData}
+        data={orderData}
         cx="50%"
         cy="50%"
         outerRadius={100}
         dataKey="value"
         label
       >
-        {paymentData.map((entry, index) => (
+        {orderData.map((entry, index) => (
           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
         ))}
       </Pie>

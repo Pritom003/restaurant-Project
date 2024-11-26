@@ -9,7 +9,6 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import { FaPoundSign } from "react-icons/fa";
 import { BsStripe } from "react-icons/bs";
-import LocationCheck from "./LocationCheck";
 import OutOfRangeModal from "./OutofRangle";
 import useAuth from "../../Hooks/useAuth";
 
@@ -21,31 +20,23 @@ const Cart = () => {
   const { user } = useAuth();
   const { items, totalPrice } = useSelector((state) => state);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
-  const [orderType, setOrderType] = useState(); // Default to online
+  const [orderType, setOrderType] = useState(""); // Default to empty
   const [spiceLevel, setSpiceLevel] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
+  const [showModal, setShowModal] = useState(false);
+
   const removeFromCart = (item) =>
     dispatch({ type: "REMOVE_FROM_CART", payload: item });
-  const [isInRange, setIsInRange] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  console.log(user?.email);
+
+  const isInRange = true;
 
   const handlePlaceOrder = () => {
-    if (orderType === "online") {
-      if (paymentMethod === "stripe") {
-        setShowPaymentForm(true);
-      } else if (paymentMethod === "cash") {
-        handleOrderCompletion("cash", "pending"); // Complete order with Cash
-      }
-    } else if (orderType === "pickup") {
-      handleOrderCompletion("pickup", "unpaid"); // Complete order for Pickup
+    if (paymentMethod === "stripe") {
+      setShowPaymentForm(true); // Show payment form for Stripe
+    } else if (paymentMethod === "cash") {
+      handleOrderCompletion("cash", "pending"); // Complete order with Cash
     }
   };
-
-  // Calculate total price
-  // const calculateTotalPrice = () => {
-  //   return spiceLevel === "More Spicy" ? totalPrice + 0.6 : totalPrice;
-  // };
 
   const handleOrderCompletion = async (method, status) => {
     const orderData = {
@@ -84,24 +75,10 @@ const Cart = () => {
     }
   };
 
-  // Payment Form in JSX
-  {
-    showPaymentForm && (
-      <Elements stripe={stripePromise}>
-        <PaymentForm
-          totalPrice={totalPrice}
-          handleOrderCompletion={handleOrderCompletion}
-        />
-      </Elements>
-    );
-  }
-
-  // Handle payment method selection
   const handlePaymentMethodChange = (method) => {
-    setPaymentMethod(method === paymentMethod ? "" : method); // This toggles the method
+    setPaymentMethod(method === paymentMethod ? "" : method); // Toggle method
   };
 
-  // Handle order type selection (Online or Pickup)
   const handleOrderTypeChange = (type) => {
     if (type === "online" && !isInRange) {
       setShowModal(true); // Show modal if out of range
@@ -110,12 +87,6 @@ const Cart = () => {
     }
   };
 
-  // Handle location check
-  const handleLocationCheck = (inRange) => {
-    setIsInRange(inRange);
-  };
-
-  // Close modal for out of range message
   const closeModal = () => {
     setShowModal(false);
   };
@@ -156,7 +127,7 @@ const Cart = () => {
 
         {items.length > 0 && (
           <div className="text-end">
-            <div className="mt-2 text-lg">Total: €{totalPrice.toFixed(2)}</div>
+            <div className="mt-2 text-lg">Total: £{totalPrice.toFixed(2)}</div>
 
             <div className="mt-4">
               <label className="block text-sm">
@@ -167,10 +138,11 @@ const Cart = () => {
                 value={spiceLevel}
                 onChange={(e) => setSpiceLevel(e.target.value)}
                 className="border rounded p-1 w-full text-sm"
-                placeholder="Add a note (e.g., Hot, More Spicy +£.6)"
+                placeholder="Add a note (e.g., Hot, More Spicy)"
               />
             </div>
 
+            {/* Order Type Selection */}
             <div className="mt-4 flex gap-4">
               <label className="text-lg flex items-center text-black">
                 <input
@@ -207,7 +179,8 @@ const Cart = () => {
               </label>
             </div>
 
-            {orderType === "online" && (
+            {/* Payment Method Selection */}
+            {(orderType === "online" || orderType === "pickup") && (
               <div className="mt-4 flex flex-wrap lg:flex-col lg:items-start lg:gap-4 items-center justify-between">
                 <label className="text-lg flex items-center text-black">
                   <input
@@ -250,7 +223,6 @@ const Cart = () => {
               </div>
             )}
 
-            <LocationCheck onLocationCheck={handleLocationCheck} />
             <button
               onClick={handlePlaceOrder}
               className="text-lg text-gray-600 hover:text-red-950 hover:underline mt-2"

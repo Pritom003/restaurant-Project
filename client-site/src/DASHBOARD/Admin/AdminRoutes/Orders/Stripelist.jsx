@@ -141,53 +141,88 @@ const Stripelist = () => {
 
         {/* Print Preview Section */}
         {selectedOrder && (
-          <div>
-            <div
-              ref={orderDetailsRef}
-              className="flex-1 p-6 bg-white shadow-lg rounded-lg mt-8 md:mt-0"
-            >
-              <h3 className="text-xl font-semibold mb-4">Order Details</h3>
-              <p>
-                <strong>User Email:</strong> {selectedOrder?.userEmail}
-              </p>
-              <p>
-                <strong>Order Date:</strong>{" "}
-                {formatDate(selectedOrder?.createdAt)}
-              </p>
-              <p>
-                <strong>Total Price:</strong> $
-                {selectedOrder?.totalPrice?.toFixed(2)}
-              </p>
-              <p>
-                <strong>Payment: </strong>
-                {selectedOrder?.paymentStatus === "success"
-                  ? "Paid"
-                  : "Pending"}
-              </p>
+  <div>
+    <div
+      ref={orderDetailsRef}
+      className="flex-1 p-6 bg-white shadow-lg rounded-lg mt-8 md:mt-0 text-gray-800"
+    >
+      {/* Order Details Header */}
+      <div className="border-b pb-4 mb-4">
+        <h3 className="text-2xl font-bold text-center mb-2">Order Receipt</h3>
+        <p className="text-sm text-center">Order ID: {selectedOrder?._id}</p>
+      </div>
 
-              <h4 className="font-semibold mt-4">Items:</h4>
-              <ul className="list-disc pl-6">
-                {selectedOrder?.items?.map((item, index) => (
-                  <li key={index}>
-                    <p>
-                      {item?.name} - ${item?.price?.toFixed(2)} x{" "}
-                      {item?.quantity}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <ReactToPrint
-              trigger={() => (
-                <button className="mt-4 text-amber-950 px-4 py-2 underline rounded-md hover:bg-green-600">
-                  Print Order
-                </button>
-              )}
-              content={() => orderDetailsRef.current}
-              documentTitle={`Order_${selectedOrder?._id}`}
-            />
-          </div>
-        )}
+      {/* User Information */}
+      <div className="mb-4">
+        <h4 className="text-lg font-semibold">Customer Information</h4>
+        <p>
+          <strong>User Email:</strong> {selectedOrder?.userEmail}
+        </p>
+        <p>
+          <strong>Order Date:</strong> {formatDate(selectedOrder?.createdAt)}
+        </p>
+      </div>
+
+      {/* Items List */}
+      <div className="mb-4">
+        <h4 className="text-lg font-semibold">Order Items</h4>
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="border-b">
+              <th className="py-2 px-4">Item Name</th>
+              <th className="py-2 px-4">Price</th>
+              <th className="py-2 px-4">Quantity</th>
+              <th className="py-2 px-4">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {selectedOrder?.items?.map((item, index) => (
+              <tr key={index} className="border-b hover:bg-gray-100">
+                <td className="py-2 px-4">{item?.name}</td>
+                <td className="py-2 px-4">${item?.price?.toFixed(2)}</td>
+                <td className="py-2 px-4">{item?.quantity}</td>
+                <td className="py-2 px-4">
+                  ${(item?.price * item?.quantity).toFixed(2)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Payment Summary */}
+      <div className="mt-4 border-t pt-4">
+        <p className="flex justify-between">
+          <span className="font-semibold">Total Price:</span>
+          <span>${selectedOrder?.totalPrice?.toFixed(2)}</span>
+        </p>
+        <p className="flex justify-between">
+          <span className="font-semibold">Payment Status:</span>
+          <span
+            className={`font-bold ${
+              selectedOrder?.paymentStatus === "success"
+                ? "text-green-600"
+                : "text-red-600"
+            }`}
+          >
+            {selectedOrder?.paymentStatus === "success" ? "Paid" : "Pending"}
+          </span>
+        </p>
+      </div>
+    </div>
+
+    {/* Print Button */}
+    <ReactToPrint
+      trigger={() => (
+        <button className="mt-4 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+          Print Order
+        </button>
+      )}
+      content={() => orderDetailsRef.current}
+      documentTitle={`Order_${selectedOrder?._id}`}
+    />
+  </div>
+)}
       </div>
     </div>
   );

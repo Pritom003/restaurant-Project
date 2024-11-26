@@ -99,24 +99,36 @@ const AcceptOrder = () => {
               </ul>
               <div className="mt-3">
                 <h5 className="font-medium">Set Preparation Time:</h5>
-                <div className="flex space-x-2">
+                <div className="flex gap-3 flex-wrap space-x-2">
                   <button
                     onClick={() => handleUpdateOrder(order._id, 15)}
-                    className="bg-blue-500 text-white px-4 py-2 rounded"
+                    className="text-green-800 border-green-500 border-2 hover:border-blue-700 p-2"
                   >
-                    15 min
+                   15 min
                   </button>
                   <button
                     onClick={() => handleUpdateOrder(order._id, 25)}
-                    className="bg-green-500 text-white px-4 py-2 rounded"
+                     className="text-green-800 border-green-500 border-2 hover:border-blue-700 p-2"
                   >
                     25 min
                   </button>
                   <button
                     onClick={() => handleUpdateOrder(order._id, 30)}
-                    className="bg-purple-500 text-white px-4 py-2 rounded"
+                     className="text-green-800 border-green-500 border-2 hover:border-blue-700 p-2"
                   >
                     30 min
+                  </button>
+                  <button
+                    onClick={() => handleUpdateOrder(order._id, 45)}
+                    className="text-green-800 border-green-500 border-2 hover:border-blue-700 p-2"
+                  >
+                    45 min
+                  </button>
+                  <button
+                    onClick={() => handleUpdateOrder(order._id, 50)}
+                    className="text-green-800 border-green-500 border-2 hover:border-blue-700 p-2"
+                  >
+                    50 min
                   </button>
                 </div>
               </div>

@@ -55,7 +55,7 @@ const Navbar = () => {
               Menu
             </NavLink>
           </li>
-          <li>
+          {/* <li>
             <NavLink
               to="/about"
               className={({ isActive }) =>
@@ -66,8 +66,8 @@ const Navbar = () => {
             >
               About Us
             </NavLink>
-          </li>
-          <li>
+          </li> */}
+          {/* <li>
             <NavLink
               to="/contact"
               className={({ isActive }) =>
@@ -78,7 +78,7 @@ const Navbar = () => {
             >
               Contact
             </NavLink>
-          </li>
+          </li> */}
 
           {/* Conditional Render: Dashboard or Login */}
           {user ? (
