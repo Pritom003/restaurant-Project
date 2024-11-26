@@ -1,13 +1,20 @@
+/* eslint-disable react/prop-types */
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useState, useContext } from "react";
-import { FaUser, FaPlus, FaHome, FaSignOutAlt, FaCashRegister } from "react-icons/fa";
+import {
+  FaUser,
+  FaPlus,
+  FaHome,
+  FaSignOutAlt,
+  FaCashRegister,
+} from "react-icons/fa";
 import { GrMoney } from "react-icons/gr";
 import { RiMenuSearchFill, RiTruckFill } from "react-icons/ri";
+import { ImStatsDots } from "react-icons/im";
 import Heading from "../../Pages/Home/MenuBox/Heading";
 import backgroundimg from "../../assets/vintage.jpg";
 import { AuthContext } from "../../providers/AuthProviders";
 import useRole from "../../Hooks/useRole.js";
-import { ImStatsDots } from "react-icons/im";
 const MenuItem = ({ to, icon, label }) => (
   <li className="flex items-center gap-2 text-xl text-white mr-2">
     {icon}
@@ -17,23 +24,29 @@ const MenuItem = ({ to, icon, label }) => (
   </li>
 );
 
-const OrderSubMenu = ({ isOpen, toggleSubMenu }) => (
+const OrderSubMenu = ({ isOpen }) =>
   isOpen && (
-    <ul className="pl-6 mt-2 space-y-2 ">
-      <MenuItem to="orderList/strip-order"
-       icon={<FaCashRegister />} label="Strip Order" />
-      <MenuItem to="orderList/cash-on-delivery" icon={<GrMoney />} label="Cash" />
+    <ul className="pl-6 mt-2 space-y-2">
+      <MenuItem
+        to="orderList/strip-order"
+        icon={<FaCashRegister />}
+        label="Strip Order"
+      />
+      <MenuItem
+        to="orderList/cash-on-delivery"
+        icon={<GrMoney />}
+        label="Cash"
+      />
       <MenuItem to="orderList/pickup" icon={<RiTruckFill />} label="Pickup" />
     </ul>
-  )
-);
+  );
 
 const DashboardLayout = () => {
   const { logOut, user } = useContext(AuthContext);
   const [isExpanded, setIsExpanded] = useState(false);
   const [orderSubMenuOpen, setOrderSubMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const [ role ]= useRole(); // Replace with dynamic role if needed
+  const [role] = useRole(); // Fetch user role dynamically
 
   const toggleMenu = () => setIsExpanded(!isExpanded);
   const toggleOrderSubMenu = () => setOrderSubMenuOpen(!orderSubMenuOpen);
@@ -53,38 +66,44 @@ const DashboardLayout = () => {
       {/* Sidebar for large devices */}
       <nav
         style={{ backgroundImage: `url(${backgroundimg})` }}
-        className="lg:fixed lg:flex lg:flex-col lg:min-h-screen
-         pl-4 hidden lg:w-48 h-full bg-cover bg-center relative "
+        className="lg:fixed lg:flex lg:flex-col lg:min-h-screen pl-4 hidden lg:w-48 h-full bg-cover bg-center relative"
       >
         {/* Overlay */}
-        <div className="absolute inset-0 bg-black 
-        opacity-60"></div>
+        <div className="absolute inset-0 bg-black opacity-60"></div>
         <div className="pt-10 z-10 relative">
           <Heading customStyle="h-12 text-white text-center" />
         </div>
-        <ul className="mt-4 z-10 relative space-y-4 overflow-y-auto  mb-20">
+        <ul className="mt-4 z-10 relative space-y-4 overflow-y-auto mb-20">
           <MenuItem to="/" icon={<FaHome />} label="Home" />
-          
+
           {role === "Admin" && (
             <>
-              <MenuItem to="" icon={<ImStatsDots /> }
-               label="Stats" />
-              <MenuItem to="add-menu" icon={<FaPlus />}
-               label="Add Menu" />
-              <MenuItem to="dishes"
-               icon={<RiMenuSearchFill />} 
-               label="All Dishes" />
+              <MenuItem to="" icon={<ImStatsDots />} label="Stats" />
+              <MenuItem to="add-menu" icon={<FaPlus />} label="Add Menu" />
+              <MenuItem
+                to="dishes"
+                icon={<RiMenuSearchFill />}
+                label="All Dishes"
+              />
               <li>
                 <div
                   onClick={toggleOrderSubMenu}
                   className="flex items-center cursor-pointer text-xl mt-4 text-white"
                 >
-                  <GrMoney className="mr-2 " />
+                  <GrMoney className="mr-2" />
                   Orders
                 </div>
-                <OrderSubMenu isOpen={orderSubMenuOpen} toggleSubMenu={toggleOrderSubMenu} />
+                <OrderSubMenu isOpen={orderSubMenuOpen} />
               </li>
               <MenuItem to="user-list" icon={<FaUser />} label="All Users" />
+              <MenuItem to="profile" icon={<FaUser />} label="Profile" />
+            </>
+          )}
+
+          {role === "guest" && (
+            <>
+              <MenuItem to="my-orders" icon={<FaUser />} label="My Orders" />
+              <MenuItem to="profile" icon={<FaUser />} label="Profile" />
             </>
           )}
 
@@ -120,13 +139,20 @@ const DashboardLayout = () => {
             {role === "Admin" && (
               <>
                 <MenuItem to="add-menu" icon={<FaPlus />} label="Add Menu" />
-                <MenuItem to="dishes" icon={<RiMenuSearchFill />} label="Dishes" />
+                <MenuItem
+                  to="dishes"
+                  icon={<RiMenuSearchFill />}
+                  label="Dishes"
+                />
                 <MenuItem to="user-list" icon={<FaUser />} label="Users" />
               </>
             )}
             {user && (
               <li>
-                <button onClick={handleLogout} className="flex flex-col items-center">
+                <button
+                  onClick={handleLogout}
+                  className="flex flex-col items-center"
+                >
                   <FaSignOutAlt />
                   <span className="text-sm">Logout</span>
                 </button>

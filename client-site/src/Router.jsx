@@ -12,7 +12,11 @@ import Login from "./Component/LogIn/LogIn";
 import UserList from "./DASHBOARD/Admin/AdminRoutes/UserList";
 import PrivateRoute from "./providers/PrivateRoute";
 import LandingPage from "./Pages/LandingPage/LandingPage";
+import MyOrders from "./DASHBOARD/My Orders/MyOrders";
 import AllMenuList from "./DASHBOARD/Admin/AdminRoutes/AllMenulist";
+import Profile from "./Component/Common/Profile";
+import AdminRoute from "./routes/AdminRoute";
+
 // import Stripelist from "./DASHBOARD/Admin/AdminRoutes/Orders/Stripelist";
 import CashOrder from "./DASHBOARD/Admin/AdminRoutes/Orders/CashOrder";
 import Stripelist from "./DASHBOARD/Admin/AdminRoutes/Orders/Stripelist";
@@ -25,7 +29,7 @@ const router = createBrowserRouter([
     element: <Layout />,
     errorElement: <NotFound />,
     children: [
-      { path: "/", element: <LandingPage/> },
+      { path: "/", element: <LandingPage /> },
       { path: "/menus", element: <Home /> },
     ],
   },
@@ -37,19 +41,67 @@ const router = createBrowserRouter([
         path: "/dashboard",
         element: <DashboardLayout role="admin" />,
         children: [
-          { path: "", element: <AdminProfile/> },
+          {
+            path: "",
+            element: (
+              <AdminRoute>
+                <AdminProfile />
+              </AdminRoute>
+            ),
+          },
+          {
+            path: "add-menu",
+            element: (
+              <AdminRoute>
+                <Addmenu />
+              </AdminRoute>
+            ),
+          },
+          {
+            path: "dishes",
+            element: (
+              <AdminRoute>
+                <AllMenuList />
+              </AdminRoute>
+            ),
+          },
+          {
+            path: "orderList",
+            element: (
+              <PrivateRoute>
+                <AdminRoute>
+                  <OrderLlist />
+                </AdminRoute>
+              </PrivateRoute>
+            ),
+          },
+          {
+            path: "user-list",
+            element: (
+              <AdminRoute>
+                <UserList />
+              </AdminRoute>
+            ),
+          },
+          {
+            path: "my-orders",
+            element: <MyOrders />,
+          },
+          { path: "profile", element: <Profile /> },
+          { path: "", element: <AdminProfile /> },
           { path: "add-menu", element: <Addmenu /> },
           { path: "dishes", element: <AllMenuList /> },
           // { path: "orderList", element: <OrderLlist /> },
-          { path: "user-list", element: <UserList /> },
+          // { path: "user-list", element: <UserList /> },
           {
             path: "orderList",
             element: <OrderLlist />, // This will display the order list
             children: [
-              { path: "strip-order", element: <Stripelist /> },  // Nested under orderList
+              { path: "strip-order", element: <Stripelist /> }, // Nested under orderList
               { path: "cash-on-delivery", element: <CashOrder /> }, // Nested under orderList
               { path: "pickup", element: <PickupOrder /> }, // Nested under orderList
-            ],}
+            ],
+          },
         ],
       },
     ],
