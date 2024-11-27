@@ -5,12 +5,12 @@ const PieCharts = () => {
   const [orderData, setOrderData] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/orders/order-type")
+    fetch("http://localhost:3000/v3/api/orders/order-type")
       .then((res) => res.json())
       .then((data) => {
         setOrderData(data); // Set the data for online vs pickup orders
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   // Define the colors for the Pie chart

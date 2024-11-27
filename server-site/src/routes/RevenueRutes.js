@@ -62,6 +62,10 @@ router.get('/api/revenue/weekly', async (req, res) => {
   }
 });
 
+
+
+
+
 router.get('/api/revenue/monthly', async (req, res) => {
   try {
     const monthOffset = parseInt(req.query.monthOffset) || 0; // Get month offset from query or default to 0
@@ -119,23 +123,18 @@ router.get('/api/revenue/yearly', async (req, res) => {
     res.status(500).json({ message: 'Server Error' });
   }
 });
-router.get('/api/orders/order-type', async (req, res) => {
+
+
+router.get('/v3/api/orders/order-type', async (req, res) => {
   try {
     const orderTypes = ['online', 'pickup']; // Possible order types
 
     const orders = await Order.aggregate([
-      {
-        $match: {
-          orderType: { $in: orderTypes }, // Match orders that are online or pickup
-        },
-      },
-      {
-        $group: {
-          _id: '$orderType', // Group by orderType (online, pickup)
-          count: { $sum: 1 }, // Count the number of orders of each type
-        },
-      },
+      { $match: { orderType: { $in: orderTypes } } },
+      { $group: { _id: '$orderType', count: { $sum: 1 } } },
     ]);
+
+
 
     // Format the data to match frontend expectations
     const formattedData = orders.map((order) => ({

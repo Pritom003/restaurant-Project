@@ -63,7 +63,7 @@ const Stripelist = () => {
 
   return (
     <div className="overflow-x-auto mt-8 text-black">
-      <h2 className="text-2xl font-semibold mb-4">Stripe Orders</h2>
+      <h2 className="text-2xl font-semibold mb-4">Online Orders</h2>
       <div className="flex gap-6">
         {/* Table Section */}
         <div className="flex-1">

@@ -1,24 +1,26 @@
 import { useState, useEffect } from "react";
-import useAxiosSecure from "./useAxiosSecure"; // Adjust path as needed
+import useAxiosSecure from "./useAxiosSecure"; // Adjust path if needed
 
-const MenuData = () => {
+const useMenuData = () => {
   const axiosSecure = useAxiosSecure();
   const [menuData, setMenuData] = useState([]);
-  const [categories, setCategories] = useState([]); // Store unique categories
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const fetchMenuData = async () => {
     try {
       setLoading(true);
-      const response = await axiosSecure.get("/menu"); // Ensure correct API route
-      setMenuData(response.data);
+      const response = await axiosSecure.get("/menu");
+      const fetchedData = response.data;
 
-      // Extract unique categories
-      const uniqueCategories = [
-        ...new Set(response.data.map((item) => item.category)),
-      ];
+      setMenuData(fetchedData);
+      console.log(fetchedData);
+
+      // Ensure we only list unique categories
+      const uniqueCategories = fetchedData.map((menu) => menu.category);
       setCategories(uniqueCategories);
+      console.log(uniqueCategories);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to fetch menu data");
     } finally {
@@ -26,12 +28,11 @@ const MenuData = () => {
     }
   };
 
-
   useEffect(() => {
     fetchMenuData();
   }, []);
 
-  return { menuData, categories, loading, error,axiosSecure };
+  return { menuData, categories, loading, error };
 };
 
-export default MenuData;
+export default useMenuData;

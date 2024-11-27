@@ -1,22 +1,29 @@
 const mongoose = require('mongoose');
 
-// Define the schema for menu items
-const menuItemSchema = new mongoose.Schema({
+// Schema for included items (Set Menu items)
+const IncludedItemSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  quantity: { type: String, required: true }
+}, { _id: false });;
+
+// Schema for varieties (Variants of items with name and price)
+const VarietySchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  price: { type: Number, required: true }
+}, { _id: false });
+
+// Schema for each menu item
+const ItemSchema = new mongoose.Schema({
   name: { type: String, required: true },
   price: { type: Number, required: true },
-  itemsIncluded: [{
-    name: { type: String },
-    quantity: { type: Number },
-  }],
+  varieties: [VarietySchema], // Array to hold item varieties
+  itemsIncluded: [IncludedItemSchema] // Supports Set Menu nested items
 });
 
-// Define the schema for the menu
-const menuSchema = new mongoose.Schema({
+// Schema for menu category
+const MenuSchema = new mongoose.Schema({
   category: { type: String, required: true, unique: true },
-  items: [menuItemSchema],
+  items: [ItemSchema] // Array to hold menu items
 });
 
-// Create the Menu model
-const Menu = mongoose.model('Menu', menuSchema);
-
-module.exports = Menu;
+module.exports = mongoose.model('MenuItem', MenuSchema);

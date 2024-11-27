@@ -116,7 +116,7 @@ router.get('/api/orders/payment-methods', async (req, res) => {
       ? { paymentMethod: method }
       : { paymentMethod: { $in: paymentMethods } };
 
-    const orders = await Order.find(query);
+    const orders = await Order.find(query).sort({ createdAt: -1 });;
     res.status(200).json(orders);
   } catch (error) {
     console.error('Error fetching orders:', error);
@@ -166,12 +166,12 @@ router.get('/api/orders/user', async (req, res) => {
 
 
 router.patch('/api/orders/:id', async (req, res) => {
-  const { time , status } = req.body;
+  const { time, status } = req.body;
 
   try {
     const updatedOrder = await Order.findByIdAndUpdate(
       req.params.id,
-      { status: 'Preparing' , $inc: { time: time } },
+      { status: 'Preparing', $inc: { time: time } },
       { new: true }
     );
     if (!updatedOrder) {

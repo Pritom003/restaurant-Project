@@ -101,15 +101,17 @@ const Cart = () => {
           {items.length > 0 ? (
             items.map((item) => (
               <li
-                key={item.name}
+                key={item.key}
                 className="flex justify-between items-center py-1"
               >
                 <span className="flex-grow">
-                  {item.name} {item.quantity > 1 && `(${item.quantity}x)`}
+                  {item.name} {item.variant && `(${item.variant})`}{" "}
+                  {item.quantity > 1 && `(${item.quantity}x)`}
                 </span>
                 <span className="flex-shrink-0">
-                  £{(item.price * item.quantity).toFixed(2)}
+                  £{(item.variantPrice || item.price) * item.quantity}
                 </span>
+
                 <button
                   onClick={() => removeFromCart(item)}
                   className="pl-2 hover:text-red-800"
