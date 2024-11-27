@@ -116,7 +116,7 @@ router.get('/api/orders/payment-methods', async (req, res) => {
       ? { paymentMethod: method }
       : { paymentMethod: { $in: paymentMethods } };
 
-    const orders = await Order.find(query);
+    const orders = await Order.find(query).sort({ createdAt: -1 });;
     res.status(200).json(orders);
   } catch (error) {
     console.error('Error fetching orders:', error);
