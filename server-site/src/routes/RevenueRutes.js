@@ -123,6 +123,8 @@ router.get('/api/revenue/yearly', async (req, res) => {
     res.status(500).json({ message: 'Server Error' });
   }
 });
+
+
 router.get('/v3/api/orders/order-type', async (req, res) => {
   try {
     const orderTypes = ['online', 'pickup']; // Possible order types
@@ -131,7 +133,9 @@ router.get('/v3/api/orders/order-type', async (req, res) => {
       { $match: { orderType: { $in: orderTypes } } },
       { $group: { _id: '$orderType', count: { $sum: 1 } } },
     ]);
-    
+
+
+
 
 
     // Format the data to match frontend expectations

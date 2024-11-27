@@ -4,7 +4,7 @@ import useAxiosSecure from "./useAxiosSecure"; // Adjust path if needed
 const useMenuData = () => {
   const axiosSecure = useAxiosSecure();
   const [menuData, setMenuData] = useState([]);
-  const [categories, setCategories] = useState([]); 
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -13,12 +13,12 @@ const useMenuData = () => {
       setLoading(true);
       const response = await axiosSecure.get("/menu");
       const fetchedData = response.data;
-      
+
       setMenuData(fetchedData);
       console.log(fetchedData);
 
       // Ensure we only list unique categories
-      const uniqueCategories = fetchedData.map(menu => menu.category);
+      const uniqueCategories = fetchedData.map((menu) => menu.category);
       setCategories(uniqueCategories);
       console.log(uniqueCategories);
     } catch (err) {

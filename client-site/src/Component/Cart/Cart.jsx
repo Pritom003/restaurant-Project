@@ -98,26 +98,29 @@ const Cart = () => {
       </h3>
       <div className="mt-2 p-2 border min-h-36 border-gray-300">
         <ul className="text-xs">
-        {items.length > 0 ? (
-items.map((item) => (
-  <li key={item.key} className="flex justify-between items-center py-1">
-    <span className="flex-grow">
-      {item.name} {item.variant && `(${item.variant})`} {item.quantity > 1 && `(${item.quantity}x)`}
-    </span>
-    <span className="flex-shrink-0">
-      £{(item.variantPrice || item.price) * item.quantity}
-    </span>
-    
-    <button 
-      onClick={() => removeFromCart(item)} 
-      className="pl-2 hover:text-red-800"
-    >
-      <PiTrashSimpleThin />
-    </button>
-  </li>
-))
-)
-: (
+          {items.length > 0 ? (
+            items.map((item) => (
+              <li
+                key={item.key}
+                className="flex justify-between items-center py-1"
+              >
+                <span className="flex-grow">
+                  {item.name} {item.variant && `(${item.variant})`}{" "}
+                  {item.quantity > 1 && `(${item.quantity}x)`}
+                </span>
+                <span className="flex-shrink-0">
+                  £{(item.variantPrice || item.price) * item.quantity}
+                </span>
+
+                <button
+                  onClick={() => removeFromCart(item)}
+                  className="pl-2 hover:text-red-800"
+                >
+                  <PiTrashSimpleThin />
+                </button>
+              </li>
+            ))
+          ) : (
             <p className="text-center text-gray-500">
               Your cart is empty. Please add items to your cart.
             </p>

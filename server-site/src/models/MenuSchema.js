@@ -4,13 +4,13 @@ const mongoose = require('mongoose');
 const IncludedItemSchema = new mongoose.Schema({
   name: { type: String, required: true },
   quantity: { type: String, required: true }
-},{ _id: false });;
+}, { _id: false });;
 
 // Schema for varieties (Variants of items with name and price)
 const VarietySchema = new mongoose.Schema({
   name: { type: String, required: true },
   price: { type: Number, required: true }
-},{ _id: false });
+}, { _id: false });
 
 // Schema for each menu item
 const ItemSchema = new mongoose.Schema({
