@@ -136,6 +136,8 @@ router.get('/v3/api/orders/order-type', async (req, res) => {
 
 
 
+
+
     // Format the data to match frontend expectations
     const formattedData = orders.map((order) => ({
       name: order._id.charAt(0).toUpperCase() + order._id.slice(1), // Capitalize the order type (Online, Pickup)
