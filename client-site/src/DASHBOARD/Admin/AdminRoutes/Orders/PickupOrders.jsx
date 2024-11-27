@@ -6,18 +6,26 @@ import { FaTrash, FaPrint, FaCheckCircle } from "react-icons/fa";
 
 const PickupOrder = () => {
   const [orders, setOrders] = useState([]);
+  const [filteredOrders, setFilteredOrders] = useState([]);
+  const [selectedMonth, setSelectedMonth] = useState(""); // Month filter
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [dataChanged, setDataChanged] = useState(false); // Track changes
   const orderDetailsRef = useRef();
 
-  // Fetch Orders when the component mounts or dataChanged is updated
+  // Fetch and sort orders in descending order when the component mounts or data changes
   useEffect(() => {
     setIsLoading(true);
     axios
       .get("http://localhost:3000/api/orders/payment-methods?method=pickup")
       .then((response) => {
-        setOrders(response.data || []);
+        const data = response.data || [];
+        // Sort all orders by creation date (descending)
+        const sortedOrders = data.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+        setOrders(sortedOrders);
+        setFilteredOrders(sortedOrders); // Initialize filtered orders
       })
       .catch((error) => {
         console.error("Error fetching pickup orders:", error);
@@ -29,6 +37,24 @@ const PickupOrder = () => {
       })
       .finally(() => setIsLoading(false));
   }, [dataChanged]); // Refresh when dataChanged changes
+
+  // Handle month filter change
+  const handleMonthChange = (event) => {
+    const selectedMonth = event.target.value;
+    setSelectedMonth(selectedMonth);
+
+    if (selectedMonth === "") {
+      setFilteredOrders(orders); // Reset to all orders if no month is selected
+    } else {
+      const monthIndex = parseInt(selectedMonth, 10);
+      const filtered = orders.filter((order) => {
+        const orderMonth = new Date(order.createdAt).getMonth() + 1; // JavaScript months are 0-indexed
+        return orderMonth === monthIndex;
+      });
+
+      setFilteredOrders(filtered);
+    }
+  };
 
   const handleDelete = (id) => {
     Swal.fire({
@@ -76,165 +102,245 @@ const PickupOrder = () => {
   };
 
   const handleRowClick = (order) => setSelectedOrder(order);
+
   return (
     <div className="overflow-x-auto mt-8 text-black">
-    <h2 className="text-2xl font-semibold mb-4">Pick UP Orders</h2>
-    <div className="flex gap-6">
-      {/* Table Section */}
-      <div className="flex-1">
-        <table className="min-w-full bg-white shadow-md rounded-lg">
-          <thead>
-            <tr className="border-b">
-              <th className="px-4 py-2 text-left">Order Date</th>
-              <th className="px-4 py-2 text-left">Total</th>
-              <th className="px-4 py-2 text-left">Payment Status</th>
-              <th className="px-4 py-2 text-left">Spicy Level</th>
-              <th className="px-4 py-2 text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.length > 0 ? (
-              orders.map((order) => (
-                <tr
-                  key={order._id}
-                  className="border-b cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleRowClick(order)}
-                >
-                  <td className="px-4 py-2">
-                    {formatDate(order?.createdAt)}
-                  </td>
-                  <td className="px-4 py-2">
-                    ${order?.totalPrice?.toFixed(2)}
-                  </td>
-                  <td className="px-4 py-2">{order?.paymentStatus}</td>
-                  <td className="px-4 py-2">{order?.spiceLevel}</td>
-                  <td className="px-4 py-2 flex space-x-4">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(order._id);
-                      }}
-                      className="text-red-500 hover:text-red-600"
-                      title="Delete Order"
-                    >
-                      <FaTrash size={18} />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedOrder(order);
-                      }}
-                      className="text-blue-500 hover:text-blue-600"
-                      title="Print Order"
-                    >
-                      <FaPrint size={18} />
-                    </button>
-                    {order.paymentStatus === "unpaid" && (
+      <h2 className="text-2xl font-semibold mb-4">Pick Up Orders</h2>
+
+      {/* Month Filter Dropdown */}
+      <div className="mb-4">
+        <label htmlFor="monthFilter" className="mr-2 font-semibold">
+          Filter by Month:
+        </label>
+        <select
+          id="monthFilter"
+          className="border px-4 py-2 rounded"
+          value={selectedMonth}
+          onChange={handleMonthChange}
+        >
+          <option value="">All Months</option>
+          <option value="1">January</option>
+          <option value="2">February</option>
+          <option value="3">March</option>
+          <option value="4">April</option>
+          <option value="5">May</option>
+          <option value="6">June</option>
+          <option value="7">July</option>
+          <option value="8">August</option>
+          <option value="9">September</option>
+          <option value="10">October</option>
+          <option value="11">November</option>
+          <option value="12">December</option>
+        </select>
+      </div>
+
+      <div className="flex gap-6">
+        {/* Table Section */}
+        <div className="flex-1">
+          <table className="min-w-full bg-white shadow-md rounded-lg">
+            <thead>
+              <tr className="border-b">
+                <th className="px-4 py-2 text-left">Order Date</th>
+                <th className="px-4 py-2 text-left">Total</th>
+                <th className="px-4 py-2 text-left">Payment Status</th>
+                <th className="px-4 py-2 text-left">Spicy Level</th>
+                <th className="px-4 py-2 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredOrders.length > 0 ? (
+                filteredOrders.map((order) => (
+                  <tr
+                    key={order._id}
+                    className="border-b cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleRowClick(order)}
+                  >
+                    <td className="px-4 py-2">
+                      {formatDate(order?.createdAt)}
+                    </td>
+                    <td className="px-4 py-2">
+                      ${order?.totalPrice?.toFixed(2)}
+                    </td>
+                    <td className="px-4 py-2">{order?.paymentStatus}</td>
+                    <td className="px-4 py-2">{order?.spiceLevel}</td>
+                    <td className="px-4 py-2 flex space-x-4">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleUpdatePaymentStatus(order._id);
+                          handleDelete(order._id);
                         }}
-                        className="text-green-500 hover:text-green-600"
-                        title="Confirm Payment"
+                        className="text-red-500 hover:text-red-600"
+                        title="Delete Order"
                       >
-                        <FaCheckCircle size={18} />
+                        <FaTrash size={18} />
                       </button>
-                    )}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedOrder(order);
+                        }}
+                        className="text-blue-500 hover:text-blue-600"
+                        title="Print Order"
+                      >
+                        <FaPrint size={18} />
+                      </button>
+                      {order.paymentStatus === "unpaid" && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleUpdatePaymentStatus(order._id);
+                          }}
+                          className="text-green-500 hover:text-green-600"
+                          title="Confirm Payment"
+                        >
+                          <FaCheckCircle size={18} />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="text-center py-4 text-gray-500">
+                    No orders found.
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="4" className="text-center py-4 text-gray-500">
-                  No orders found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+              )}
+            </tbody>
+          </table>
+        </div>
 
         {/* Print Preview Section */}
         {selectedOrder && (
-  <div>
-    <div
-      ref={orderDetailsRef}
-      className="flex-1 p-6 bg-white shadow-lg rounded-lg mt-8 md:mt-0 text-gray-800"
-    >
-      {/* Order Details Header */}
-      <div className="border-b pb-4 mb-4">
-        <h3 className="text-2xl font-bold text-center mb-2">Order Receipt</h3>
-        <p className="text-sm text-center">Order ID: {selectedOrder?._id}</p>
-      </div>
+          <div>
+            <div
+              ref={orderDetailsRef}
+              style={{
+                fontFamily: "monospace",
+                width: "300px",
+                margin: "auto",
+                padding: "20px",
+                border: "1px solid black",
+                background: "#fff",
+              }}
+            >
+              {/* Header */}
+              <h2 style={{ textAlign: "center", margin: "0" }}>Deedar Uk</h2>
+              <p
+                style={{
+                  textAlign: "center",
+                  margin: "5px 0",
+                  fontSize: "12px",
+                }}
+              ></p>
+              <hr />
 
-      {/* User Information */}
-      <div className="mb-4">
-        <h4 className="text-lg font-semibold">Customer Information</h4>
-        <p>
-          <strong>User Email:</strong> {selectedOrder?.userEmail}
-        </p>
-        <p>
-          <strong>Order Date:</strong> {formatDate(selectedOrder?.createdAt)}
-        </p>
-      </div>
+              {/* Order Details */}
+              <h3 style={{ textAlign: "center", margin: "5px 0" }}>
+                Order: {selectedOrder._id}
+              </h3>
+              <p style={{ fontSize: "12px", margin: "5px 0" }}>
+                CreatedAt:
+                {selectedOrder.createdAt} {selectedOrder.time}
+              </p>
+              <hr />
 
-      {/* Items List */}
-      <div className="mb-4">
-        <h4 className="text-lg font-semibold">Order Items</h4>
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="border-b">
-              <th className="py-2 px-4">Item Name</th>
-              <th className="py-2 px-4">Price</th>
-              <th className="py-2 px-4">Quantity</th>
-              <th className="py-2 px-4">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {selectedOrder?.items?.map((item, index) => (
-              <tr key={index} className="border-b hover:bg-gray-100">
-                <td className="py-2 px-4">{item?.name}</td>
-                <td className="py-2 px-4">${item?.price?.toFixed(2)}</td>
-                <td className="py-2 px-4">{item?.quantity}</td>
-                <td className="py-2 px-4">
-                  ${(item?.price * item?.quantity).toFixed(2)}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+              {/* Items */}
+              <table
+                style={{
+                  width: "100%",
+                  fontSize: "12px",
+                  marginBottom: "10px",
+                  borderCollapse: "collapse",
+                }}
+              >
+                <thead>
+                  <tr>
+                    <th style={{ textAlign: "left" }}>Qty</th>
+                    <th style={{ textAlign: "left" }}>Item</th>
+                    <th style={{ textAlign: "right" }}>Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedOrder.items.map((item, index) => (
+                    <tr key={index}>
+                      <td>{item.quantity}</td>
+                      <td>{item.name}</td>
+                      <td style={{ textAlign: "right" }}>€ {item.price}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <hr />
 
-      {/* Payment Summary */}
-      <div className="mt-4 border-t pt-4">
-        <p className="flex justify-between">
-          <span className="font-semibold">Total Price:</span>
-          <span>${selectedOrder?.totalPrice?.toFixed(2)}</span>
-        </p>
-        <p className="flex justify-between">
-          <span className="font-semibold">Heppy Shoping:</span>
-          <span
-            className='font-bold' 
-          >
-            Deedar
-          </span>
-        </p>
-      </div>
-    </div>
+              {/* Payment Details */}
+              <p style={{ fontSize: "12px" }}>
+                {selectedOrder.paymentMethod} {selectedOrder.paymentStatus}
+              </p>
+              <table style={{ width: "100%", fontSize: "12px" }}>
+                <tbody>
+                  <tr>
+                    <td>Subtotal:</td>
+                    <td style={{ textAlign: "right" }}>
+                      € {selectedOrder.totalPrice}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Total:</td>
+                    <td style={{ textAlign: "right", fontWeight: "bold" }}>
+                      € {selectedOrder.totalPrice}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <p style={{ fontSize: "12px", marginTop: "10px" }}>
+                Transaction Type: {selectedOrder.paymentMethod} <br />
+                Authorization: {selectedOrder.paymentStatus} <br />
+                {/* Payment Code: {selectedOrder.payment.paymentCode} <br /> */}
+                Payment ID: {selectedOrder._id} <br />
+              </p>
+              <hr />
 
-    {/* Print Button */}
-    <ReactToPrint
-      trigger={() => (
-        <button className="mt-4 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
-          Print Order
-        </button>
-      )}
-      content={() => orderDetailsRef.current}
-      documentTitle={`Order_${selectedOrder?._id}`}
-    />
-  </div>
-)}
+              {/* Tip Section */}
+              <p style={{ fontSize: "12px", margin: "10px 0" }}>
+                + Tip: _____________
+              </p>
+              <p style={{ fontSize: "12px", marginBottom: "10px" }}>
+                = Total: _____________
+              </p>
+              <p style={{ textAlign: "center" }}>
+                X _______________________________
+              </p>
+              <hr />
+
+              {/* Footer */}
+              <p
+                style={{
+                  textAlign: "center",
+                  fontSize: "12px",
+                  marginTop: "10px",
+                }}
+              >
+                Customer Copy <br />
+                Thanks for visiting <br />
+                {selectedOrder.restaurantName}
+              </p>
+            </div>
+            <div style={{ textAlign: "center", marginTop: "20px" }}>
+              <ReactToPrint
+                trigger={() => (
+                  <button
+                    className="bg-red-500"
+                    style={{ padding: "10px 20px" }}
+                  >
+                    Print
+                  </button>
+                )}
+                content={() => orderDetailsRef.current}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

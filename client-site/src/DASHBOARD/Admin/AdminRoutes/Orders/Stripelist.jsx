@@ -10,7 +10,7 @@ const Stripelist = () => {
   const orderDetailsRef = useRef();
 
   // Fetch Stripe orders on component mount
-
+  console.log(selectedOrder);
   useEffect(() => {
     axios
       .get("http://localhost:3000/api/orders/payment-methods?method=stripe")
@@ -141,88 +141,135 @@ const Stripelist = () => {
 
         {/* Print Preview Section */}
         {selectedOrder && (
-  <div>
-    <div
-      ref={orderDetailsRef}
-      className="flex-1 p-6 bg-white shadow-lg rounded-lg mt-8 md:mt-0 text-gray-800"
-    >
-      {/* Order Details Header */}
-      <div className="border-b pb-4 mb-4">
-        <h3 className="text-2xl font-bold text-center mb-2">Order Receipt</h3>
-        <p className="text-sm text-center">Order ID: {selectedOrder?._id}</p>
-      </div>
+          <div>
+            <div
+              ref={orderDetailsRef}
+              style={{
+                fontFamily: "monospace",
+                width: "300px",
+                margin: "auto",
+                padding: "20px",
+                border: "1px solid black",
+                background: "#fff",
+              }}
+            >
+              {/* Header */}
+              <h2 style={{ textAlign: "center", margin: "0" }}>Deedar Uk</h2>
+              <p
+                style={{
+                  textAlign: "center",
+                  margin: "5px 0",
+                  fontSize: "12px",
+                }}
+              ></p>
+              <hr />
 
-      {/* User Information */}
-      <div className="mb-4">
-        <h4 className="text-lg font-semibold">Customer Information</h4>
-        <p>
-          <strong>User Email:</strong> {selectedOrder?.userEmail}
-        </p>
-        <p>
-          <strong>Order Date:</strong> {formatDate(selectedOrder?.createdAt)}
-        </p>
-      </div>
+              {/* Order Details */}
+              <h3 style={{ textAlign: "center", margin: "5px 0" }}>
+                Order: {selectedOrder._id}
+              </h3>
+              <p style={{ fontSize: "12px", margin: "5px 0" }}>
+                CreatedAt:
+                {selectedOrder.createdAt} {selectedOrder.time}
+              </p>
+              <hr />
 
-      {/* Items List */}
-      <div className="mb-4">
-        <h4 className="text-lg font-semibold">Order Items</h4>
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="border-b">
-              <th className="py-2 px-4">Item Name</th>
-              <th className="py-2 px-4">Price</th>
-              <th className="py-2 px-4">Quantity</th>
-              <th className="py-2 px-4">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {selectedOrder?.items?.map((item, index) => (
-              <tr key={index} className="border-b hover:bg-gray-100">
-                <td className="py-2 px-4">{item?.name}</td>
-                <td className="py-2 px-4">${item?.price?.toFixed(2)}</td>
-                <td className="py-2 px-4">{item?.quantity}</td>
-                <td className="py-2 px-4">
-                  ${(item?.price * item?.quantity).toFixed(2)}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+              {/* Items */}
+              <table
+                style={{
+                  width: "100%",
+                  fontSize: "12px",
+                  marginBottom: "10px",
+                  borderCollapse: "collapse",
+                }}
+              >
+                <thead>
+                  <tr>
+                    <th style={{ textAlign: "left" }}>Qty</th>
+                    <th style={{ textAlign: "left" }}>Item</th>
+                    <th style={{ textAlign: "right" }}>Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedOrder.items.map((item, index) => (
+                    <tr key={index}>
+                      <td>{item.quantity}</td>
+                      <td>{item.name}</td>
+                      <td style={{ textAlign: "right" }}>€ {item.price}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <hr />
 
-      {/* Payment Summary */}
-      <div className="mt-4 border-t pt-4">
-        <p className="flex justify-between">
-          <span className="font-semibold">Total Price:</span>
-          <span>${selectedOrder?.totalPrice?.toFixed(2)}</span>
-        </p>
-        <p className="flex justify-between">
-          <span className="font-semibold">Payment Status:</span>
-          <span
-            className={`font-bold ${
-              selectedOrder?.paymentStatus === "success"
-                ? "text-green-600"
-                : "text-red-600"
-            }`}
-          >
-            {selectedOrder?.paymentStatus === "success" ? "Paid" : "Pending"}
-          </span>
-        </p>
-      </div>
-    </div>
+              {/* Payment Details */}
+              <p style={{ fontSize: "12px" }}>
+                {selectedOrder.paymentMethod} {selectedOrder.paymentStatus}
+              </p>
+              <table style={{ width: "100%", fontSize: "12px" }}>
+                <tbody>
+                  <tr>
+                    <td>Subtotal:</td>
+                    <td style={{ textAlign: "right" }}>
+                      € {selectedOrder.totalPrice}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Total:</td>
+                    <td style={{ textAlign: "right", fontWeight: "bold" }}>
+                      € {selectedOrder.totalPrice}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <p style={{ fontSize: "12px", marginTop: "10px" }}>
+                Transaction Type: {selectedOrder.paymentMethod} <br />
+                Authorization: {selectedOrder.paymentStatus} <br />
+                {/* Payment Code: {selectedOrder.payment.paymentCode} <br /> */}
+                Payment ID: {selectedOrder._id} <br />
+              </p>
+              <hr />
 
-    {/* Print Button */}
-    <ReactToPrint
-      trigger={() => (
-        <button className="mt-4 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
-          Print Order
-        </button>
-      )}
-      content={() => orderDetailsRef.current}
-      documentTitle={`Order_${selectedOrder?._id}`}
-    />
-  </div>
-)}
+              {/* Tip Section */}
+              <p style={{ fontSize: "12px", margin: "10px 0" }}>
+                + Tip: _____________
+              </p>
+              <p style={{ fontSize: "12px", marginBottom: "10px" }}>
+                = Total: _____________
+              </p>
+              <p style={{ textAlign: "center" }}>
+                X _______________________________
+              </p>
+              <hr />
+
+              {/* Footer */}
+              <p
+                style={{
+                  textAlign: "center",
+                  fontSize: "12px",
+                  marginTop: "10px",
+                }}
+              >
+                Customer Copy <br />
+                Thanks for visiting <br />
+                {selectedOrder.restaurantName}
+              </p>
+            </div>
+            <div style={{ textAlign: "center", marginTop: "20px" }}>
+              <ReactToPrint
+                trigger={() => (
+                  <button
+                    className="bg-red-500"
+                    style={{ padding: "10px 20px" }}
+                  >
+                    Print
+                  </button>
+                )}
+                content={() => orderDetailsRef.current}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
