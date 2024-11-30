@@ -10,6 +10,7 @@ const orderRoutes = require('./src/routes/OrderRoutes');
 const revenueRoutes = require('./src/routes/RevenueRutes');
 const paymentRoutes  = require('./src/routes/PaymentRutes');
 const userRoutes  = require('./src/routes/UsersRoutes');
+const SpecialMenuRoutes  = require('./src/routes/SpecialMenuRouter');
 
 dotenv.config(); // Ensure your .env file is loaded
 
@@ -43,6 +44,7 @@ app.use(orderRoutes);
 app.use(revenueRoutes);
 app.use(paymentRoutes);
 app.use(userRoutes);
+app.use(SpecialMenuRoutes);
 
 // Welcome route
 app.get('/', (req, res) => {

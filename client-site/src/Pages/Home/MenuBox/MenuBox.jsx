@@ -1,14 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import MenuData from "../../../Hooks/Menudatea"; // Ensure this fetches correct menu data
 import Loader from "../../../Component/Shared/Loader/Loader";
 import Heading from "./Heading";
 import { useDispatch } from "react-redux";
+import axios from "axios";
+import SpecialMenuModal from "./SpecialMenuModal";
 
 const MenuBox = ({ addToCart }) => {
   const { menuData, loading, error } = MenuData();
   const [expandedCategories, setExpandedCategories] = useState([]);
   const [isAllergiesExpanded, setIsAllergiesExpanded] = useState(false);
+  const [specialMenuData, setSpecialMenuData] = useState([]);
+  const [specialMenuCat, setSpecialcatMenuData] = useState([]);
+  const [isSpecialMenuOpen, setIsSpecialMenuOpen] = useState(false); 
   const dispatch = useDispatch();
   const toggleCategory = (category) => {
     setExpandedCategories((prev) =>
@@ -17,6 +22,22 @@ const MenuBox = ({ addToCart }) => {
         : [...prev, category]
     );
   };
+    // Fetch Special Menu
+    useEffect(() => {
+      const fetchSpecialMenu = async () => {
+        try {
+          const response = await axios.get("http://localhost:3000/api/special-menu"); // Adjust the URL as needed
+          setSpecialMenuData(response.data);
+        } catch (err) {
+          console.error("Failed to fetch special menu:", err);
+        }
+      };
+      fetchSpecialMenu();
+    }, []);
+  
+    // Combine menus
+   const SpecialMenuprice= specialMenuData.find(item => item.category === "Mid Week Special Platter")?.price?.toFixed(2)
+    console.log(specialMenuData,'here');
 
   return (
     <div>
@@ -70,6 +91,40 @@ const MenuBox = ({ addToCart }) => {
           </div>
         )}
         {error && <p>Error loading menu: {error}</p>}
+        
+  
+           {/* Special Menu Category */}
+        <div
+          className="flex justify-between items-center cursor-pointer p-2 bg-red-300 hover:bg-red-400"
+          onClick={() => {
+            // Find the specific menu item for Mid Week Special Platter
+            const specialMenu = specialMenuData.find(
+              (item) => item.category === "Mid Week Special Platter"
+            );
+            // Open the modal and pass only the subcategories of the selected menu
+            setIsSpecialMenuOpen(true);
+            setSpecialcatMenuData(specialMenu.subcategories); // Passing only subcategories
+          }}
+        >
+          <span className="text-xl font-semibold text-white">
+            Special Menu - Mid Week Special Platter
+          </span>
+ <span className="text-xl text-white flex gap-2 ">         £{SpecialMenuprice} <FaChevronDown  /></span>
+         
+        </div>
+
+        {/* Render SpecialMenuModal if the special menu is open */}
+        {isSpecialMenuOpen && (
+          <SpecialMenuModal
+            onClose={() => setIsSpecialMenuOpen(false)}
+            subcategories={specialMenuCat} 
+            price={SpecialMenuprice}// Pass the filtered subcategories here
+            onAddToCart={(platter) => {
+              dispatch({ type: "ADD_TO_CART", payload: platter });
+              setIsSpecialMenuOpen(false);
+            }}
+          />
+        )}
 
         {!loading &&
           !error &&
