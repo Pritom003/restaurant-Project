@@ -166,12 +166,12 @@ router.get('/api/orders/user', async (req, res) => {
 
 
 router.patch('/api/orders/:id', async (req, res) => {
-  const { time , status } = req.body;
+  const { time, status } = req.body;
 
   try {
     const updatedOrder = await Order.findByIdAndUpdate(
       req.params.id,
-      { status: 'Preparing' , $inc: { time: time } },
+      { status: 'Preparing', $inc: { time: time } },
       { new: true }
     );
     if (!updatedOrder) {

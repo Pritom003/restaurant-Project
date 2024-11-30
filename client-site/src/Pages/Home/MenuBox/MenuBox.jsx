@@ -185,7 +185,7 @@ const MenuBox = ({ addToCart }) => {
                               {item.name}
                               <button
                                 className="hover:underline"
-                                onClick={() => addToCart(item)} 
+                                onClick={() => addToCart(item)}
                                 // Add item to cart
                               >
                                 + £{item.price}
@@ -195,23 +195,31 @@ const MenuBox = ({ addToCart }) => {
                             {item.varieties.length > 0 && (
                               <div className="text-xs grid justify-end gap-1 text-gray-600 mt-1">
                                 {item.varieties.map((variety, idx) => (
-                                  <li className="flex gap-2 justify-between" key={idx}>
+                                  <li
+                                    className="flex gap-2 justify-between"
+                                    key={idx}
+                                  >
                                     <span>{variety.name}</span>
-                                    <button   
+                                    <button
                                       className="hover:underline"
                                       onClick={() => {
-                                        
                                         const updatedItem = {
                                           ...item,
                                           variant: variety.name || null,
-                                          variantPrice: variety ? variety.price : 0,
-                                          keyToRemove: idx,  // Set variant price if selected
+                                          variantPrice: variety
+                                            ? variety.price
+                                            : 0,
+                                          keyToRemove: idx, // Set variant price if selected
                                         };
-                                        dispatch({ type: 'ADD_TO_CART', payload: updatedItem });
+                                        dispatch({
+                                          type: "ADD_TO_CART",
+                                          payload: updatedItem,
+                                        });
                                         // addToCart(updatedItem); // Add item with updated price to cart
                                       }}
                                     >
-                                      + £{variety.price.toFixed(2)} {/* Display variety price */}
+                                      + £{variety.price.toFixed(2)}{" "}
+                                      {/* Display variety price */}
                                     </button>
                                   </li>
                                 ))}
