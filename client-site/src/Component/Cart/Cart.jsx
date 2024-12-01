@@ -11,6 +11,7 @@ import { FaPoundSign } from "react-icons/fa";
 import { BsStripe } from "react-icons/bs";
 import OutOfRangeModal from "./OutofRangle";
 import useAuth from "../../Hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
 const stripePromise = loadStripe(stripePublicKey);
@@ -24,6 +25,7 @@ const Cart = () => {
   const [spiceLevel, setSpiceLevel] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
 
   const removeFromCart = (item) =>
     dispatch({ type: "REMOVE_FROM_CART", payload: item });
@@ -35,6 +37,10 @@ const Cart = () => {
       setShowPaymentForm(true); // Show payment form for Stripe
     } else if (paymentMethod === "cash") {
       handleOrderCompletion("cash", "pending"); // Complete order with Cash
+    } else if (orderType === "pickup") {
+      navigate("/pickup-order", {
+        state: { items, totalPrice, spiceLevel, orderType },
+      });
     }
   };
 
@@ -81,9 +87,10 @@ const Cart = () => {
 
   const handleOrderTypeChange = (type) => {
     if (type === "online" && !isInRange) {
-      setShowModal(true); // Show modal if out of range
+      setShowModal(true);
     } else {
       setOrderType(type);
+      setPaymentMethod(""); // Reset payment method when switching order type
     }
   };
 
@@ -160,7 +167,7 @@ const Cart = () => {
                     orderType === "online" ? "bg-red-950" : ""
                   }`}
                 ></span>
-                <span>Online</span>
+                <span>Delivery</span>
               </label>
 
               <label className="text-lg flex items-center text-black">
@@ -182,7 +189,7 @@ const Cart = () => {
             </div>
 
             {/* Payment Method Selection */}
-            {(orderType === "online" || orderType === "pickup") && (
+            {orderType === "online" ? (
               <div className="mt-4 flex flex-wrap lg:flex-col lg:items-start lg:gap-4 items-center justify-between">
                 <label className="text-lg flex items-center text-black">
                   <input
@@ -223,6 +230,8 @@ const Cart = () => {
                   </span>
                 </label>
               </div>
+            ) : (
+              ""
             )}
 
             <button

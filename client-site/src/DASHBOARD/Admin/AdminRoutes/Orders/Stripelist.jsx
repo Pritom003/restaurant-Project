@@ -155,6 +155,8 @@ const Stripelist = () => {
             >
               {/* Header */}
               <h2 style={{ textAlign: "center", margin: "0" }}>Deedar Uk</h2>
+              <p className="text-center">Address:{selectedOrder?.address}</p>
+              <p className="text-center">Zip Code:{selectedOrder?.zipcode}</p>
               <p
                 style={{
                   textAlign: "center",

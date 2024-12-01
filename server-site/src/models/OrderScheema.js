@@ -22,9 +22,12 @@ const OrderSchema = new mongoose.Schema(
     spiceLevel: { type: String, },
     status: { type: String, },
     time: { type: Number, },
+    email: { type: String, },
+    address: { type: String, },
+    zipcode: { type: String, },
     // createdAt: { type: Date, default: new Date('2024-11-13T00:00:00Z') },
   },
-  { timestamps: true , default:30 }
+  { timestamps: true, default: 30 }
 );
 
 const Order = mongoose.model('Order', OrderSchema);
