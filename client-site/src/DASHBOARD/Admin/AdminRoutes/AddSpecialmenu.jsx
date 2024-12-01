@@ -6,7 +6,7 @@ const AddSpecialmenu = () => {
     const { register, control, handleSubmit, reset } = useForm({
         defaultValues: {
             category: 'Mid Week Special Platter',
-            price: '', // Add default price
+            Price: 0, // Add default price
             subcategories: [], // Initialize subcategories as an array
         },
     });
@@ -15,7 +15,7 @@ const AddSpecialmenu = () => {
 
     // Handle adding a new subcategory dynamically
     const handleAddSubcategory = () => {
-        setSubcategories([...subcategories, { name: '', dishes: [] }]);
+        setSubcategories([...subcategories, { name: '', price: 0, dishes: [] }]);
     };
 
     // Handle adding items to a subcategory
@@ -30,12 +30,13 @@ const AddSpecialmenu = () => {
         const formattedData = {
             ...data,
             subcategories: subcategories.map((subcategory) => {
-                if (!subcategory.name) {
-                    alert('Please fill in the subcategory name');
+                if (!subcategory.name || !subcategory.price) {
+                    alert('Please fill in the subcategory name and price');
                     return null; // Skip invalid subcategory
                 }
                 return {
                     name: subcategory.name,
+                    price: parseFloat(subcategory.price), // Ensure price is a number
                     dishes: subcategory.dishes.map((dish) => {
                         if (!dish.name) {
                             alert('Please fill in the dish name');
@@ -108,6 +109,17 @@ const AddSpecialmenu = () => {
                                     onChange={(e) => {
                                         const updatedSubcategories = [...subcategories];
                                         updatedSubcategories[index].name = e.target.value;
+                                        setSubcategories(updatedSubcategories);
+                                    }}
+                                    className="input input-bordered bg-white text-black w-full max-w-md"
+                                />
+                                <input
+                                    type="number"
+                                    placeholder="Subcategory Price"
+                                    value={subcategory.price}
+                                    onChange={(e) => {
+                                        const updatedSubcategories = [...subcategories];
+                                        updatedSubcategories[index].price = parseFloat(e.target.value); // Convert to number
                                         setSubcategories(updatedSubcategories);
                                     }}
                                     className="input input-bordered bg-white text-black w-full max-w-md"

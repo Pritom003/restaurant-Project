@@ -90,13 +90,13 @@ const AcceptOrder = () => {
               <p><strong>Total Price:</strong> £{order.totalPrice}</p>
               <p><strong>status</strong> £{order.status}</p>
               <h5 className="font-medium mt-3">Items:</h5>
-              <ul>
+              
                 {order.items.map((item, index) => (
-                  <li key={index}>
+                  <span key={index}>
                     {item.name} (x{item.quantity}) - £{item.price}
-                  </li>
+                  </span>
                 ))}
-              </ul>
+              
               <div className="mt-3">
                 <h5 className="font-medium">Set Preparation Time:</h5>
                 <div className="flex gap-3 flex-wrap space-x-2">

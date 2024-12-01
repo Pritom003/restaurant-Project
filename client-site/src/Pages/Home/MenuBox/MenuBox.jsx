@@ -37,10 +37,12 @@ const MenuBox = ({ addToCart }) => {
   }, []);
 
   // Find price of Mid Week Special Platter
-    const SpecialMenuprice= specialMenuData.find(item => item.category === "Mid Week Special Platter")?.price
+    const SpecialMenuprice= specialMenuData.find(item => item.category === "Mid Week Special Platter")?.Price
     console.log(specialMenuData,'here');
   // Handle opening modal with special menu data
-  const currentDay = new Date().getDay();
+  // const currentDay = new Date().getDay();
+  const currentDay = 2
+  console.log(currentDay);
  
 
   const handleSpecialMenuClick = () => {

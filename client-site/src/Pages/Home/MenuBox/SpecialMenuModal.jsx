@@ -6,9 +6,10 @@ const SpecialMenuModal = ({ onClose, subcategories, onAddToCart, price }) => {
   const handleSelect = (subcategory, item) => {
     setSelectedItems((prev) => ({ ...prev, [subcategory]: item }));
   };
-
+  const platter = Object.values(selectedItems);
   const handleSubmit = () => {
-    const platter = Object.values(selectedItems);
+
+    // console.log(platter,'ddd');
 
     // Create a platter object with category and selected items
     const platterWithCategory = {
@@ -39,7 +40,7 @@ const SpecialMenuModal = ({ onClose, subcategories, onAddToCart, price }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[60vh] overflow-y-scroll pr-4">
           {subcategories?.map((subcategory) => (
             <div key={subcategory.name} className="border-b pb-4">
-              <h3 className="text-xl font-semibold mb-2">{subcategory.name}</h3>
+              <h3 className="text-lg font-semibold mb-2">{subcategory.name} - £{subcategory.price} </h3>
               <ul>
                 {subcategory.dishes.map((item) => (
                   <li key={item.name} className="mb-4">
@@ -52,7 +53,7 @@ const SpecialMenuModal = ({ onClose, subcategories, onAddToCart, price }) => {
                         onChange={() => handleSelect(subcategory.name, item)}
                         className="mr-3"
                       />
-                      <span>{item.name} - <span className="font-bold">${item.price}</span></span>
+                      <span>{item.name}</span>
                     </label>
                   </li>
                 ))}
@@ -65,7 +66,8 @@ const SpecialMenuModal = ({ onClose, subcategories, onAddToCart, price }) => {
       <div className="flex flex-wrap justify-between gap-2 sticky pb-4 bg-white px-6 max-w-4xl w-full">
         <button
           onClick={handleSubmit}
-          className="mt-6 p-3 w-44 text-green-700 text-xl border-2 border-green-950 rounded-lg hover:bg-green-500 hover:text-white transition duration-300"
+          disabled={platter.length==0}
+          className="mt-6 p-3 w-44 text-green-700 text-xl border-2 disabled:bg-slate-600 border-green-950 rounded-lg hover:bg-green-500 hover:text-white transition duration-300"
         >
           Add to Cart
         </button>

@@ -37,12 +37,21 @@ const Cart = () => {
       handleOrderCompletion("cash", "pending"); // Complete order with Cash
     }
   };
-
+console.log(items);
   const handleOrderCompletion = async (method, status) => {
+    const formattedItems = items.map((item) => ({
+      name: item.name,
+      price: item.variantPrice || item.price,
+      quantity: item.quantity,
+      variant: item.variant || null, // Include variant if available
+      category: item.category,
+      subItems: item.items || [], // Include submenu items
+    }));
+  
     const orderData = {
       chefEmail: "mkrefat5@gmail.com",
-      userEmail: user?.email || "guest@example.com", // Fallback email for testing
-      items,
+      userEmail: user?.email || "guest@example.com",
+      items: formattedItems,
       totalPrice,
       paymentStatus: status,
       paymentMethod: method,
