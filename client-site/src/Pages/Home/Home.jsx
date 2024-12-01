@@ -6,6 +6,7 @@ import { FaUserCircle } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import useAuth from "../../Hooks/useAuth";
 import useRole from "../../Hooks/useRole";
+
 import Notifications from "../../DASHBOARD/Admin/Notification/Notifications";
 const Home = () => {
   const dispatch = useDispatch();
@@ -42,7 +43,10 @@ const Home = () => {
         {
           role==='Admin'? <div className="bg-[#e8e7e5] px-4 pb-4 pt-4 w-full"><Notifications/></div>:''
         }
-
+{/* card image */}
+<div className="bg-[#e8e7e5] px-4 pb-4 pt-4 w-full">
+  <img src='https://i.ibb.co.com/WKL1WMk/Card-5-Star-768x168.jpg'></img>
+</div>
         {/* Conditional Login/Profile */}
         <div className="bg-[#e8e7e5] px-4 pb-4 pt-4 w-full">
           {isLoggedIn ? (

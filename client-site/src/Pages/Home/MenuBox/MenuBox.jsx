@@ -6,6 +6,7 @@ import Heading from "./Heading";
 import { useDispatch } from "react-redux";
 import axios from "axios";
 import SpecialMenuModal from "./SpecialMenuModal";
+import Swal from "sweetalert2";
 
 const MenuBox = ({ addToCart }) => {
   const { menuData, loading, error } = MenuData();
@@ -22,22 +23,46 @@ const MenuBox = ({ addToCart }) => {
         : [...prev, category]
     );
   };
-    // Fetch Special Menu
-    useEffect(() => {
-      const fetchSpecialMenu = async () => {
-        try {
-          const response = await axios.get("http://localhost:3000/api/special-menu"); // Adjust the URL as needed
-          setSpecialMenuData(response.data);
-        } catch (err) {
-          console.error("Failed to fetch special menu:", err);
-        }
-      };
-      fetchSpecialMenu();
-    }, []);
-  
-    // Combine menus
-   const SpecialMenuprice= specialMenuData.find(item => item.category === "Mid Week Special Platter")?.price?.toFixed(2)
+      // Fetch Special Menu
+  useEffect(() => {
+    const fetchSpecialMenu = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/api/special-menu"); // Adjust the URL as needed
+        setSpecialMenuData(response.data);
+      } catch (err) {
+        console.error("Failed to fetch special menu:", err);
+      }
+    };
+    fetchSpecialMenu();
+  }, []);
+
+  // Find price of Mid Week Special Platter
+    const SpecialMenuprice= specialMenuData.find(item => item.category === "Mid Week Special Platter")?.price
     console.log(specialMenuData,'here');
+  // Handle opening modal with special menu data
+  const currentDay = new Date().getDay();
+ 
+
+  const handleSpecialMenuClick = () => {
+    const specialMenu = specialMenuData.find(
+      (item) => item.category === "Mid Week Special Platter"
+    );
+    if (currentDay >= 1 && currentDay <= 4) {
+      // Show the special menu if it's Monday to Thursday
+      setSpecialcatMenuData(specialMenu?.subcategories);
+      setIsSpecialMenuOpen(true);
+    } else {
+      // If it's not Monday to Thursday, show the SweetAlert2 message
+      Swal.fire({
+        icon: "warning",
+        title: "Sorry",
+        text: "The Midweek Special Menu is only available from Monday to Thursday.",
+        confirmButtonText: "Okay",
+        confirmButtonColor: "#f44336",
+      });
+    }
+  };
+  
 
   return (
     <div>
@@ -93,32 +118,26 @@ const MenuBox = ({ addToCart }) => {
         {error && <p>Error loading menu: {error}</p>}
         
   
-           {/* Special Menu Category */}
-        <div
+              {/* Special Menu Category */}
+              
+              <div
           className="flex justify-between items-center cursor-pointer p-2 bg-red-300 hover:bg-red-400"
-          onClick={() => {
-            // Find the specific menu item for Mid Week Special Platter
-            const specialMenu = specialMenuData.find(
-              (item) => item.category === "Mid Week Special Platter"
-            );
-            // Open the modal and pass only the subcategories of the selected menu
-            setIsSpecialMenuOpen(true);
-            setSpecialcatMenuData(specialMenu.subcategories); // Passing only subcategories
-          }}
+          onClick={handleSpecialMenuClick}
         >
           <span className="text-xl font-semibold text-white">
             Special Menu - Mid Week Special Platter
           </span>
- <span className="text-xl text-white flex gap-2 ">         £{SpecialMenuprice} <FaChevronDown  /></span>
-         
+          <span className="text-xl text-white flex gap-2">
+            £{SpecialMenuprice} <FaChevronDown />
+          </span>
         </div>
 
         {/* Render SpecialMenuModal if the special menu is open */}
         {isSpecialMenuOpen && (
           <SpecialMenuModal
             onClose={() => setIsSpecialMenuOpen(false)}
-            subcategories={specialMenuCat} 
-            price={SpecialMenuprice}// Pass the filtered subcategories here
+            subcategories={specialMenuCat} // Pass the subcategories here
+            price={SpecialMenuprice}
             onAddToCart={(platter) => {
               dispatch({ type: "ADD_TO_CART", payload: platter });
               setIsSpecialMenuOpen(false);

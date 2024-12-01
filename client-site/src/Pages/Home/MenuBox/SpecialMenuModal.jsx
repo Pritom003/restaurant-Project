@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import { v4 as uuidv4 } from "uuid"; 
 const SpecialMenuModal = ({ onClose, subcategories, onAddToCart, price }) => {
   const [selectedItems, setSelectedItems] = useState({});
 
@@ -8,11 +8,11 @@ const SpecialMenuModal = ({ onClose, subcategories, onAddToCart, price }) => {
   };
 
   const handleSubmit = () => {
-    // Gather all selected items for each subcategory
     const platter = Object.values(selectedItems);
 
     // Create a platter object with category and selected items
     const platterWithCategory = {
+      id: uuidv4(),
       category: "Special Platter", // Add the category name
       items: platter, // Keep the selected items
       price: price,  // Pass the price from prop
