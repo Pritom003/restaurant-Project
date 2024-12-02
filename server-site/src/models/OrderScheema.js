@@ -8,7 +8,7 @@ const OrderSchema = new mongoose.Schema(
     items: [
       {
         name: String,
-        price: Number,
+        price: String,
         quantity: Number,
         createdAt: { type: Date, default: Date.now },
         // createdAt: { type: Date, default: new Date('2024-11-13T00:00:00Z') },
@@ -17,7 +17,7 @@ const OrderSchema = new mongoose.Schema(
     paymentStatus: { type: String, }, // Required for tracking payment status
     paymentMethod: { type: String, },
     orderType: { type: String, required: true },
-    totalPrice: { type: Number, required: true },
+    totalPrice: { type:String, required: true },
     createdAt: { type: Date, default: Date.now },
     spiceLevel: { type: String, },
     status: { type: String, },

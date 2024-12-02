@@ -12,7 +12,11 @@ const subcategorySchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    dishes: [dishSchema], // Array of dish objects
+    price: {
+        type: Number,
+        // required: true,
+    },
+    dishes: [dishSchema], 
 });
 
 const specialMenuSchema = new mongoose.Schema({
@@ -21,7 +25,7 @@ const specialMenuSchema = new mongoose.Schema({
         required: true,
         enum: ['Mid Week Special Platter', 'Chef Choice'],
     },
-    price: {
+    Price: {
         type: Number,
         required: true,
     },

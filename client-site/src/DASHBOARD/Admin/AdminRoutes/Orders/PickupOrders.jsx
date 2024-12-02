@@ -159,7 +159,7 @@ const PickupOrder = () => {
                       {formatDate(order?.createdAt)}
                     </td>
                     <td className="px-4 py-2">
-                      ${order?.totalPrice?.toFixed(2)}
+                      ${order?.totalPrice}
                     </td>
                     <td className="px-4 py-2">{order?.paymentStatus}</td>
                     <td className="px-4 py-2">{order?.spiceLevel}</td>

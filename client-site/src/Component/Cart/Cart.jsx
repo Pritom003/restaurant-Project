@@ -45,13 +45,22 @@ const Cart = () => {
       });
     }
   };
-
+  console.log(items);
   const handleOrderCompletion = async (method, status) => {
+    const formattedItems = items.map((item) => ({
+      name: item.name,
+      price: item.variantPrice || item.price,
+      quantity: item.quantity,
+      variant: item.variant || null, // Include variant if available
+      category: item.category,
+      subItems: item.items || [], // Include submenu items
+    }));
+
     const orderData = {
       chefEmail: "mkrefat5@gmail.com",
       userEmail: user?.email || "guest@example.com", // Fallback email for testing
-      items,
       totalPrice: getTotalPrice(),
+      items: formattedItems,
       paymentStatus: status,
       paymentMethod: method,
       orderType,
@@ -101,9 +110,7 @@ const Cart = () => {
   };
 
   const getTotalPrice = () => {
-    return orderType === "online"
-      ? totalPrice + DELIVERY_CHARGE
-      : totalPrice;
+    return orderType === "online" ? totalPrice + DELIVERY_CHARGE : totalPrice;
   };
 
   return (
@@ -122,6 +129,13 @@ const Cart = () => {
                 <span className="flex-grow">
                   {item.name} {item.variant && `(${item.variant})`}{" "}
                   {item.quantity > 1 && `(${item.quantity}x)`}
+                  {/* Display special menu platter items under the category name */}
+                  {item.category === "Special Platter" && (
+                    <span className="text-sm text-gray-600">
+                      {" "}
+                      ({item.items.map((subItem) => subItem.name).join(", ")})
+                    </span>
+                  )}
                 </span>
                 <span className="flex-shrink-0">
                   £{(item.variantPrice || item.price) * item.quantity}
