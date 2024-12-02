@@ -16,6 +16,8 @@ import { useNavigate } from "react-router-dom";
 const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
 const stripePromise = loadStripe(stripePublicKey);
 
+const DELIVERY_CHARGE = 2.99;
+
 const Cart = () => {
   const dispatch = useDispatch();
   const { user } = useAuth();
@@ -39,7 +41,7 @@ const Cart = () => {
       handleOrderCompletion("cash", "pending"); // Complete order with Cash
     } else if (orderType === "pickup") {
       navigate("/pickup-order", {
-        state: { items, totalPrice, spiceLevel, orderType },
+        state: { items, totalPrice: getTotalPrice(), spiceLevel, orderType },
       });
     }
   };
@@ -49,7 +51,7 @@ const Cart = () => {
       chefEmail: "mkrefat5@gmail.com",
       userEmail: user?.email || "guest@example.com", // Fallback email for testing
       items,
-      totalPrice,
+      totalPrice: getTotalPrice(),
       paymentStatus: status,
       paymentMethod: method,
       orderType,
@@ -98,6 +100,12 @@ const Cart = () => {
     setShowModal(false);
   };
 
+  const getTotalPrice = () => {
+    return orderType === "online"
+      ? totalPrice + DELIVERY_CHARGE
+      : totalPrice;
+  };
+
   return (
     <div className="text-black">
       <h3 className="border border-l-2 pl-2 text-xl border-l-red-900 flex gap-2 text-black justify-between items-center">
@@ -136,7 +144,17 @@ const Cart = () => {
 
         {items.length > 0 && (
           <div className="text-end">
-            <div className="mt-2 text-lg">Total: £{totalPrice.toFixed(2)}</div>
+            <div className="mt-2 text-lg">
+              Subtotal: £{totalPrice.toFixed(2)}
+            </div>
+            {orderType === "online" && (
+              <div className="mt-2 text-lg">
+                Delivery Charge: £{DELIVERY_CHARGE.toFixed(2)}
+              </div>
+            )}
+            <div className="mt-2 text-lg">
+              Total: £{getTotalPrice().toFixed(2)}
+            </div>
 
             <div className="mt-4">
               <label className="block text-sm">
@@ -253,7 +271,7 @@ const Cart = () => {
             </h2>
             <Elements stripe={stripePromise}>
               <PaymentForm
-                totalPrice={totalPrice}
+                totalPrice={getTotalPrice()}
                 handleOrderCompletion={handleOrderCompletion}
               />
             </Elements>
