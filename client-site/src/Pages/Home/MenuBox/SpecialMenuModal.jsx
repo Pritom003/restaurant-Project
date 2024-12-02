@@ -25,6 +25,9 @@ const SpecialMenuModal = ({ onClose, subcategories, onAddToCart, price }) => {
     onAddToCart(platterWithCategory); // Pass the platter to the parent component
     onClose(); // Close the modal after submitting
   };
+  console.log("Selected Items:", selectedItems);  // Inside handleSelect
+console.log("Platter (items selected):", platter);  // Inside handleSubmit
+
 
   return (
     <div className="fixed grid inset-0 bg-black bg-opacity-50 z-[52] justify-center items-center">

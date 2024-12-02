@@ -1,12 +1,15 @@
 const initialState = {
   items: JSON.parse(localStorage.getItem('cartItems')) || [],
-  totalPrice: JSON.parse(localStorage.getItem('cartItems'))
-    ? JSON.parse(localStorage.getItem('cartItems')).reduce(
-        (total, item) => total + (item.variantPrice || item.price) * (item.quantity || 1),
-        0
-      )
-    : 0,
+  totalPrice: 0,
 };
+
+if (initialState.items.length > 0) {
+  initialState.totalPrice = initialState.items.reduce(
+    (total, item) => total + (item.variantPrice || item.price) * (item.quantity || 1),
+    0
+  );
+}
+
 const cartReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'ADD_TO_CART':
@@ -16,7 +19,7 @@ const cartReducer = (state = initialState, action) => {
       // Special menu check: If category is 'Special Platter', handle it differently
       if (category === "Special Platter") {
         const newItem = {
-          id,  // Use unique ID for each special platter
+          id,  // Unique ID for each special platter
           name: 'Special Platter',
           category: category,
           items: items,
@@ -77,15 +80,18 @@ const cartReducer = (state = initialState, action) => {
       };
 
     case 'REMOVE_FROM_CART':
-      const { id: removeId } = action.payload;  // Use the unique ID for removal
+      const { id: removeId, key: removeKey } = action.payload; // Use both ID and key for better matching
 
       let newItems = state.items.filter((item) => {
         // Remove special platter if its ID matches
         if (item.category === "Special Platter" && item.id === removeId) {
-          return false; // This will remove the item from the cart
+          return false; // Remove this item
         }
-        // Remove regular items if their ID matches
-        return item.id !== removeId;
+        // Remove regular items based on key match
+        if (item.key === removeKey) {
+          return false; // Remove this item
+        }
+        return true; // Keep all other items
       });
 
       localStorage.setItem('cartItems', JSON.stringify(newItems));
@@ -106,6 +112,5 @@ const cartReducer = (state = initialState, action) => {
       return state;
   }
 };
-
 
 export default cartReducer;
