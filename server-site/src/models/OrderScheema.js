@@ -17,7 +17,7 @@ const OrderSchema = new mongoose.Schema(
     paymentStatus: { type: String, }, // Required for tracking payment status
     paymentMethod: { type: String, },
     orderType: { type: String, required: true },
-    totalPrice: { type:String, required: true },
+    totalPrice: { type: String, required: true },
     createdAt: { type: Date, default: Date.now },
     spiceLevel: { type: String, },
     status: { type: String, },
@@ -25,6 +25,7 @@ const OrderSchema = new mongoose.Schema(
     email: { type: String, },
     address: { type: String, },
     zipcode: { type: String, },
+    mobile: { type: String, },
     // createdAt: { type: Date, default: new Date('2024-11-13T00:00:00Z') },
   },
   { timestamps: true, default: 30 }

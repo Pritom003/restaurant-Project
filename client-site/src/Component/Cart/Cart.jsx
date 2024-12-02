@@ -4,17 +4,17 @@ import { PiTrashSimpleThin } from "react-icons/pi";
 import Swal from "sweetalert2";
 import { TiShoppingCart } from "react-icons/ti";
 import { useState } from "react";
-import PaymentForm from "./PaymentForm";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
-import { FaPoundSign } from "react-icons/fa";
-import { BsStripe } from "react-icons/bs";
+// import PaymentForm from "./PaymentForm";
+// import { loadStripe } from "@stripe/stripe-js";
+// import { Elements } from "@stripe/react-stripe-js";
+// import { FaPoundSign } from "react-icons/fa";
+// import { BsStripe } from "react-icons/bs";
 import OutOfRangeModal from "./OutofRangle";
 import useAuth from "../../Hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
-const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
-const stripePromise = loadStripe(stripePublicKey);
+// const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
+// const stripePromise = loadStripe(stripePublicKey);
 
 const DELIVERY_CHARGE = 2.99;
 
@@ -39,7 +39,7 @@ const Cart = () => {
       setShowPaymentForm(true); // Show payment form for Stripe
     } else if (paymentMethod === "cash") {
       handleOrderCompletion("cash", "pending"); // Complete order with Cash
-    } else if (orderType === "pickup") {
+    } else if (orderType === "pickup" || orderType == "online") {
       navigate("/pickup-order", {
         state: { items, totalPrice: getTotalPrice(), spiceLevel, orderType },
       });
@@ -92,9 +92,9 @@ const Cart = () => {
     }
   };
 
-  const handlePaymentMethodChange = (method) => {
-    setPaymentMethod(method === paymentMethod ? "" : method); // Toggle method
-  };
+  // const handlePaymentMethodChange = (method) => {
+  //   setPaymentMethod(method === paymentMethod ? "" : method); // Toggle method
+  // };
 
   const handleOrderTypeChange = (type) => {
     if (type === "online" && !isInRange) {
@@ -127,6 +127,17 @@ const Cart = () => {
                 className="flex justify-between items-center py-1"
               >
                 <span className="flex-grow">
+                  <button
+                    onClick={() =>
+                      dispatch({
+                        type: "DECREMENT_QUANTITY",
+                        payload: { id: item.id },
+                      })
+                    }
+                    className="text-gray-600 text-lg bg-red-200 hover:text-red-800 px-3 py-1 border rounded"
+                  >
+                    -
+                  </button>
                   {item.name} {item.variant && `(${item.variant})`}{" "}
                   {item.quantity > 1 && `(${item.quantity}x)`}
                   {/* Display special menu platter items under the category name */}
@@ -136,7 +147,20 @@ const Cart = () => {
                       ({item.items.map((subItem) => subItem.name).join(", ")})
                     </span>
                   )}
+                  <span className="text-base">{item.quantity}</span>
+                  <button
+                    onClick={() =>
+                      dispatch({
+                        type: "INCREMENT_QUANTITY",
+                        payload: { id: item.id },
+                      })
+                    }
+                    className="text-gray-600 text-lg bg-red-200 hover:text-red-800 px-3 py-1 border rounded"
+                  >
+                    +
+                  </button>
                 </span>
+
                 <span className="flex-shrink-0">
                   £{(item.variantPrice || item.price) * item.quantity}
                 </span>
@@ -221,7 +245,7 @@ const Cart = () => {
             </div>
 
             {/* Payment Method Selection */}
-            {orderType === "online" ? (
+            {/* {orderType === "online" ? (
               <div className="mt-4 flex flex-wrap lg:flex-col lg:items-start lg:gap-4 items-center justify-between">
                 <label className="text-lg flex items-center text-black">
                   <input
@@ -264,7 +288,7 @@ const Cart = () => {
               </div>
             ) : (
               ""
-            )}
+            )} */}
 
             <button
               onClick={handlePlaceOrder}
@@ -277,7 +301,7 @@ const Cart = () => {
       </div>
 
       {/* Payment Form for Stripe */}
-      {showPaymentForm && paymentMethod === "stripe" && (
+      {/* {showPaymentForm && paymentMethod === "stripe" && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg max-w-md w-full">
             <h2 className="text-xl font-semibold mb-4">
@@ -297,7 +321,7 @@ const Cart = () => {
             </button>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Out of Range Modal */}
       {showModal && <OutOfRangeModal onClose={closeModal} />}

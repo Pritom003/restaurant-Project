@@ -14,21 +14,37 @@ import axios from "axios";
 const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
 const stripePromise = loadStripe(stripePublicKey);
 
+// Sample delivery charge mapping
+const areaDeliveryCharges = {
+  "Zone 1": 3.5,
+  "Zone 2": 5.0,
+  "Zone 3": 7.0,
+};
+
 const PickupOrderForm = () => {
   const location = useLocation();
   const { items, totalPrice, spiceLevel, orderType } = location.state || {};
-  console.log(items);
   const [formData, setFormData] = useState({
     email: "",
     address: "",
     zipcode: "",
-    paymentMethod: "pickup",
+    mobile: "",
+    area: "",
+    paymentMethod: "",
   });
   const [isProcessing, setIsProcessing] = useState(false);
+  const [extraCharge, setExtraCharge] = useState(0);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const handleAreaChange = (e) => {
+    const selectedArea = e.target.value;
+    const charge = areaDeliveryCharges[selectedArea] || 0;
+    setExtraCharge(charge);
+    setFormData((prevData) => ({ ...prevData, area: selectedArea }));
   };
 
   const handleSubmit = async (e) => {
@@ -44,10 +60,12 @@ const PickupOrderForm = () => {
     const orderData = {
       email: formData.email,
       address: formData.address,
+      mobile: formData.mobile,
       zipcode: formData.zipcode,
+      area: formData.area,
       items,
-      totalPrice,
-      paymentMethod: 'pickup',
+      totalPrice: totalPrice + extraCharge,
+      paymentMethod: formData.paymentMethod,
       paymentStatus,
       status: "x",
       spiceLevel,
@@ -80,13 +98,28 @@ const PickupOrderForm = () => {
     <div className="p-4">
       <form className="max-w-xl p-5 bg-white mx-auto" onSubmit={handleSubmit}>
         <h2 className="text-2xl font-bold mb-6">Pickup Order Details</h2>
-
+        <div className="flex gap-5">
+          <p>Order Type: {orderType}</p>
+          <p className="mb-3">
+            Total Price: £{(totalPrice + extraCharge).toFixed(2)}
+          </p>
+        </div>
         {/* Email Field */}
         <InputField
           label="Email Address"
           type="email"
           name="email"
           value={formData.email}
+          onChange={handleInputChange}
+          required
+        />
+
+        {/* Mobile Number Field */}
+        <InputField
+          label="Mobile Number"
+          type="text"
+          name="mobile"
+          value={formData.mobile}
           onChange={handleInputChange}
           required
         />
@@ -110,6 +143,31 @@ const PickupOrderForm = () => {
           onChange={handleInputChange}
           required
         />
+
+        {/* Area Selection for Online Order */}
+        {orderType === "online" && (
+          <div className="mb-4">
+            <label className="block mb-2 font-medium">
+              Select Delivery Area
+            </label>
+            <select
+              name="area"
+              value={formData.area}
+              onChange={handleAreaChange}
+              className="w-full p-2 border rounded"
+              required
+            >
+              <option value="" disabled>
+                Select Area
+              </option>
+              {Object.keys(areaDeliveryCharges).map((area) => (
+                <option key={area} value={area}>
+                  {area} (+£{areaDeliveryCharges[area].toFixed(2)})
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {/* Payment Method Selection */}
         <div className="mb-4">
@@ -135,7 +193,7 @@ const PickupOrderForm = () => {
         {formData.paymentMethod === "online" && (
           <Elements stripe={stripePromise}>
             <StripePaymentForm
-              totalPrice={totalPrice}
+              totalPrice={totalPrice + extraCharge}
               onPaymentSuccess={(paymentMethodId) =>
                 handleOrderSubmission("success", paymentMethodId)
               }
@@ -153,7 +211,7 @@ const PickupOrderForm = () => {
           {isProcessing
             ? "Processing..."
             : formData.paymentMethod === "online"
-            ? `Pay £${totalPrice.toFixed(2)}`
+            ? `Pay £${(totalPrice + extraCharge).toFixed(2)}`
             : "Place Order"}
         </button>
       </form>
