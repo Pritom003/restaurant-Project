@@ -16,7 +16,7 @@ import { useNavigate } from "react-router-dom";
 // const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
 // const stripePromise = loadStripe(stripePublicKey);
 
-const DELIVERY_CHARGE = 2.99;
+const DELIVERY_CHARGE = 0.0;
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -185,11 +185,7 @@ const Cart = () => {
             <div className="mt-2 text-lg">
               Subtotal: £{totalPrice.toFixed(2)}
             </div>
-            {orderType === "online" && (
-              <div className="mt-2 text-lg">
-                Delivery Charge: £{DELIVERY_CHARGE.toFixed(2)}
-              </div>
-            )}
+
             <div className="mt-2 text-lg">
               Total: £{getTotalPrice().toFixed(2)}
             </div>

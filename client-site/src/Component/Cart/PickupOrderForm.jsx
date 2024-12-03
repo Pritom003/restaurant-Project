@@ -56,8 +56,17 @@ const PickupOrderForm = () => {
     }
   };
 
+  const generateOrderNumber = () => {
+    const currentOrderNumber =
+      parseInt(localStorage.getItem("orderNumber")) || 0;
+    const newOrderNumber = currentOrderNumber + 1;
+    localStorage.setItem("orderNumber", newOrderNumber);
+    return newOrderNumber;
+  };
+
   const handleOrderSubmission = async (paymentStatus) => {
     const orderData = {
+      orderNumber: generateOrderNumber(),
       email: formData.email,
       address: formData.address,
       mobile: formData.mobile,
@@ -73,6 +82,7 @@ const PickupOrderForm = () => {
       chefEmail: "a",
       userEmail: "b",
       time: 1,
+      extraCharge,
     };
     console.log(orderData);
     try {

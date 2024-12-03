@@ -8,9 +8,10 @@ const CashOrder = () => {
   const [orders, setOrders] = useState([]);
   const [sortedOrders, setSortedOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [sortOption, setSortOption] = useState("ascending"); // Default sort option
+  const [sortOption, setSortOption] = useState("descending"); // Default sort option for newest first
   const orderDetailsRef = useRef();
   console.log(selectedOrder);
+
   // Fetch orders on component mount
   useEffect(() => {
     axios
@@ -40,30 +41,12 @@ const CashOrder = () => {
         (a, b) =>
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       );
-    } else if (option === "month") {
-      // Group orders by month and sort by descending order within each group
-      const groupedByMonth = sorted.reduce((acc, order) => {
-        const monthKey = new Date(order.createdAt).toLocaleString("default", {
-          month: "long",
-          year: "numeric",
-        });
-        if (!acc[monthKey]) {
-          acc[monthKey] = [];
-        }
-        acc[monthKey].push(order);
-        return acc;
-      }, {});
-
-      // Now sort each month group in descending order based on the order date
-      for (const month in groupedByMonth) {
-        groupedByMonth[month] = groupedByMonth[month].sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-      }
-
-      // Flatten the grouped orders into a single array
-      sorted = Object.values(groupedByMonth).flat();
+    } else if (option === "descending") {
+      // Sort by descending order of createdAt
+      sorted = sorted.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
     }
 
     setSortedOrders(sorted);
@@ -147,8 +130,8 @@ const CashOrder = () => {
           onChange={handleSortChange}
           className="p-2 border rounded-md"
         >
-          <option value="ascending">Date (Ascending)</option>
-          <option value="month">Month</option>
+          <option value="descending">Date (Newest First)</option>
+          <option value="ascending">Date (Oldest First)</option>
         </select>
       </div>
 
@@ -255,7 +238,7 @@ const CashOrder = () => {
 
               {/* Order Details */}
               <h3 style={{ textAlign: "center", margin: "5px 0" }}>
-                Order: {selectedOrder._id}
+                Order Number: {selectedOrder.orderNumber}
               </h3>
               <p style={{ fontSize: "12px", margin: "5px 0" }}>
                 CreatedAt:
@@ -297,6 +280,12 @@ const CashOrder = () => {
               </p>
               <table style={{ width: "100%", fontSize: "12px" }}>
                 <tbody>
+                  <tr>
+                    <td>Delivery Charge:</td>
+                    <td style={{ textAlign: "right" }}>
+                      € {selectedOrder.extraCharge}
+                    </td>
+                  </tr>
                   <tr>
                     <td>Subtotal:</td>
                     <td style={{ textAlign: "right" }}>

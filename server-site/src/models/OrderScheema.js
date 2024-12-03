@@ -27,6 +27,8 @@ const OrderSchema = new mongoose.Schema(
     zipcode: { type: String, },
     mobile: { type: String, },
     area: { type: String, },
+    extraCharge: { type: Number, },
+    orderNumber: { type: Number, },
     // createdAt: { type: Date, default: new Date('2024-11-13T00:00:00Z') },
   },
   { timestamps: true, default: 30 }
