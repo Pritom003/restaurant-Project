@@ -37,7 +37,6 @@ const Cart = () => {
       handleOrderCompletion("cash", "pending"); // Complete order with Cash
     }
   };
-console.log(items);
 const formattedItems = items.map((item) => ({
   name: item.name,
   price: item.variantPrice || item.price,
@@ -46,7 +45,7 @@ const formattedItems = items.map((item) => ({
   category: item.category,
   subItems: item.items || [], // Include submenu items
 }));
-console.log(formattedItems,'see herer');
+
   const handleOrderCompletion = async (method, status) => {
 
     const orderData = {

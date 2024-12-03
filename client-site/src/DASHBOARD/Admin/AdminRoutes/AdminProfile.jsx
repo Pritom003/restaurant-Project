@@ -14,6 +14,7 @@ const AdminProfile = () => {
   const [yearlyRevenue, setYearlyRevenue] = useState([]);
   const [weekOffset, setWeekOffset] = useState(0);
   const [monthOffset, setMonthOffset] = useState(0);
+  const [yearOffset, setYearOffset] = useState(0);
 
   const daysOfWeek = ["Sat", "Sun", "Mon", "Tues", "Wed", "Thurs", "Fri"];
   const monthsOfYear = [
@@ -32,12 +33,13 @@ const AdminProfile = () => {
     };
   };
 
+  
   const getMonthName = (offset = 0) => {
     const currentMonth = new Date().getMonth();
     return `${monthsOfYear[(currentMonth + offset + 12) % 12]} ${new Date().getFullYear()}`;
   };
 
-  const getYearMonthLabel = () => `${new Date().getFullYear()} - ${monthsOfYear[new Date().getMonth()]}`;
+  // const getYearMonthLabel = () => `${new Date().getFullYear()} - ${monthsOfYear[new Date().getMonth()]}`;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,7 +48,7 @@ const AdminProfile = () => {
           axios.get('http://localhost:3000/api/revenue/daily'),
           axios.get(`http://localhost:3000/api/revenue/weekly?weekOffset=${weekOffset}`),
           axios.get(`http://localhost:3000/api/revenue/monthly?monthOffset=${monthOffset}`),
-          axios.get('http://localhost:3000/api/revenue/yearly'),
+          axios.get(`http://localhost:3000/api/revenue/yearly?yearOffset=${yearOffset}`),
         ]);
         setDailyRevenue(daily.data);
         setWeeklyRevenue(weekly.data);
@@ -57,7 +59,8 @@ const AdminProfile = () => {
       }
     };
     fetchData();
-  }, [weekOffset, monthOffset]);
+  }, [weekOffset, monthOffset,yearOffset]);
+
 
   const createChartData = (data, labels, label, chartType = 'line', borderColor = '#26630b') => ({
     labels: labels,
@@ -118,7 +121,8 @@ const AdminProfile = () => {
 
   const handlePreviousMonth = () => setMonthOffset(prevOffset => prevOffset - 1);
   const handleNextMonth = () => setMonthOffset(prevOffset => prevOffset + 1);
-
+  const handlePreviousYear = () => setYearOffset(prevOffset => prevOffset - 1);
+  const handleNextYear = () => setYearOffset(prevOffset => prevOffset + 1);
   return (
     <div className="container mx-auto p-4 text-black grid justify-center items-center">
     {/* Revenue Cards */}
@@ -126,7 +130,7 @@ const AdminProfile = () => {
       {/* Daily Revenue */}
       <div className="p-4 bg-blue-100 rounded shadow  text-center grid items-center justify-center">
         <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
-          <FaDollarSign className="mr-2 font-semibold text-black" /> Today's Revenue
+          <FaDollarSign className="mr-2 font-semibold text-black" /> Daily Revenue
         </h2>
         <div className="flex lg:flex-col items-center lg:justify-start justify-between gap-2">
           <p className="text-5xl lg:text-4xl text-black font-bold">£{dailyRevenue?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0).toFixed(2)}</p>
@@ -188,7 +192,25 @@ const AdminProfile = () => {
         <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
           <FaCalendarAlt className="mr-2 font-semibold text-black" /> Yearly Revenue
         </h2>
-        <p className="text-5xl lg:text-4xl text-black font-bold">£{yearlyRevenue?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0).toFixed(2)}</p>
+        <p className="text-5xl lg:text-4xl text-black font-bold">
+    £{yearlyRevenue?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0).toFixed(2)}
+  </p>
+  <div className="flex items-center justify-center gap-4">
+    <button 
+      onClick={handlePreviousYear} 
+      className="bg-yellow-900 text-white px-2 py-1 rounded"
+    >
+      &lt;
+    </button>
+    <button 
+      onClick={handleNextYear} 
+      className="bg-yellow-900 text-white px-2 py-1 rounded"
+    >
+      &gt;
+    </button>
+  </div>
+  <p className="text-yellow-950 text-xl">{new Date().getFullYear() + yearOffset}</p>
+        {/* <p className="text-5xl lg:text-4xl text-black font-bold">£{yearlyRevenue?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0).toFixed(2)}</p> */}
       </div>
     </div>
   
@@ -214,13 +236,24 @@ const AdminProfile = () => {
       </div>
   
       {/* Yearly Chart */}
-      <div className="w-full bg-red-50 p-5">
-        <h3 className="text-lg font-bold mb-4">Yearly Revenue Graph</h3>
-        <Bar 
-          data={createChartData(formatYearlyData(yearlyRevenue), formatYearlyLabels(), 'Revenue', 'bar', '#6a4b3e')}
-          options={{ responsive: true }}
-        />
-      </div>
+      <div className="w-full bg-yellow-50 p-5">
+    <h3 className="text-lg font-bold mb-4">Yearly Revenue Graph</h3>
+    <Line 
+      data={createChartData(formatYearlyData(yearlyRevenue), formatYearlyLabels(), 'Yearly Revenue')}
+      options={{
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+          title: {
+            display: true,
+            text: 'Yearly Revenue Overview',
+          },
+        },
+      }}
+    />
+  </div>
 
 
          {/* Pie Chart */}

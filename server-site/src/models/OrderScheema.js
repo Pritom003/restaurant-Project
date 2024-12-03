@@ -1,42 +1,25 @@
 const mongoose = require('mongoose');
-
-const OrderSchema = new mongoose.Schema(
-  {
-    userEmail: { type: String, required: true },
-    chefEmail: { type: String, required: true },
-
-    items: [
-
-
-  
-      {
-        name: String,
-        price: String,
-        quantity: Number,
-        category:String,
-        variant:String,
-        subItems: [               // Subitems array (each subitem can have its own structure)
-          {
-            name: String,         // Name of the subitem
-                         // Price of the subitem
-          }
-        ],
-        createdAt: { type: Date, default: Date.now },
-        // createdAt: { type: Date, default: new Date('2024-11-13T00:00:00Z') },
-      },
-    ],
-    paymentStatus: { type: String, }, // Required for tracking payment status
-    paymentMethod: { type: String, },
-    orderType: { type: String, required: true },
-    totalPrice: { type:String, required: true },
-    createdAt: { type: Date, default: Date.now },
-    spiceLevel: { type: String, },
-    status: { type: String, },
-    time: { type: Number, },
-    // createdAt: { type: Date, default: new Date('2024-11-13T00:00:00Z') },
-  },
-  { timestamps: true , default:30 }
-);
+const OrderSchema = new mongoose.Schema({
+  userEmail: { type: String, required: true },
+  chefEmail: { type: String, required: true },
+  items: [
+    {
+      name: String,
+      price: String,
+      quantity: Number,
+      category: String,
+      variant: String,
+      subItems: [{ name: String }],
+    },
+  ],
+  paymentStatus: { type: String },
+  paymentMethod: { type: String },
+  orderType: { type: String, required: true },
+  totalPrice: { type: Number, required: true },
+  spiceLevel: { type: String },
+  status: { type: String },
+  time: { type: Number },
+}, { timestamps: true });
 
 const Order = mongoose.model('Order', OrderSchema);
 

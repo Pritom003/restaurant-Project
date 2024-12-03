@@ -3,7 +3,7 @@ const moment = require('moment');
 const Order = require('../models/OrderScheema'); // Fixed typo (OrderScheema to OrderSchema)
 const router = express.Router();
 
-// GET request for daily revenue
+
 router.get('/api/revenue/daily', async (req, res) => {
   try {
     const startOfDay = moment().startOf('day').toDate();
@@ -17,20 +17,25 @@ router.get('/api/revenue/daily', async (req, res) => {
         },
       },
       {
+        $addFields: {
+          totalPrice: { $toDouble: '$totalPrice' }, 
+        },
+      },
+      {
         $group: {
           _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
           totalRevenue: { $sum: '$totalPrice' },
         },
       },
-      { $sort: { _id: 1 } }, // Sort by date
+      { $sort: { _id: 1 } },
     ]);
 
     res.json(revenue.map(({ _id, totalRevenue }) => ({ date: _id, totalRevenue })));
   } catch (error) {
-    console.error('Error fetching daily revenue:', error);
-    res.status(500).json({ message: 'Server Error' });
+    res.status(500).json({ message: 'Error fetching daily revenue', error: error.message });
   }
 });
+
 
 // GET request for weekly revenue
 router.get('/api/revenue/weekly', async (req, res) => {
@@ -98,8 +103,9 @@ router.get('/api/revenue/monthly', async (req, res) => {
 // GET request for yearly revenue
 router.get('/api/revenue/yearly', async (req, res) => {
   try {
-    const startOfYear = moment().startOf('year').toDate();
-    const endOfYear = moment().endOf('year').toDate();
+    const yearoffset = parseInt(req.query.yearOffset) || 0; 
+    const startOfYear = moment().startOf('year').add(yearoffset,'year').toDate();
+    const endOfYear = moment().endOf('year').add(yearoffset,'year').toDate();
 
     const revenue = await Order.aggregate([
       {
