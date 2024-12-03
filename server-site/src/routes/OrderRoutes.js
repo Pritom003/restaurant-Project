@@ -5,7 +5,7 @@ const axios = require('axios');
 
 
 router.post('/api/orders', async (req, res) => {
-  const { userEmail, chefEmail, paymentStatus, paymentMethod, items, totalPrice, orderType, spiceLevel, email, address, zipcode, mobile } = req.body;
+  const { userEmail, chefEmail, paymentStatus, paymentMethod, items, totalPrice, orderType, spiceLevel, email, address, zipcode, mobile, area } = req.body;
 
   if (!userEmail || !items || items.length === 0 || !totalPrice) {
     return res.status(400).json({ error: 'User email, items, and total price are required' });
@@ -26,7 +26,8 @@ router.post('/api/orders', async (req, res) => {
       email,
       address,
       zipcode,
-      mobile
+      mobile,
+      area
     });
 
     const savedOrder = await newOrder.save();

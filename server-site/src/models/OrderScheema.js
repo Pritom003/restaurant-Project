@@ -26,6 +26,7 @@ const OrderSchema = new mongoose.Schema(
     address: { type: String, },
     zipcode: { type: String, },
     mobile: { type: String, },
+    area: { type: String, },
     // createdAt: { type: Date, default: new Date('2024-11-13T00:00:00Z') },
   },
   { timestamps: true, default: 30 }

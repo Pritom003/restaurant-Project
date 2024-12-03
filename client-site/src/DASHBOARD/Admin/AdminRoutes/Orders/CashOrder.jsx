@@ -176,9 +176,7 @@ const CashOrder = () => {
                     <td className="px-4 py-2">
                       {formatDate(order?.createdAt)}
                     </td>
-                    <td className="px-4 py-2">
-                      ${order?.totalPrice}
-                    </td>
+                    <td className="px-4 py-2">${order?.totalPrice}</td>
                     <td className="px-4 py-2">{order?.paymentStatus}</td>
                     <td className="px-4 py-2">{order?.spiceLevel}</td>
                     <td className="px-4 py-2 flex space-x-4">
@@ -245,6 +243,7 @@ const CashOrder = () => {
               <h2 style={{ textAlign: "center", margin: "0" }}>Deedar Uk</h2>
               <p className="text-center">Address:{selectedOrder?.address}</p>
               <p className="text-center">Zip Code:{selectedOrder?.zipcode}</p>
+              <p className="text-center">Area:{selectedOrder?.area}</p>
               <p
                 style={{
                   textAlign: "center",
