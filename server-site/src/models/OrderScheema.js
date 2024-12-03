@@ -6,10 +6,21 @@ const OrderSchema = new mongoose.Schema(
     chefEmail: { type: String, required: true },
 
     items: [
+
+
+  
       {
         name: String,
         price: String,
         quantity: Number,
+        category:String,
+        variant:String,
+        subItems: [               // Subitems array (each subitem can have its own structure)
+          {
+            name: String,         // Name of the subitem
+                         // Price of the subitem
+          }
+        ],
         createdAt: { type: Date, default: Date.now },
         // createdAt: { type: Date, default: new Date('2024-11-13T00:00:00Z') },
       },

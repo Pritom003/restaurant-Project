@@ -43,8 +43,8 @@ const MenuBox = ({ addToCart }) => {
     const SpecialMenuprice= specialMenuData.find(item => item.category === "Mid Week Special Platter")?.Price
     // console.log(specialMenuData,'here');
   // Handle opening modal with special menu data
-  // const currentDay = new Date().getDay();
-  const currentDay = 2
+  const currentDay = new Date().getDay();
+  // const currentDay = 2
   // console.log(currentDay);
  
 
