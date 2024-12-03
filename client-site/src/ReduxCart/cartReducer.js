@@ -17,7 +17,7 @@ const cartReducer = (state = initialState, action) => {
       // Handle special menu items
       if (category === 'Special Platter') {
         const newItem = {
-          id,
+          id,  // Unique ID for each special platter
           name: 'Special Platter',
           category,
           items,
