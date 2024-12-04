@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import MenuData from "../../../Hooks/Menudatea"; // Ensure this fetches correct menu data
@@ -221,7 +222,7 @@ const MenuBox = ({ addToCart }) => {
                             <div className="flex w-full justify-between">
                               {item.name}
 
-                              {item.varieties.length > 0 && (
+                              {item.varieties.length > 0 ? (
   <div className="text-xs grid justify-end gap-1 text-gray-600 mt-1">
     <select
   className="bg-white text-black  w-44"
@@ -253,14 +254,14 @@ const MenuBox = ({ addToCart }) => {
       ))}
     </select>
   </div>
-)}
-                              <button
-                                className="hover:underline"
-                                onClick={() => addToCart(item)}
-                                // Add item to cart
-                              >
-                                + £{item.price}
-                              </button>
+) :     <button
+className="hover:underline"
+onClick={() => addToCart(item)}
+// Add item to cart
+>
++ £{item.price}
+</button>}
+                          
                             </div>
 
   

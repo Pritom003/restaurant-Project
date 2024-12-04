@@ -1,8 +1,10 @@
+/* eslint-disable no-case-declarations */
 const initialState = {
   items: JSON.parse(localStorage.getItem('cartItems')) || [],
   totalPrice: 0,
 };
 
+// Calculate total price at initialization
 if (initialState.items.length > 0) {
   initialState.totalPrice = initialState.items.reduce(
     (total, item) => total + (item.variantPrice || item.price) * (item.quantity || 1),
@@ -16,14 +18,13 @@ const cartReducer = (state = initialState, action) => {
       const { name, variant, price, variantPrice, category, items, id } = action.payload;
       const key = variant ? `${name} (${variant})` : name;
 
-      // Special menu check: If category is 'Special Platter', handle it differently
       if (category === "Special Platter") {
         const newItem = {
-          id,  // Unique ID for each special platter
+          id,  // Unique ID for each platter
           name: 'Special Platter',
-          category: category,
-          items: items,
-          price: price,
+          category,
+          items,
+          price,
           variantPrice: 0,
           quantity: 1,
         };
@@ -41,10 +42,8 @@ const cartReducer = (state = initialState, action) => {
         };
       }
 
-      // Regular add to cart functionality
-      const existingItemIndex = state.items.findIndex(
-        (item) => item.key === key
-      );
+      // Regular items handling
+      const existingItemIndex = state.items.findIndex((item) => item.key === key);
 
       let updatedItems;
       if (existingItemIndex !== -1) {
@@ -80,18 +79,14 @@ const cartReducer = (state = initialState, action) => {
       };
 
     case 'REMOVE_FROM_CART':
-      const { id: removeId, key: removeKey } = action.payload; // Use both ID and key for better matching
+      const { id: removeId, key: removeKey, category: removeCategory } = action.payload;
 
-      let newItems = state.items.filter((item) => {
-        // Remove special platter if its ID matches
-        if (item.category === "Special Platter" && item.id === removeId) {
-          return false; // Remove this item
+      const newItems = state.items.filter((item) => {
+        if (removeCategory === "Special Platter") {
+          // Only remove the exact special platter matching by id and category
+          return !(item.id === removeId && item.category === removeCategory);
         }
-        // Remove regular items based on key match
-        if (item.key === removeKey) {
-          return false; // Remove this item
-        }
-        return true; // Keep all other items
+        return item.key !== removeKey; // Regular item removal by key
       });
 
       localStorage.setItem('cartItems', JSON.stringify(newItems));

@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useState } from 'react';
 
 const AddSpecialmenu = () => {
-    const { register, control, handleSubmit, reset } = useForm({
+    const { register,  handleSubmit, reset } = useForm({
         defaultValues: {
             category: 'Mid Week Special Platter',
             Price: 0, // Add default price
@@ -26,45 +26,45 @@ const AddSpecialmenu = () => {
     };
 
     const onSubmit = async (data) => {
-        // Ensure subcategories have names and dishes before submitting
+        // Prepare the formatted data as before
+        if (data.Price ===0) {
+            alert('Please fill price for the category ' );
+            return null;
+        }
         const formattedData = {
             ...data,
             subcategories: subcategories.map((subcategory) => {
                 if (!subcategory.name || !subcategory.price) {
                     alert('Please fill in the subcategory name and price');
-                    return null; // Skip invalid subcategory
+                    return null;
                 }
                 return {
                     name: subcategory.name,
-                    price: parseFloat(subcategory.price), // Ensure price is a number
+                    price: parseFloat(subcategory.price),
                     dishes: subcategory.dishes.map((dish) => {
                         if (!dish.name) {
                             alert('Please fill in the dish name');
                             return null;
                         }
-                        return { name: dish.name }; // Ensure dishes are objects with a "name"
-                    }).filter(dish => dish !== null), // Remove invalid dishes
+                        return { name: dish.name };
+                    }).filter(dish => dish !== null),
                 };
-            }).filter(subcategory => subcategory !== null), // Remove invalid subcategories
+            }).filter(subcategory => subcategory !== null),
         };
-
-        // If no subcategories or price is invalid, return early
-        if (formattedData.subcategories.length === 0 || !formattedData.price) {
-            alert('Please fill in all required fields.');
-            return;
-        }
-
+    
         try {
-            const response = await axios.post('http://localhost:3000/api/special-menu', formattedData);
-            console.log('Menu added successfully:', response.data);
-            alert('Special menu added successfully!');
+            const response = await axios.put(`http://localhost:3000/api/special-menu/${data.category}`, formattedData);
+            console.log('Menu updated successfully:', response.data);
+            alert('Special menu updated successfully!');
             reset();
             setSubcategories([]); // Clear the subcategories state after submission
         } catch (error) {
-            console.error('Error adding menu:', error);
-            alert('Failed to add menu. Please try again.');
+            console.error('Error updating menu:', error);
+            alert('Failed to update menu. Please try again.');
         }
     };
+    ;
+    
 
     return (
         <div className="p-8 max-w-4xl mx-auto w-3/4 mt-20 shadow-lg bg-green-50">
@@ -91,7 +91,7 @@ const AddSpecialmenu = () => {
                     </label>
                     <input
                         type="number"
-                        {...register('price', { required: 'Price is required' })}
+                        {...register('Price', { required: 'Price is required' })}
                         className="input input-bordered bg-white text-black w-full max-w-md"
                     />
                 </div>

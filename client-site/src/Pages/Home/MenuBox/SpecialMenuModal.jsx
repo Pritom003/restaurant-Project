@@ -1,32 +1,42 @@
+/* eslint-disable react/prop-types */
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid"; 
 const SpecialMenuModal = ({ onClose, subcategories, onAddToCart, price }) => {
   const [selectedItems, setSelectedItems] = useState({});
+  const [totalSubcategoryPrice, setTotalSubcategoryPrice] = useState(0); // New State
 
-  const handleSelect = (subcategory, item) => {
-    setSelectedItems((prev) => ({ ...prev, [subcategory]: item }));
+  const handleSelect = (subcategoryName, subcategoryPrice, item) => {
+    setSelectedItems((prev) => ({ ...prev, [subcategoryName]: item }));
+
+    // Update total price when a subcategory dish is selected
+    setTotalSubcategoryPrice((prevTotal) => {
+      // Subtract the previously selected subcategory's price (if any)
+      if (selectedItems[subcategoryName]) {
+        prevTotal -= subcategories?.find((sub) => sub.name === subcategoryName)?.price || 0;
+      }
+      return prevTotal + subcategoryPrice; // Add new subcategory's price
+    });
   };
+  console.log(totalSubcategoryPrice,"LOOOK HWEW I AM RHW PRIXEWEEEE");
   const platter = Object.values(selectedItems);
+
+
+ 
   const handleSubmit = () => {
-
-    // console.log(platter,'ddd');
-
-    // Create a platter object with category and selected items
+    const totalPrice = price + totalSubcategoryPrice; 
     const platterWithCategory = {
       id: uuidv4(),
-      category: "Special Platter", // Add the category name
-      items: platter, // Keep the selected items
-      price: price,  // Pass the price from prop
+      category: "Special Platter", 
+      items: platter, 
+      price: totalPrice, 
     };
 
-    // Log the platter object in a readable format
-    console.log("Platter with Category and Items:", platterWithCategory);
-
-    onAddToCart(platterWithCategory); // Pass the platter to the parent component
-    onClose(); // Close the modal after submitting
+    onAddToCart(platterWithCategory); 
+    onClose(); 
   };
-  console.log("Selected Items:", selectedItems);  // Inside handleSelect
-console.log("Platter (items selected):", platter);  // Inside handleSubmit
+
+  console.log(selectedItems,'hey gpt see how am receiveing my data '); 
+
 
 
   return (
@@ -53,7 +63,7 @@ console.log("Platter (items selected):", platter);  // Inside handleSubmit
                         name={subcategory.name}
                         value={item.name}
                         checked={selectedItems[subcategory.name]?.name === item.name}
-                        onChange={() => handleSelect(subcategory.name, item)}
+                        onChange={() => handleSelect(subcategory.name,subcategory.price, item)}
                         className="mr-3"
                       />
                       <span>{item.name}</span>
