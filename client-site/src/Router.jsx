@@ -25,6 +25,7 @@ import AcceptsOrder from "./DASHBOARD/Admin/Notification/AcceptsOrder";
 import PreparingOrders from "./DASHBOARD/Admin/Notification/PreparingOrder/PreparingOrders";
 import UpcomingOrders from "./DASHBOARD/User/UpcommingOrder";
 import PickupOrderForm from "./Component/Cart/PickupOrderForm";
+import AddLocation from "./DASHBOARD/Admin/AdminRoutes/AddLocation";
 // import PrivateRoute from "./PrivateRoute"; // Import the PrivateRoute component
 
 const router = createBrowserRouter([
@@ -101,6 +102,14 @@ const router = createBrowserRouter([
             element: (
               <AdminRoute>
                 <UserList />
+              </AdminRoute>
+            ),
+          },
+          {
+            path: "add-location",
+            element: (
+              <AdminRoute>
+                <AddLocation />
               </AdminRoute>
             ),
           },

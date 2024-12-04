@@ -88,6 +88,11 @@ const DashboardLayout = () => {
               <MenuItem to="" icon={<ImStatsDots />} label="Stats" />
               <MenuItem to="add-menu" icon={<FaPlus />} label="Add Menu" />
               <MenuItem
+                to="add-location"
+                icon={<FaPlus />}
+                label="Add Location"
+              />
+              <MenuItem
                 to="New-Orders"
                 icon={<IoNotificationsOutline />}
                 label="NEW"

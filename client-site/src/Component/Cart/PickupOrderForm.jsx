@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import {
   Elements,
@@ -17,11 +17,6 @@ const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
 const stripePromise = loadStripe(stripePublicKey);
 
 // Sample delivery charge mapping
-const areaDeliveryCharges = {
-  "Zone 1": 3.5,
-  "Zone 2": 5.0,
-  "Zone 3": 7.0,
-};
 
 const PickupOrderForm = () => {
   const { user } = useAuth();
@@ -38,6 +33,7 @@ const PickupOrderForm = () => {
   });
   const [isProcessing, setIsProcessing] = useState(false);
   const [extraCharge, setExtraCharge] = useState(0);
+  const [deliveryLocations, setDeliveryLocations] = useState([]);
 
   const removeFromCart = (item) =>
     dispatch({ type: "REMOVE_FROM_CART", payload: item });
@@ -47,12 +43,36 @@ const PickupOrderForm = () => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleAreaChange = (e) => {
-    const selectedArea = e.target.value;
-    const charge = areaDeliveryCharges[selectedArea] || 0;
-    setExtraCharge(charge);
-    setFormData((prevData) => ({ ...prevData, area: selectedArea }));
-  };
+  // Fetch locations from the backend using Axios
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/delivery-location"
+        );
+        setDeliveryLocations(response.data.data); // Update the state with fetched data
+      } catch (error) {
+        console.error("Error fetching locations:", error);
+        alert("Failed to fetch locations");
+      }
+    };
+
+    fetchLocations();
+  }, []);
+
+ // Handle area selection and update delivery charge
+ const handleAreaChange = (e) => {
+  const selectedArea = e.target.value;
+  setFormData({ ...formData, area: selectedArea });
+
+  // Find the selected location's price
+  const selectedLocation = deliveryLocations.find(
+    (loc) => loc.locationName === selectedArea
+  );
+
+  // Update extra charge
+  setExtraCharge(selectedLocation ? selectedLocation.price : 0);
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -178,9 +198,9 @@ const PickupOrderForm = () => {
               <option value="" disabled>
                 Select Area
               </option>
-              {Object.keys(areaDeliveryCharges).map((area) => (
-                <option key={area} value={area}>
-                  {area} (+£{areaDeliveryCharges[area].toFixed(2)})
+              {deliveryLocations.map((location) => (
+                <option key={location._id} value={location.locationName}>
+                  {location.locationName} (+£{location.price.toFixed(2)})
                 </option>
               ))}
             </select>
