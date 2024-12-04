@@ -74,20 +74,21 @@ const cartReducer = (state = initialState, action) => {
     }
 
     case 'REMOVE_FROM_CART': {
-      const { id: removeId } = action.payload;
+      const { key } = action.payload; // Use unique 'key' to identify items
 
-      const newItems = state.items.filter((item) => item.id !== removeId);
+      const updatedItems = state.items.filter((item) => item.key !== key);
 
-      localStorage.setItem('cartItems', JSON.stringify(newItems));
+      localStorage.setItem('cartItems', JSON.stringify(updatedItems));
       return {
         ...state,
-        items: newItems,
-        totalPrice: newItems.reduce(
-          (total, item) => total + (item.variantPrice || item.price) * (item.quantity || 1),
+        items: updatedItems,
+        totalPrice: updatedItems.reduce(
+          (total, item) => total + (item.variantPrice || item.price) * item.quantity,
           0
         ),
       };
     }
+
 
     case 'INCREMENT_QUANTITY': {
       const { id } = action.payload;

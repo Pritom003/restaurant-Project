@@ -22,40 +22,29 @@ const Cart = () => {
   const dispatch = useDispatch();
   const { user } = useAuth();
   const { items, totalPrice } = useSelector((state) => state);
-  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  // const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [orderType, setOrderType] = useState(""); // Default to empty
   const [spiceLevel, setSpiceLevel] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("");
+  // const [paymentMethod, setPaymentMethod] = useState("");
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
   const removeFromCart = (item) =>
-    dispatch({ type: "REMOVE_FROM_CART", payload: item });
+    dispatch({ type: "REMOVE_FROM_CART", payload: { key: item.key } });
 
   const isInRange = true;
 
-  const handlePlaceOrder = () => {
-    if (paymentMethod === "stripe") {
-      setShowPaymentForm(true); // Show payment form for Stripe
-    } else if (paymentMethod === "cash") {
-      handleOrderCompletion("cash", "pending"); // Complete order with Cash
-    } else if (orderType === "pickup" || orderType == "online") {
-      navigate("/pickup-order", {
-        state: { items, totalPrice: getTotalPrice(), spiceLevel, orderType },
-      });
-    }
-  };
-  console.log(items);
-  const handleOrderCompletion = async (method, status) => {
-    const formattedItems = items.map((item) => ({
-      name: item.name,
-      price: item.variantPrice || item.price,
-      quantity: item.quantity,
-      variant: item.variant || null, // Include variant if available
-      category: item.category,
-      subItems: item.items || [], // Include submenu items
-    }));
+  const formattedItems = items.map((item) => ({
+    name: item.name,
+    price: item.variantPrice || item.price,
+    quantity: item.quantity,
+    variant: item.variant || null, // Include variant if available
+    category: item.category,
+    subItems: item.items || [], // Include submenu items
+  }));
 
+  console.log("Formated data", formattedItems);
+  const handleOrderCompletion = async (method, status) => {
     const orderData = {
       chefEmail: "mkrefat5@gmail.com",
       userEmail: user?.email || "guest@example.com", // Fallback email for testing
@@ -66,10 +55,10 @@ const Cart = () => {
       orderType,
       spiceLevel,
     };
-
+    console.log("Order data", orderData);
     try {
       await axios.post("http://localhost:3000/api/orders", orderData);
-      setShowPaymentForm(false);
+      // setShowPaymentForm(false);
       Swal.fire(
         "Order Placed",
         `Your order has been placed with ${
@@ -92,6 +81,20 @@ const Cart = () => {
     }
   };
 
+  const handlePlaceOrder = () => {
+    if (orderType) {
+      navigate("/pickup-order", {
+        state: {
+          items: formattedItems,
+          totalPrice: getTotalPrice(),
+          spiceLevel,
+          orderType,
+        },
+      });
+    }
+  };
+  console.log(items);
+
   // const handlePaymentMethodChange = (method) => {
   //   setPaymentMethod(method === paymentMethod ? "" : method); // Toggle method
   // };
@@ -101,7 +104,7 @@ const Cart = () => {
       setShowModal(true);
     } else {
       setOrderType(type);
-      setPaymentMethod(""); // Reset payment method when switching order type
+      // setPaymentMethod(""); // Reset payment method when switching order type
     }
   };
 

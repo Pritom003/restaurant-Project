@@ -70,6 +70,8 @@ router.post("/api/orders", async (req, res) => {
     extraCharge,
   } = req.body;
 
+  console.log('Items ', items)
+
   // Validate required fields
   if (!userEmail || !items || items.length === 0 || !totalPrice) {
     return res.status(400).json({

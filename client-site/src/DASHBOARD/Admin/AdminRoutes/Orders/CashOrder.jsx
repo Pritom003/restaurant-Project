@@ -227,6 +227,7 @@ const CashOrder = () => {
               <p className="text-center">Address:{selectedOrder?.address}</p>
               <p className="text-center">Zip Code:{selectedOrder?.zipcode}</p>
               <p className="text-center">Area:{selectedOrder?.area}</p>
+              <p className="text-center">Contact No:{selectedOrder?.mobile}</p>
               <p
                 style={{
                   textAlign: "center",
@@ -247,31 +248,44 @@ const CashOrder = () => {
               <hr />
 
               {/* Items */}
-              <table
-                style={{
-                  width: "100%",
-                  fontSize: "12px",
-                  marginBottom: "10px",
-                  borderCollapse: "collapse",
-                }}
-              >
+              <table>
                 <thead>
                   <tr>
-                    <th style={{ textAlign: "left" }}>Qty</th>
-                    <th style={{ textAlign: "left" }}>Item</th>
+                    <th>Quantity</th>
+                    <th>Item Name</th>
+                    <th>Sub Items</th>
                     <th style={{ textAlign: "right" }}>Price</th>
                   </tr>
                 </thead>
                 <tbody>
                   {selectedOrder.items.map((item, index) => (
                     <tr key={index}>
+                      {/* Quantity */}
                       <td>{item.quantity}</td>
+
+                      {/* Item Name */}
                       <td>{item.name}</td>
-                      <td style={{ textAlign: "right" }}>€ {item.price}</td>
+
+                      {/* Sub Items */}
+                      <td>
+                        {item.subItems && typeof item.subItems === "object" && (
+                          <ul>
+                            {Object.values(item.subItems).map(
+                              (subItem, subIndex) => (
+                                <li key={subIndex}>{subItem.name}</li>
+                              )
+                            )}
+                          </ul>
+                        )}
+                      </td>
+
+                      {/* Price */}
+                      <td style={{ textAlign: "right" }}>£ {item.price}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+
               <hr />
 
               {/* Payment Details */}
@@ -283,19 +297,19 @@ const CashOrder = () => {
                   <tr>
                     <td>Delivery Charge:</td>
                     <td style={{ textAlign: "right" }}>
-                      € {selectedOrder.extraCharge}
+                      £ {selectedOrder.extraCharge}
                     </td>
                   </tr>
                   <tr>
                     <td>Subtotal:</td>
                     <td style={{ textAlign: "right" }}>
-                      € {selectedOrder.totalPrice}
+                      £ {selectedOrder.totalPrice}
                     </td>
                   </tr>
                   <tr>
                     <td>Total:</td>
                     <td style={{ textAlign: "right", fontWeight: "bold" }}>
-                      € {selectedOrder.totalPrice}
+                      £ {selectedOrder.totalPrice}
                     </td>
                   </tr>
                 </tbody>

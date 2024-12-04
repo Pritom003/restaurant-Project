@@ -13,7 +13,7 @@ import {
 } from "react-icons/fa";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { GrMoney } from "react-icons/gr";
-import { RiMenuSearchFill, RiTruckFill } from "react-icons/ri";
+import { RiMenuSearchFill } from "react-icons/ri";
 import { ImStatsDots } from "react-icons/im";
 import Heading from "../../Pages/Home/MenuBox/Heading";
 import backgroundimg from "../../assets/vintage.jpg";
@@ -36,14 +36,14 @@ const OrderSubMenu = ({ isOpen }) =>
       <MenuItem
         to="orderList/strip-order"
         icon={<FaCashRegister />}
-        label="Strip Order"
+        label="Online"
       />
       <MenuItem
         to="orderList/cash-on-delivery"
         icon={<GrMoney />}
         label="Cash"
       />
-      <MenuItem to="orderList/pickup" icon={<RiTruckFill />} label="Pickup" />
+      {/* <MenuItem to="orderList/pickup" icon={<RiTruckFill />} label="Pickup" /> */}
     </ul>
   );
 
@@ -84,12 +84,24 @@ const DashboardLayout = () => {
 
           {role === "Admin" && (
             <>
-             <MenuItem to="profile" icon={<FaUser />} label="Profile" />
+              <MenuItem to="profile" icon={<FaUser />} label="Profile" />
               <MenuItem to="" icon={<ImStatsDots />} label="Stats" />
               <MenuItem to="add-menu" icon={<FaPlus />} label="Add Menu" />
-              <MenuItem to="New-Orders" icon={<IoNotificationsOutline />} label="NEW" />
-              <MenuItem to="Preparing-list" icon={<FaClock />} label="Countdown" />
-              <MenuItem to="dishes" icon={<RiMenuSearchFill />} label="All Dishes" />
+              <MenuItem
+                to="New-Orders"
+                icon={<IoNotificationsOutline />}
+                label="NEW"
+              />
+              <MenuItem
+                to="Preparing-list"
+                icon={<FaClock />}
+                label="Countdown"
+              />
+              <MenuItem
+                to="dishes"
+                icon={<RiMenuSearchFill />}
+                label="All Dishes"
+              />
               <li>
                 <div
                   onClick={toggleOrderSubMenu}
@@ -101,15 +113,22 @@ const DashboardLayout = () => {
                 <OrderSubMenu isOpen={orderSubMenuOpen} />
               </li>
               <MenuItem to="user-list" icon={<FaUsers />} label="All Users" />
-             
             </>
           )}
 
           {role === "guest" && (
             <>
               <MenuItem to="profile" icon={<FaUser />} label="Profile" />
-              <MenuItem to="my-orders" icon={<FaHistory />} label="Order History" />
-              <MenuItem to="upocomming-order" icon={<FaBowlFood />} label="My Orders" />
+              <MenuItem
+                to="my-orders"
+                icon={<FaHistory />}
+                label="Order History"
+              />
+              <MenuItem
+                to="upocomming-order"
+                icon={<FaBowlFood />}
+                label="My Orders"
+              />
             </>
           )}
 
@@ -146,9 +165,21 @@ const DashboardLayout = () => {
                 <MenuItem to="profile" icon={<FaUser />} label="Profile" />
                 <MenuItem to="" icon={<ImStatsDots />} label="Stats" />
                 <MenuItem to="add-menu" icon={<FaPlus />} label="Add Menu" />
-                <MenuItem to="New-Orders" icon={<IoNotificationsOutline />} label="NEW" />
-                <MenuItem to="Preparing-list" icon={<FaClock />} label="Countdown" />
-                <MenuItem to="dishes" icon={<RiMenuSearchFill />} label="All Dishes" />
+                <MenuItem
+                  to="New-Orders"
+                  icon={<IoNotificationsOutline />}
+                  label="NEW"
+                />
+                <MenuItem
+                  to="Preparing-list"
+                  icon={<FaClock />}
+                  label="Countdown"
+                />
+                <MenuItem
+                  to="dishes"
+                  icon={<RiMenuSearchFill />}
+                  label="All Dishes"
+                />
                 <li>
                   <div
                     onClick={toggleOrderSubMenu}
@@ -159,8 +190,7 @@ const DashboardLayout = () => {
                   </div>
                   <OrderSubMenu isOpen={orderSubMenuOpen} />
                 </li>
-                <MenuItem to="user-list" icon={<FaUsers/>} label="All Users" />
-              
+                <MenuItem to="user-list" icon={<FaUsers />} label="All Users" />
               </>
             )}
             {user && (

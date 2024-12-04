@@ -10,6 +10,8 @@ import {
 import { loadStripe } from "@stripe/stripe-js";
 import Swal from "sweetalert2";
 import axios from "axios";
+import useAuth from "../../Hooks/useAuth";
+import { useDispatch } from "react-redux";
 
 const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
 const stripePromise = loadStripe(stripePublicKey);
@@ -22,6 +24,8 @@ const areaDeliveryCharges = {
 };
 
 const PickupOrderForm = () => {
+  const { user } = useAuth();
+  const dispatch = useDispatch();
   const location = useLocation();
   const { items, totalPrice, spiceLevel, orderType } = location.state || {};
   const [formData, setFormData] = useState({
@@ -34,6 +38,9 @@ const PickupOrderForm = () => {
   });
   const [isProcessing, setIsProcessing] = useState(false);
   const [extraCharge, setExtraCharge] = useState(0);
+
+  const removeFromCart = (item) =>
+    dispatch({ type: "REMOVE_FROM_CART", payload: item });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -49,7 +56,7 @@ const PickupOrderForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.paymentMethod === "online") {
+    if (formData.paymentMethod === "stripe") {
       setIsProcessing(true);
     } else {
       await handleOrderSubmission("cash");
@@ -80,7 +87,7 @@ const PickupOrderForm = () => {
       spiceLevel,
       orderType,
       chefEmail: "a",
-      userEmail: "b",
+      userEmail: user?.email,
       time: 1,
       extraCharge,
     };
@@ -92,6 +99,7 @@ const PickupOrderForm = () => {
         "Your order has been placed successfully!",
         "success"
       );
+      dispatch({ type: "CLEAR_CART" });
     } catch (error) {
       console.error(error);
       Swal.fire(
@@ -193,14 +201,14 @@ const PickupOrderForm = () => {
             <RadioButton
               label="Online Payment"
               name="paymentMethod"
-              value="online"
-              checked={formData.paymentMethod === "online"}
+              value="stripe"
+              checked={formData.paymentMethod === "stripe"}
               onChange={handleInputChange}
             />
           </div>
         </div>
 
-        {formData.paymentMethod === "online" && (
+        {formData.paymentMethod === "stripe" && (
           <Elements stripe={stripePromise}>
             <StripePaymentForm
               totalPrice={totalPrice + extraCharge}
@@ -220,7 +228,7 @@ const PickupOrderForm = () => {
         >
           {isProcessing
             ? "Processing..."
-            : formData.paymentMethod === "online"
+            : formData.paymentMethod === "stripe"
             ? `Pay £${(totalPrice + extraCharge).toFixed(2)}`
             : "Place Order"}
         </button>

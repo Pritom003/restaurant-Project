@@ -9,7 +9,7 @@ const IncludedItemSchema = new mongoose.Schema({
 // Schema for varieties (Variants of items with name and price)
 const VarietySchema = new mongoose.Schema({
   name: { type: String, required: true },
-  price: { type: Number, required: true }
+  price: { type: Number, }
 }, { _id: false });
 
 // Schema for each menu item
