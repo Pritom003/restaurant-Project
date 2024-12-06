@@ -4,64 +4,61 @@ import { PiTrashSimpleThin } from "react-icons/pi";
 import Swal from "sweetalert2";
 import { TiShoppingCart } from "react-icons/ti";
 import { useState } from "react";
-import PaymentForm from "./PaymentForm";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
-import { FaPoundSign } from "react-icons/fa";
-import { BsStripe } from "react-icons/bs";
+// import PaymentForm from "./PaymentForm";
+// import { loadStripe } from "@stripe/stripe-js";
+// import { Elements } from "@stripe/react-stripe-js";
+// import { FaPoundSign } from "react-icons/fa";
+// import { BsStripe } from "react-icons/bs";
 import OutOfRangeModal from "./OutofRangle";
 import useAuth from "../../Hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
-const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
-const stripePromise = loadStripe(stripePublicKey);
+// const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
+// const stripePromise = loadStripe(stripePublicKey);
+
+const DELIVERY_CHARGE = 0.0;
 
 const Cart = () => {
   const dispatch = useDispatch();
   const { user } = useAuth();
   const { items, totalPrice } = useSelector((state) => state);
-  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  // const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [orderType, setOrderType] = useState(""); // Default to empty
   const [spiceLevel, setSpiceLevel] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("");
+  // const [paymentMethod, setPaymentMethod] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
 
   const removeFromCart = (item) =>
-    dispatch({ type: "REMOVE_FROM_CART", payload: item });
+    dispatch({ type: "REMOVE_FROM_CART", payload: { key: item.key } });
 
   const isInRange = true;
 
-  const handlePlaceOrder = () => {
-    if (paymentMethod === "stripe") {
-      setShowPaymentForm(true); // Show payment form for Stripe
-    } else if (paymentMethod === "cash") {
-      handleOrderCompletion("cash", "pending"); // Complete order with Cash
-    }
-  };
-const formattedItems = items.map((item) => ({
-  name: item.name,
-  price: item.variantPrice || item.price,
-  quantity: item.quantity,
-  variant: item.variant || null, // Include variant if available
-  category: item.category,
-  subItems: item.items || [], // Include submenu items
-}));
+  const formattedItems = items.map((item) => ({
+    name: item.name,
+    price: item.variantPrice || item.price,
+    quantity: item.quantity,
+    variant: item.variant || null, // Include variant if available
+    category: item.category,
+    subItems: item.items || [], // Include submenu items
+  }));
 
+  console.log("Formated data", formattedItems);
   const handleOrderCompletion = async (method, status) => {
-
     const orderData = {
       chefEmail: "mkrefat5@gmail.com",
-      userEmail: user?.email || "guest@example.com",
+      userEmail: user?.email || "guest@example.com", // Fallback email for testing
+      totalPrice: getTotalPrice(),
       items: formattedItems,
-      totalPrice,
       paymentStatus: status,
       paymentMethod: method,
       orderType,
       spiceLevel,
     };
-console.log(orderData.items ,'the items');
+    console.log("Order data", orderData);
     try {
       await axios.post("http://localhost:3000/api/orders", orderData);
-      setShowPaymentForm(false);
+      // setShowPaymentForm(false);
       Swal.fire(
         "Order Placed",
         `Your order has been placed with ${
@@ -84,20 +81,39 @@ console.log(orderData.items ,'the items');
     }
   };
 
-  const handlePaymentMethodChange = (method) => {
-    setPaymentMethod(method === paymentMethod ? "" : method); // Toggle method
+  const handlePlaceOrder = () => {
+    if (orderType) {
+      navigate("/pickup-order", {
+        state: {
+          items: formattedItems,
+          totalPrice: getTotalPrice(),
+          spiceLevel,
+          orderType,
+        },
+      });
+    }
   };
+  console.log(items);
+
+  // const handlePaymentMethodChange = (method) => {
+  //   setPaymentMethod(method === paymentMethod ? "" : method); // Toggle method
+  // };
 
   const handleOrderTypeChange = (type) => {
     if (type === "online" && !isInRange) {
-      setShowModal(true); // Show modal if out of range
+      setShowModal(true);
     } else {
       setOrderType(type);
+      // setPaymentMethod(""); // Reset payment method when switching order type
     }
   };
 
   const closeModal = () => {
     setShowModal(false);
+  };
+
+  const getTotalPrice = () => {
+    return orderType === "online" ? totalPrice + DELIVERY_CHARGE : totalPrice;
   };
 
   return (
@@ -107,35 +123,60 @@ console.log(orderData.items ,'the items');
       </h3>
       <div className="mt-2 p-2 border min-h-36 border-gray-300">
         <ul className="text-xs">
-        {items.length > 0 ? (
-  items.map((item) => (
-    <li key={item.key} className="flex justify-between items-center py-1">
-      <span className="flex-grow">
-        {item.name} {item.variant && `(${item.variant})`}{" "}
-        {item.quantity > 1 && `(${item.quantity}x)`}
+          {items.length > 0 ? (
+            items.map((item) => (
+              <li
+                key={item.key}
+                className="flex justify-between items-center py-1"
+              >
+                <span className="flex-grow">
+                  <button
+                    onClick={() =>
+                      dispatch({
+                        type: "DECREMENT_QUANTITY",
+                        payload: { id: item.id },
+                      })
+                    }
+                    className="text-gray-600 text-lg bg-red-200 hover:text-red-800 px-3 py-1 border rounded"
+                  >
+                    -
+                  </button>
+                  {item.name} {item.variant && `(${item.variant})`}{" "}
+                  {item.quantity > 1 && `(${item.quantity}x)`}
+                  {/* Display special menu platter items under the category name */}
+                  {item.category === "Special Platter" && (
+                    <span className="text-sm text-gray-600">
+                      {" "}
+                      ({item.items.map((subItem) => subItem.name).join(", ")})
+                    </span>
+                  )}
+                  <span className="text-base">{item.quantity}</span>
+                  <button
+                    onClick={() =>
+                      dispatch({
+                        type: "INCREMENT_QUANTITY",
+                        payload: { id: item.id },
+                      })
+                    }
+                    className="text-gray-600 text-lg bg-red-200 hover:text-red-800 px-3 py-1 border rounded"
+                  >
+                    +
+                  </button>
+                </span>
 
-        {/* Display special menu platter items under the category name */}
-        {item.category === "Special Platter" && (
-          <span className="text-sm text-gray-600">
-            {" "}
-            ({item.items.map(subItem => subItem.name).join(", ")})
-          </span>
-        )}
-      </span>
-      <span className="flex-shrink-0">
-        £{(item.variantPrice || item.price) * item.quantity}
-      </span>
+                <span className="flex-shrink-0">
+                  £{(item.variantPrice || item.price) * item.quantity}
+                </span>
 
-      <button
-        onClick={() => removeFromCart(item)}
-        className="pl-2 hover:text-red-800"
-      >
-        <PiTrashSimpleThin />
-      </button>
-    </li>
-  ))
-) 
- : (
+                <button
+                  onClick={() => removeFromCart(item)}
+                  className="pl-2 hover:text-red-800"
+                >
+                  <PiTrashSimpleThin />
+                </button>
+              </li>
+            ))
+          ) : (
             <p className="text-center text-gray-500">
               Your cart is empty. Please add items to your cart.
             </p>
@@ -144,7 +185,13 @@ console.log(orderData.items ,'the items');
 
         {items.length > 0 && (
           <div className="text-end">
-            <div className="mt-2 text-lg">Total: £{totalPrice.toFixed(2)}</div>
+            <div className="mt-2 text-lg">
+              Subtotal: £{totalPrice.toFixed(2)}
+            </div>
+
+            <div className="mt-2 text-lg">
+              Total: £{getTotalPrice().toFixed(2)}
+            </div>
 
             <div className="mt-4">
               <label className="block text-sm">
@@ -175,7 +222,7 @@ console.log(orderData.items ,'the items');
                     orderType === "online" ? "bg-red-950" : ""
                   }`}
                 ></span>
-                <span>Online</span>
+                <span>Delivery</span>
               </label>
 
               <label className="text-lg flex items-center text-black">
@@ -197,7 +244,7 @@ console.log(orderData.items ,'the items');
             </div>
 
             {/* Payment Method Selection */}
-            {(orderType === "online" || orderType === "pickup") && (
+            {/* {orderType === "online" ? (
               <div className="mt-4 flex flex-wrap lg:flex-col lg:items-start lg:gap-4 items-center justify-between">
                 <label className="text-lg flex items-center text-black">
                   <input
@@ -238,7 +285,9 @@ console.log(orderData.items ,'the items');
                   </span>
                 </label>
               </div>
-            )}
+            ) : (
+              ""
+            )} */}
 
             <button
               onClick={handlePlaceOrder}
@@ -251,7 +300,7 @@ console.log(orderData.items ,'the items');
       </div>
 
       {/* Payment Form for Stripe */}
-      {showPaymentForm && paymentMethod === "stripe" && (
+      {/* {showPaymentForm && paymentMethod === "stripe" && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg max-w-md w-full">
             <h2 className="text-xl font-semibold mb-4">
@@ -259,7 +308,7 @@ console.log(orderData.items ,'the items');
             </h2>
             <Elements stripe={stripePromise}>
               <PaymentForm
-                totalPrice={totalPrice}
+                totalPrice={getTotalPrice()}
                 handleOrderCompletion={handleOrderCompletion}
               />
             </Elements>
@@ -271,7 +320,7 @@ console.log(orderData.items ,'the items');
             </button>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Out of Range Modal */}
       {showModal && <OutOfRangeModal onClose={closeModal} />}

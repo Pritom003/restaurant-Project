@@ -14,6 +14,7 @@ const AddMenuItem = () => {
     { name: "", price: "", itemsIncluded: [{ name: "", quantity: "" }] },
   ]);
   const [varieties, setVarieties] = useState([{ name: "", price: "" }]);
+  const [spicyLevels, setSpicyLevels] = useState([{ name: "", price: "" }]);
 
   const onSubmit = async (data) => {
     const itemData = {
@@ -31,6 +32,9 @@ const AddMenuItem = () => {
               varieties: varieties.filter(
                 (variety) => variety.name && variety.price
               ), // Include varieties if any
+              spicyLevels: spicyLevels.filter(
+                (level) => level.name && level.price
+              ), // Include spicy levels if any
             },
           ],
     };
@@ -49,6 +53,7 @@ const AddMenuItem = () => {
 
       // Reset form and state after submission
       setVarieties([{ name: "", price: "" }]);
+      setSpicyLevels([{ name: "", price: "" }]);
       setIsOtherCategory(false);
       setIsSetMenu(false);
       setSetMenuItems([
@@ -115,147 +120,169 @@ const AddMenuItem = () => {
     });
   };
 
+  const handleAddSpicyLevel = () => {
+    setSpicyLevels((prevLevels) => [...prevLevels, { name: "", price: "" }]);
+  };
+
+  const handleSpicyLevelChange = (index, field, value) => {
+    setSpicyLevels((prevLevels) => {
+      const updatedLevels = [...prevLevels];
+      updatedLevels[index][field] = value;
+      return updatedLevels;
+    });
+  };
+
+  console.log("From Front End", spicyLevels);
+
   return (
-   <div>
-     <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="max-w-lg mx-auto p-4 bg-white shadow-lg rounded-lg"
-    >
-      <h2 className="text-2xl font-bold mb-4 text-center">Add Menu Item</h2>
+    <div>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="max-w-lg mx-auto p-4 bg-white shadow-lg rounded-lg"
+      >
+        <h2 className="text-2xl font-bold mb-4 text-center">Add Menu Item</h2>
 
-      {/* Category Selection */}
-      <div className="mb-4">
-        <label className="block text-gray-700 font-medium">
-          Select Category
-        </label>
-        <select
-          {...register("category", { required: true })}
-          onChange={handleCategoryChange}
-          className="border rounded p-2 w-full bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="">Select a category</option>
-          {categories.map((category) => (
-            <option key={category} value={category}>
-              {category}
-            </option>
-          ))}
-          <option value="Others">Others</option>
-        </select>
-      </div>
-
-      {/* Custom Category Input */}
-      {isOtherCategory && (
+        {/* Category Selection */}
         <div className="mb-4">
-          <label
-            htmlFor="customCategory"
-            className="block text-gray-700 font-medium"
-          >
-            Custom Category Name
+          <label className="block text-gray-700 font-medium">
+            Select Category
           </label>
-          <input
-            type="text"
-            id="customCategory"
-            {...register("customCategory", { required: true })}
-            className="border rounded p-2 bg-white w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-      )}
-
-      {/* Set Menu Item Handling */}
-      {isSetMenu ? (
-        setMenuItems.map((item, index) => (
-          <div
-            key={index}
-            className="mb-4 p-4 border rounded bg-gray-50 shadow-sm"
+          <select
+            {...register("category", { required: true })}
+            onChange={handleCategoryChange}
+            className="border rounded p-2 w-full bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <h3 className="text-lg font-semibold mb-2">Set Menu Item</h3>
-            <input
-              type="text"
-              placeholder="Item Name"
-              value={item.name}
-              onChange={(e) =>
-                handleSetMenuItemChange(index, "name", e.target.value)
-              }
-              className="border rounded bg-white p-2 w-full mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-            <input
-              type="number"
-              placeholder="Price"
-              value={item.price}
-              onChange={(e) =>
-                handleSetMenuItemChange(index, "price", e.target.value)
-              }
-              className="border rounded bg-white p-2 w-full mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-            <h4 className="text-md font-medium mb-2">Included Items</h4>
-            {item.itemsIncluded.map((includedItem, includedIndex) => (
-              <div key={includedIndex} className="flex mb-2 space-x-2">
-                <input
-                  type="text"
-                  placeholder="Included Item Name"
-                  value={includedItem.name}
-                  onChange={(e) =>
-                    handleIncludedItemChange(
-                      index,
-                      includedIndex,
-                      "name",
-                      e.target.value
-                    )
-                  }
-                  className="border p-2 rounded flex-1"
-                  required
-                />
-                <input
-                  type="number"
-                  placeholder="Quantity"
-                  value={includedItem.quantity}
-                  onChange={(e) =>
-                    handleIncludedItemChange(
-                      index,
-                      includedIndex,
-                      "quantity",
-                      e.target.value
-                    )
-                  }
-                  className="border p-2 rounded w-24"
-                  required
-                />
-              </div>
+            <option value="">Select a category</option>
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
             ))}
-            <button
-              type="button"
-              onClick={() => handleAddIncludedItem(index)}
-              className="underline mt-2"
-            >
-              Add Included Item +
-            </button>
-          </div>
-        ))
-      ) : (
-        <>
-          {/* For non-set menu items */}
+            <option value="Others">Others</option>
+          </select>
+        </div>
+
+        {/* Custom Category Input */}
+        {isOtherCategory && (
           <div className="mb-4">
-            <label className="block text-gray-700 font-medium">Item Name</label>
+            <label
+              htmlFor="customCategory"
+              className="block text-gray-700 font-medium"
+            >
+              Custom Category Name
+            </label>
             <input
               type="text"
-              {...register("itemName", { required: true })}
-              className="border rounded p-2 w-full"
+              id="customCategory"
+              {...register("customCategory", { required: true })}
+              className="border rounded p-2 bg-white w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 font-medium">Price</label>
-            <input
-              type="number"
-              step="0.01"
-              {...register("price", { required: true })}
-              className="border rounded p-2 w-full"
-            />
-          </div>
-          <h3 className="text-md font-medium mb-2">Varieties</h3>
+        )}
+
+        {/* Set Menu Item Handling */}
+        {isSetMenu ? (
+          setMenuItems.map((item, index) => (
+            <div
+              key={index}
+              className="mb-4 p-4 border rounded bg-gray-50 shadow-sm"
+            >
+              <h3 className="text-lg font-semibold mb-2">Set Menu Item</h3>
+              <input
+                type="text"
+                placeholder="Item Name"
+                value={item.name}
+                onChange={(e) =>
+                  handleSetMenuItemChange(index, "name", e.target.value)
+                }
+                className="border rounded bg-white p-2 w-full mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <input
+                type="number"
+                placeholder="Price"
+                value={item.price}
+                onChange={(e) =>
+                  handleSetMenuItemChange(index, "price", e.target.value)
+                }
+                step="0.01"
+                min="0"
+                className="border rounded bg-white p-2 w-full mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <h4 className="text-md font-medium mb-2">Included Items</h4>
+              {item.itemsIncluded.map((includedItem, includedIndex) => (
+                <div key={includedIndex} className="flex mb-2 space-x-2">
+                  <input
+                    type="text"
+                    placeholder="Included Item Name"
+                    value={includedItem.name}
+                    onChange={(e) =>
+                      handleIncludedItemChange(
+                        index,
+                        includedIndex,
+                        "name",
+                        e.target.value
+                      )
+                    }
+                    className="border p-2 rounded flex-1"
+                    required
+                  />
+                  <input
+                    type="number"
+                    placeholder="Quantity"
+                    value={includedItem.quantity}
+                    onChange={(e) =>
+                      handleIncludedItemChange(
+                        index,
+                        includedIndex,
+                        "quantity",
+                        e.target.value
+                      )
+                    }
+                    className="border p-2 rounded w-24"
+                    required
+                  />
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => handleAddIncludedItem(index)}
+                className="underline mt-2"
+              >
+                Add Included Item +
+              </button>
+            </div>
+          ))
+        ) : (
+          <>
+            <div className="mb-4">
+              <label className="block text-gray-700 font-medium">
+                Item Name
+              </label>
+              <input
+                type="text"
+                {...register("itemName", { required: true })}
+                className="border rounded p-2 w-full bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700 font-medium">Price</label>
+              <input
+                type="number"
+                {...register("price", { required: true })}
+                step="0.01"
+                min="0"
+                className="border rounded p-2 w-full bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </>
+        )}
+
+        {/* Varieties */}
+        <div className="mb-4">
+          <label className="block text-gray-700 font-medium">Varieties</label>
           {varieties.map((variety, index) => (
-            <div key={index} className="flex mb-2 space-x-2">
+            <div key={index} className="flex space-x-2">
               <input
                 type="text"
                 placeholder="Variety Name"
@@ -263,16 +290,18 @@ const AddMenuItem = () => {
                 onChange={(e) =>
                   handleVarietyChange(index, "name", e.target.value)
                 }
-                className="border p-2 rounded flex-1"
+                className="border rounded p-2 w-full mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <input
                 type="number"
-                placeholder="Variety Price"
+                placeholder="Price"
                 value={variety.price}
                 onChange={(e) =>
                   handleVarietyChange(index, "price", e.target.value)
                 }
-                className="border p-2 rounded w-24"
+                step="0.01"
+                min="0"
+                className="border rounded p-2 w-24 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           ))}
@@ -283,21 +312,56 @@ const AddMenuItem = () => {
           >
             Add Variety +
           </button>
-        </>
-      )}
+        </div>
 
-      {/* Submit Button */}
-      <div className="mt-6 text-center">
+        {/* Spicy Levels */}
+        <div className="mb-4">
+          <label className="block text-gray-700 font-medium">
+            Spicy Levels
+          </label>
+          {spicyLevels.map((level, index) => (
+            <div key={index} className="flex space-x-2">
+              <input
+                type="text"
+                placeholder="Spicy Level Name"
+                value={level.name}
+                onChange={(e) =>
+                  handleSpicyLevelChange(index, "name", e.target.value)
+                }
+                className="border rounded p-2 w-full mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                type="number"
+                placeholder="Price"
+                value={level.price}
+                onChange={(e) =>
+                  handleSpicyLevelChange(index, "price", e.target.value)
+                }
+                step="0.01"
+                min="0"
+                className="border rounded p-2 w-24 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={handleAddSpicyLevel}
+            className="underline mt-2"
+          >
+            Add Spicy Level +
+          </button>
+        </div>
+
+        {/* Submit Button */}
         <button
           type="submit"
-          className="bg-blue-500 text-white px-6 py-2 rounded-lg"
+          className="bg-blue-500 text-white px-4 py-2 rounded mt-4 w-full hover:bg-blue-600"
         >
-          Add Item
+          Submit
         </button>
-      </div>
-    </form>
-    <AddSpecialmenu></AddSpecialmenu>
-   </div>
+      </form>
+      <AddSpecialmenu />
+    </div>
   );
 };
 

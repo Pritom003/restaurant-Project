@@ -5,7 +5,7 @@ const MenuItem = require('../models/MenuSchema');
 router.post('/api/menu/:category/item', async (req, res) => {
   const { category } = req.params;
   const { items } = req.body;
-
+  console.log('From BackEnd', items)
   if (!items || items.length === 0) {
     return res.status(400).json({ error: 'Items are required' });
   }

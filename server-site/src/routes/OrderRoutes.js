@@ -2,17 +2,87 @@ const express = require('express');
 const router = express.Router();
 const Order = require('../models/OrderScheema'); // Adjust path as needed
 const axios = require('axios');
+const nodemailer = require("nodemailer");
+
+// Configure Nodemailer
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER, // Your email
+    pass: process.env.EMAIL_PASS, // Your email password
+  },
+});
+
+// Function to send a welcome email
+const sendWelcomeEmail = async (email, orderNumber, items) => {
+
+  const formattedItems = items
+    .map((item, index) => `  ${index + 1}. ${item.name} (x${item.quantity})`)
+    .join("\n");
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "Your Deedar.UK Restaurant Order Confirmation 🍴",
+    text: `Dear Valued Customer,
+
+Thank you for choosing Deedar.UK Restaurant! We are delighted to confirm your order.
+
+Here are your order details:
+- **Items Ordered:** ${formattedItems}
+- **Order Number:** ${orderNumber}
+
+Your satisfaction is our priority, and we’re working hard to prepare your delicious meal. If you have any questions or need assistance, feel free to contact us.
+
+We look forward to serving you again soon!
+
+Warm regards,  
+The Deedar.UK Restaurant Team
+`,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Welcome email sent successfully to ${email}`);
+  } catch (error) {
+    console.error(`Failed to send welcome email to ${email}:`, error);
+  }
+};
 
 
-router.post('/api/orders', async (req, res) => {
-  const { userEmail, chefEmail, paymentStatus, paymentMethod, items,totalPrice,  orderType, spiceLevel } = req.body;
-console.log(items);
+// API endpoint to place an order
+router.post("/api/orders", async (req, res) => {
+  const {
+    orderNumber,
+    userEmail,
+    chefEmail,
+    paymentStatus,
+    paymentMethod,
+    items,
+    totalPrice,
+    orderType,
+    spiceLevel,
+    email,
+    address,
+    zipcode,
+    mobile,
+    area,
+    extraCharge,
+  } = req.body;
+
+  console.log('Items ', items)
+
+  // Validate required fields
   if (!userEmail || !items || items.length === 0 || !totalPrice) {
-    return res.status(400).json({ error: 'User email, items, and total price are required' });
+    return res.status(400).json({
+      error: "User email, items, and total price are required",
+    });
   }
 
   try {
+    // Create and save the order
     const newOrder = new Order({
+      orderNumber,
       userEmail,
       chefEmail,
       paymentStatus,
@@ -20,22 +90,32 @@ console.log(items);
       orderType,
       items,
       totalPrice,
-      status: 'Pending',
+      status: "Pending",
       spiceLevel,
+      email,
+      address,
+      zipcode,
+      mobile,
+      area,
+      extraCharge,
     });
 
     const savedOrder = await newOrder.save();
 
     // Emit event to all connected clients
-    req.io.emit('new-order', savedOrder);
+    req.io.emit("new-order", savedOrder);
 
+    // Send the welcome email
+    await sendWelcomeEmail(email, orderNumber, items);
+
+    // Respond with success
     res.status(201).json({
-      message: 'Order placed successfully',
+      message: "Order placed successfully",
       data: savedOrder,
     });
   } catch (error) {
-    console.error('Error placing order:', error);
-    res.status(500).json({ error: 'Failed to place order' });
+    console.error("Error placing order:", error);
+    res.status(500).json({ error: "Failed to place order" });
   }
 });
 // GET request to fetch all orders

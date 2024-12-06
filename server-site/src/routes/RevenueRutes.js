@@ -18,7 +18,7 @@ router.get('/api/revenue/daily', async (req, res) => {
       },
       {
         $addFields: {
-          totalPrice: { $toDouble: '$totalPrice' }, 
+          totalPrice: { $toDouble: '$totalPrice' },
         },
       },
       {
@@ -103,9 +103,9 @@ router.get('/api/revenue/monthly', async (req, res) => {
 // GET request for yearly revenue
 router.get('/api/revenue/yearly', async (req, res) => {
   try {
-    const yearoffset = parseInt(req.query.yearOffset) || 0; 
-    const startOfYear = moment().startOf('year').add(yearoffset,'year').toDate();
-    const endOfYear = moment().endOf('year').add(yearoffset,'year').toDate();
+    const yearoffset = parseInt(req.query.yearOffset) || 0;
+    const startOfYear = moment().startOf('year').add(yearoffset, 'year').toDate();
+    const endOfYear = moment().endOf('year').add(yearoffset, 'year').toDate();
 
     const revenue = await Order.aggregate([
       {

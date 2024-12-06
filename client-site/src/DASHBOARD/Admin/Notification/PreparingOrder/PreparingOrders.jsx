@@ -9,9 +9,11 @@ const PreparingOrders = () => {
   useEffect(() => {
     const fetchPreparingOrders = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/orders/preparing");
+        const response = await fetch(
+          "http://localhost:3000/api/orders/preparing"
+        );
         const data = await response.json();
-        setOrders(data)
+        setOrders(data);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching preparing orders:", error);
@@ -35,7 +37,10 @@ const PreparingOrders = () => {
 
     const minutes = Math.floor(remainingSeconds / 60);
     const seconds = remainingSeconds % 60;
-    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
+      2,
+      "0"
+    )}`;
   };
 
   // Auto-refresh timer every second
@@ -60,9 +65,12 @@ const PreparingOrders = () => {
 
     if (result.isConfirmed) {
       try {
-        const response = await fetch(`http://localhost:3000/api/orders/${orderId}/expire`, {
-          method: "PATCH",
-        });
+        const response = await fetch(
+          `http://localhost:3000/api/orders/${orderId}/expire`,
+          {
+            method: "PATCH",
+          }
+        );
 
         if (response.ok) {
           const updatedOrder = await response.json();
@@ -85,50 +93,52 @@ const PreparingOrders = () => {
       }
     }
   };
- // Add 5 more minutes to the order
- const addTimeToOrder = async (orderId) => {
-  // Show confirmation dialog
-  const result = await Swal.fire({
-    title: "Extend Time?",
-    text: "Are you sure you want to add 5 more minutes to this order?",
-    icon: "question",
-    showCancelButton: true,
-    confirmButtonText: "Yes, Add Time!",
-    cancelButtonText: "Cancel",
-  });
+  // Add 5 more minutes to the order
+  const addTimeToOrder = async (orderId) => {
+    // Show confirmation dialog
+    const result = await Swal.fire({
+      title: "Extend Time?",
+      text: "Are you sure you want to add 5 more minutes to this order?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Add Time!",
+      cancelButtonText: "Cancel",
+    });
 
-  if (result.isConfirmed) {
-    try {
-      const response = await fetch(`http://localhost:3000/api/orders/${orderId}`, {
-        method: "PATCH",
-        body: JSON.stringify({ time: 5 }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        const updatedOrder = await response.json();
-        console.log("5 minutes added:", updatedOrder);
-        setOrders((prevOrders) =>
-          prevOrders.map((order) =>
-            order._id === orderId ? { ...order, time: order.time + 5 } : order
-          )
+    if (result.isConfirmed) {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/api/orders/${orderId}`,
+          {
+            method: "PATCH",
+            body: JSON.stringify({ time: 5 }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
         );
-        Swal.fire({
-          title: "Time Extended!",
-          text: "5 minutes have been added to the preparation time.",
-          icon: "success",
-        });
-      } else {
-        console.error("Failed to update order time", await response.json());
-      }
-    } catch (error) {
-      console.error("Error updating order time:", error);
-    }
-  }
-};
 
+        if (response.ok) {
+          const updatedOrder = await response.json();
+          console.log("5 minutes added:", updatedOrder);
+          setOrders((prevOrders) =>
+            prevOrders.map((order) =>
+              order._id === orderId ? { ...order, time: order.time + 5 } : order
+            )
+          );
+          Swal.fire({
+            title: "Time Extended!",
+            text: "5 minutes have been added to the preparation time.",
+            icon: "success",
+          });
+        } else {
+          console.error("Failed to update order time", await response.json());
+        }
+      } catch (error) {
+        console.error("Error updating order time:", error);
+      }
+    }
+  };
 
   if (loading) {
     return <div>Loading preparing orders...</div>;
@@ -144,10 +154,18 @@ const PreparingOrders = () => {
               key={order._id}
               className="border rounded-lg p-4 shadow-md bg-white"
             >
-              <h4 className="text-xl font-semibold mb-2">Order #{order._id}</h4>
-              <p><strong>User Email:</strong> {order.userEmail}</p>
-              <p><strong>Total Price:</strong> £{order.totalPrice}</p>
-              <p><strong>Preparation Time:</strong> {order.time} minutes</p>
+              <h4 className="text-xl font-semibold mb-2">
+                Order #{order.orderNumber}
+              </h4>
+              <p>
+                <strong>User Email:</strong> {order.userEmail}
+              </p>
+              <p>
+                <strong>Total Price:</strong> £{order.totalPrice}
+              </p>
+              <p>
+                <strong>Preparation Time:</strong> {order.time} minutes
+              </p>
               <h5 className="font-medium mt-3">Items:</h5>
               <ul>
                 {order.items.map((item, index) => (
@@ -163,29 +181,28 @@ const PreparingOrders = () => {
                 </h5>
                 <p>{order.status}</p>
               </div>
-<div className="flex flex-wrap justify-between items-center">
-  
-              {/* Update status if time is 00:00 */}
-              {/* {calculateRemainingTime(order.updatedAt, order.time) === "00:00" && ( */}
-              <button
+              <div className="flex flex-wrap justify-between items-center">
+                {/* Update status if time is 00:00 */}
+                {/* {calculateRemainingTime(order.updatedAt, order.time) === "00:00" && ( */}
+                <button
                   onClick={() => updateOrderStatus(order._id)}
                   className="mt-3 border-2 border-red-300 text-red-600 py-1 px-3 rounded"
                 >
-                   Expired
+                  Expired
                 </button>
-              {/* )} */}
-
-              {/* Show "+5 minutes" button if less than 5 minutes left */}
-              {/* {calculateRemainingTime(order.updatedAt, order.time) !== "00:00" &&
-                calculateRemainingTime(order.updatedAt, order.time).split(":")[0] < 5 && ( */}
-                  <button
-                    onClick={() => addTimeToOrder(order._id)}
-                    className="mt-3  border-2 border-blue-300 text-blue-600  py-1 px-3 rounded"
-                  >
-                    +5 Minutes
-                  </button>
                 {/* )} */}
-</div>
+
+                {/* Show "+5 minutes" button if less than 5 minutes left */}
+                {/* {calculateRemainingTime(order.updatedAt, order.time) !== "00:00" &&
+                calculateRemainingTime(order.updatedAt, order.time).split(":")[0] < 5 && ( */}
+                <button
+                  onClick={() => addTimeToOrder(order._id)}
+                  className="mt-3  border-2 border-blue-300 text-blue-600  py-1 px-3 rounded"
+                >
+                  +5 Minutes
+                </button>
+                {/* )} */}
+              </div>
             </div>
           ))}
         </div>

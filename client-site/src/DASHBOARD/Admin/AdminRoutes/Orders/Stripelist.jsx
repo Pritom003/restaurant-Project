@@ -88,9 +88,7 @@ const Stripelist = () => {
                     <td className="px-4 py-2">
                       {formatDate(order?.createdAt)}
                     </td>
-                    <td className="px-4 py-2">
-                      ${order?.totalPrice}
-                    </td>
+                    <td className="px-4 py-2">${order?.totalPrice}</td>
                     <td className="px-4 py-2">{order?.paymentStatus}</td>
                     <td className="px-4 py-2">{order?.spiceLevel}</td>
                     <td className="px-4 py-2 flex space-x-4">
@@ -155,6 +153,10 @@ const Stripelist = () => {
             >
               {/* Header */}
               <h2 style={{ textAlign: "center", margin: "0" }}>Deedar Uk</h2>
+              <p className="text-center">Address:{selectedOrder?.address}</p>
+              <p className="text-center">Zip Code:{selectedOrder?.zipcode}</p>
+              <p className="text-center">Area:{selectedOrder?.area}</p>
+              <p className="text-center">Contact No:{selectedOrder?.mobile}</p>
               <p
                 style={{
                   textAlign: "center",
@@ -166,7 +168,7 @@ const Stripelist = () => {
 
               {/* Order Details */}
               <h3 style={{ textAlign: "center", margin: "5px 0" }}>
-                Order: {selectedOrder._id}
+                Order Number: {selectedOrder.orderNumber}
               </h3>
               <p style={{ fontSize: "12px", margin: "5px 0" }}>
                 CreatedAt:
@@ -175,31 +177,44 @@ const Stripelist = () => {
               <hr />
 
               {/* Items */}
-              <table
-                style={{
-                  width: "100%",
-                  fontSize: "12px",
-                  marginBottom: "10px",
-                  borderCollapse: "collapse",
-                }}
-              >
+              <table>
                 <thead>
                   <tr>
-                    <th style={{ textAlign: "left" }}>Qty</th>
-                    <th style={{ textAlign: "left" }}>Item</th>
+                    <th>Quantity</th>
+                    <th>Item Name</th>
+                    <th>Sub Items</th>
                     <th style={{ textAlign: "right" }}>Price</th>
                   </tr>
                 </thead>
                 <tbody>
                   {selectedOrder.items.map((item, index) => (
                     <tr key={index}>
+                      {/* Quantity */}
                       <td>{item.quantity}</td>
+
+                      {/* Item Name */}
                       <td>{item.name}</td>
-                      <td style={{ textAlign: "right" }}>€ {item.price}</td>
+
+                      {/* Sub Items */}
+                      <td>
+                        {item.subItems && typeof item.subItems === "object" && (
+                          <ul>
+                            {Object.values(item.subItems).map(
+                              (subItem, subIndex) => (
+                                <li key={subIndex}>{subItem.name}</li>
+                              )
+                            )}
+                          </ul>
+                        )}
+                      </td>
+
+                      {/* Price */}
+                      <td style={{ textAlign: "right" }}>£ {item.price}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+
               <hr />
 
               {/* Payment Details */}
@@ -209,15 +224,21 @@ const Stripelist = () => {
               <table style={{ width: "100%", fontSize: "12px" }}>
                 <tbody>
                   <tr>
+                    <td>Delivery Charge:</td>
+                    <td style={{ textAlign: "right" }}>
+                      £ {selectedOrder.extraCharge}
+                    </td>
+                  </tr>
+                  <tr>
                     <td>Subtotal:</td>
                     <td style={{ textAlign: "right" }}>
-                      € {selectedOrder.totalPrice}
+                      £ {selectedOrder.totalPrice}
                     </td>
                   </tr>
                   <tr>
                     <td>Total:</td>
                     <td style={{ textAlign: "right", fontWeight: "bold" }}>
-                      € {selectedOrder.totalPrice}
+                      £ {selectedOrder.totalPrice}
                     </td>
                   </tr>
                 </tbody>

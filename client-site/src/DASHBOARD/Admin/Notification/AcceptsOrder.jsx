@@ -9,7 +9,9 @@ const AcceptOrder = () => {
   useEffect(() => {
     const fetchPendingOrders = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/orders/pending");
+        const response = await fetch(
+          "http://localhost:3000/api/orders/pending"
+        );
         const data = await response.json();
         setOrders(data);
         setLoading(false);
@@ -21,55 +23,59 @@ const AcceptOrder = () => {
     fetchPendingOrders();
   }, []);
 
- // Handle adding preparation time and updating order status
- const handleUpdateOrder = async (orderId, time) => {
-  // SweetAlert2 permission check before updating the order
-  Swal.fire({
-    title: 'Are you sure?',
-    text: `Do you want to set the preparation time for Order #${orderId}?`,
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, Update!',
-    cancelButtonText: 'No, Cancel',
-    reverseButtons: true
-  }).then(async (result) => {
-    if (result.isConfirmed) {
-      try {
-        const response = await fetch(`http://localhost:3000/api/orders/${orderId}`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ time, status: "Preparing" }),
-        });
+  // Handle adding preparation time and updating order status
+  const handleUpdateOrder = async (orderId, time) => {
+    // SweetAlert2 permission check before updating the order
+    Swal.fire({
+      title: "Are you sure?",
+      text: `Do you want to set the preparation time for Order #${orderId}?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Update!",
+      cancelButtonText: "No, Cancel",
+      reverseButtons: true,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await fetch(
+            `http://localhost:3000/api/orders/${orderId}`,
+            {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ time, status: "Preparing" }),
+            }
+          );
 
-        if (response.ok) {
-        await response.json();
+          if (response.ok) {
+            await response.json();
+            Swal.fire({
+              title: "Order Updated!",
+              text: `Order #${orderId} status updated to Preparing.`,
+              icon: "success",
+            });
+            setOrders((prevOrders) =>
+              prevOrders.filter((order) => order._id !== orderId)
+            );
+          } else {
+            Swal.fire({
+              title: "Error!",
+              text: "There was an issue updating the order.",
+              icon: "error",
+            });
+          }
+        } catch (error) {
+          console.error("Error updating order status:", error);
           Swal.fire({
-            title: 'Order Updated!',
-            text: `Order #${orderId} status updated to Preparing.`,
-            icon: 'success',
-          });
-          setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId));
-        } else {
-          Swal.fire({
-            title: 'Error!',
-            text: 'There was an issue updating the order.',
-            icon: 'error',
+            title: "Failed!",
+            text: "Failed to update order status.",
+            icon: "error",
           });
         }
-      } catch (error) {
-        console.error("Error updating order status:", error);
-        Swal.fire({
-          title: 'Failed!',
-          text: 'Failed to update order status.',
-          icon: 'error',
-        });
       }
-    }
-  });
-};
-
+    });
+  };
 
   if (loading) {
     return <div>Loading pending orders...</div>;
@@ -85,18 +91,26 @@ const AcceptOrder = () => {
               key={order._id}
               className="border rounded-lg p-4 shadow-md bg-white"
             >
-              <h4 className="text-xl font-semibold mb-2">Order #{order._id}</h4>
-              <p><strong>User Email:</strong> {order.userEmail}</p>
-              <p><strong>Total Price:</strong> £{order.totalPrice}</p>
-              <p><strong>status</strong> £{order.status}</p>
+              <h4 className="text-xl font-semibold mb-2">
+                Order #{order.orderNumber}
+              </h4>
+              <p>
+                <strong>User Email:</strong> {order.userEmail}
+              </p>
+              <p>
+                <strong>Total Price:</strong> £{order.totalPrice}
+              </p>
+              <p>
+                <strong>status</strong> £{order.status}
+              </p>
               <h5 className="font-medium mt-3">Items:</h5>
-              
-                {order.items.map((item, index) => (
-                  <span key={index}>
-                    {item.name} (x{item.quantity}) - £{item.price}
-                  </span>
-                ))}
-              
+
+              {order.items.map((item, index) => (
+                <span key={index}>
+                  {item.name} (x{item.quantity}) - £{item.price}
+                </span>
+              ))}
+
               <div className="mt-3">
                 <h5 className="font-medium">Set Preparation Time:</h5>
                 <div className="flex gap-3 flex-wrap space-x-2">
@@ -104,17 +118,17 @@ const AcceptOrder = () => {
                     onClick={() => handleUpdateOrder(order._id, 15)}
                     className="text-green-800 border-green-500 border-2 hover:border-blue-700 p-2"
                   >
-                   15 min
+                    15 min
                   </button>
                   <button
                     onClick={() => handleUpdateOrder(order._id, 25)}
-                     className="text-green-800 border-green-500 border-2 hover:border-blue-700 p-2"
+                    className="text-green-800 border-green-500 border-2 hover:border-blue-700 p-2"
                   >
                     25 min
                   </button>
                   <button
                     onClick={() => handleUpdateOrder(order._id, 30)}
-                     className="text-green-800 border-green-500 border-2 hover:border-blue-700 p-2"
+                    className="text-green-800 border-green-500 border-2 hover:border-blue-700 p-2"
                   >
                     30 min
                   </button>

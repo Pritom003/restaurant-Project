@@ -24,6 +24,8 @@ import PickupOrder from "./DASHBOARD/Admin/AdminRoutes/Orders/PickupOrders";
 import AcceptsOrder from "./DASHBOARD/Admin/Notification/AcceptsOrder";
 import PreparingOrders from "./DASHBOARD/Admin/Notification/PreparingOrder/PreparingOrders";
 import UpcomingOrders from "./DASHBOARD/User/UpcommingOrder";
+import PickupOrderForm from "./Component/Cart/PickupOrderForm";
+import AddLocation from "./DASHBOARD/Admin/AdminRoutes/AddLocation";
 // import PrivateRoute from "./PrivateRoute"; // Import the PrivateRoute component
 
 const router = createBrowserRouter([
@@ -34,6 +36,7 @@ const router = createBrowserRouter([
     children: [
       { path: "/", element: <LandingPage /> },
       { path: "/menus", element: <Home /> },
+      { path: "/pickup-order", element: <PickupOrderForm /> },
     ],
   },
   {
@@ -68,10 +71,22 @@ const router = createBrowserRouter([
               </AdminRoute>
             ),
           },
-          { path: "New-Orders",
-           element: ( <AdminRoute><AcceptsOrder /></AdminRoute> )},
-          { path: "Preparing-list",
-             element:  (<AdminRoute><PreparingOrders/> </AdminRoute>) },
+          {
+            path: "New-Orders",
+            element: (
+              <AdminRoute>
+                <AcceptsOrder />
+              </AdminRoute>
+            ),
+          },
+          {
+            path: "Preparing-list",
+            element: (
+              <AdminRoute>
+                <PreparingOrders />{" "}
+              </AdminRoute>
+            ),
+          },
           {
             path: "orderList",
             element: (
@@ -91,6 +106,14 @@ const router = createBrowserRouter([
             ),
           },
           {
+            path: "add-location",
+            element: (
+              <AdminRoute>
+                <AddLocation />
+              </AdminRoute>
+            ),
+          },
+          {
             path: "my-orders",
             element: <MyOrders />,
           },
@@ -98,8 +121,8 @@ const router = createBrowserRouter([
           { path: "", element: <AdminProfile /> },
           { path: "add-menu", element: <Addmenu /> },
           { path: "dishes", element: <AllMenuList /> },
-          { path: "upocomming-order", element: <UpcomingOrders/> },
-         
+          { path: "upocomming-order", element: <UpcomingOrders /> },
+
           {
             path: "orderList",
             element: <OrderLlist />, // This will display the order list

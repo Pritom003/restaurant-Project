@@ -5,12 +5,13 @@ const http = require('http'); // Required for Socket.IO
 const { Server } = require('socket.io');
 const dotenv = require('dotenv');
 const connectToMongoDB = require('./src/config/db');
-const menuRoutes = require('./src/routes/MenuRoutes'); 
+const menuRoutes = require('./src/routes/MenuRoutes');
 const orderRoutes = require('./src/routes/OrderRoutes');
 const revenueRoutes = require('./src/routes/RevenueRutes');
-const paymentRoutes  = require('./src/routes/PaymentRutes');
-const userRoutes  = require('./src/routes/UsersRoutes');
-const SpecialMenuRoutes  = require('./src/routes/SpecialMenuRouter');
+const paymentRoutes = require('./src/routes/PaymentRutes');
+const userRoutes = require('./src/routes/UsersRoutes');
+const SpecialMenuRoutes = require('./src/routes/SpecialMenuRouter');
+const DeliveryLocationRoutes = require('./src/routes/LocationRoutes');
 
 dotenv.config(); // Ensure your .env file is loaded
 
@@ -39,12 +40,13 @@ app.use((req, res, next) => {
 });
 
 // Use the imported routes
-app.use(menuRoutes); 
-app.use(orderRoutes); 
+app.use(menuRoutes);
+app.use(orderRoutes);
 app.use(revenueRoutes);
 app.use(paymentRoutes);
 app.use(userRoutes);
 app.use(SpecialMenuRoutes);
+app.use(DeliveryLocationRoutes);
 
 // Welcome route
 app.get('/', (req, res) => {
