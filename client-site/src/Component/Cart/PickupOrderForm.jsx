@@ -60,19 +60,19 @@ const PickupOrderForm = () => {
     fetchLocations();
   }, []);
 
- // Handle area selection and update delivery charge
- const handleAreaChange = (e) => {
-  const selectedArea = e.target.value;
-  setFormData({ ...formData, area: selectedArea });
+  // Handle area selection and update delivery charge
+  const handleAreaChange = (e) => {
+    const selectedArea = e.target.value;
+    setFormData({ ...formData, area: selectedArea });
 
-  // Find the selected location's price
-  const selectedLocation = deliveryLocations.find(
-    (loc) => loc.locationName === selectedArea
-  );
+    // Find the selected location's price
+    const selectedLocation = deliveryLocations.find(
+      (loc) => loc.locationName === selectedArea
+    );
 
-  // Update extra charge
-  setExtraCharge(selectedLocation ? selectedLocation.price : 0);
-};
+    // Update extra charge
+    setExtraCharge(selectedLocation ? selectedLocation.price : 0);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -135,7 +135,12 @@ const PickupOrderForm = () => {
   return (
     <div className="p-4">
       <form className="max-w-xl p-5 bg-white mx-auto" onSubmit={handleSubmit}>
-        <h2 className="text-2xl font-bold mb-6">Pickup Order Details</h2>
+        {orderType === "online" ? (
+          <h2 className="text-2xl font-bold mb-6">Online Order Details</h2>
+        ) : (
+          <h2 className="text-2xl font-bold mb-6">Pickup Order Details</h2>
+        )}
+
         <div className="flex gap-5">
           <p>Order Type: {orderType}</p>
           <p className="mb-3">

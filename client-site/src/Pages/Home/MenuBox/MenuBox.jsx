@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import MenuData from "../../../Hooks/Menudatea"; // Ensure this fetches correct menu data
@@ -14,8 +15,7 @@ const MenuBox = ({ addToCart }) => {
   const [isAllergiesExpanded, setIsAllergiesExpanded] = useState(false);
   const [specialMenuData, setSpecialMenuData] = useState([]);
   const [specialMenuCat, setSpecialcatMenuData] = useState([]);
-  const [isSpecialMenuOpen, setIsSpecialMenuOpen] = useState(false); 
-
+  const [isSpecialMenuOpen, setIsSpecialMenuOpen] = useState(false);
 
   const [isStillCantDecideOpen, setIsStillCantDecideOpen] = useState(false);
   const dispatch = useDispatch();
@@ -26,11 +26,13 @@ const MenuBox = ({ addToCart }) => {
         : [...prev, category]
     );
   };
-      // Fetch Special Menu
+  // Fetch Special Menu
   useEffect(() => {
     const fetchSpecialMenu = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/special-menu"); // Adjust the URL as needed
+        const response = await axios.get(
+          "http://localhost:3000/api/special-menu"
+        ); // Adjust the URL as needed
         setSpecialMenuData(response.data);
       } catch (err) {
         console.error("Failed to fetch special menu:", err);
@@ -40,13 +42,14 @@ const MenuBox = ({ addToCart }) => {
   }, []);
 
   // Find price of Mid Week Special Platter
-    const SpecialMenuprice= specialMenuData.find(item => item.category === "Mid Week Special Platter")?.Price
-    // console.log(specialMenuData,'here');
+  const SpecialMenuprice = specialMenuData.find(
+    (item) => item.category === "Mid Week Special Platter"
+  )?.Price;
+  // console.log(specialMenuData,'here');
   // Handle opening modal with special menu data
-  // const currentDay = new Date().getDay();
-  const currentDay = 2
+  const currentDay = new Date().getDay();
+  // const currentDay = 2
   // console.log(currentDay);
- 
 
   const handleSpecialMenuClick = () => {
     const specialMenu = specialMenuData.find(
@@ -72,10 +75,16 @@ const MenuBox = ({ addToCart }) => {
   );
   // const cheCat=categories.category
   const handleStillCantDecideClick = () => {
- 
     // console.log( ,'dehksjfeheuhehfrehfuhehe');
     setSpecialcatMenuData(categories.subcategories);
     setIsStillCantDecideOpen(true);
+  };
+
+  const calculateTotalPrice = (item) => {
+    let totalPrice = item.price;
+    if (item.variantPrice) totalPrice += item.variantPrice; // Add variant price
+    if (item.variantPrice) totalPrice += item.variantPrice; // Add spicy level price if selected
+    return totalPrice;
   };
 
   return (
@@ -130,11 +139,10 @@ const MenuBox = ({ addToCart }) => {
           </div>
         )}
         {error && <p>Error loading menu: {error}</p>}
-        
-  
-              {/* Special Menu Category */}
-              
-              <div
+
+        {/* Special Menu Category */}
+
+        <div
           className="flex justify-between items-center cursor-pointer p-2 bg-red-300 hover:bg-red-400"
           onClick={handleSpecialMenuClick}
         >
@@ -158,7 +166,6 @@ const MenuBox = ({ addToCart }) => {
             }}
           />
         )}
-                 
 
         {!loading &&
           !error &&
@@ -190,8 +197,6 @@ const MenuBox = ({ addToCart }) => {
                         <div className="border-b-2 border-dotted border-red-900 pb-2">
                           <div className="flex w-full text-xl justify-between">
                             <span>{item.name}</span>
-                            
-
 
                             <button
                               className="hover:underline"
@@ -221,67 +226,110 @@ const MenuBox = ({ addToCart }) => {
                             <div className="flex w-full justify-between">
                               {item.name}
 
-                              {item.varieties.length > 0 && (
-  <div className="text-xs grid justify-end gap-1 text-gray-600 mt-1">
-    <select
-  className="bg-white text-black  w-44"
-      onChange={(e) => {
-        const selectedVariety = item.varieties.find(
-          (variety) => variety.name === e.target.value
-        );
-        
-        const updatedItem = {
-          ...item,
-          variant: selectedVariety.name || null,
-          variantPrice: selectedVariety ? selectedVariety.price : 0,
-          // Track the variant name for removing specific item
-          keyToRemove: selectedVariety ? selectedVariety.name : null,
-        };
+                              {item.spicyLevels.length > 0 && (
+                                <div className="text-xs grid justify-end gap-1 text-gray-600 mt-1">
+                                  <select
+                                    className="bg-white text-black  w-44"
+                                    onChange={(e) => {
+                                      const selectedSpicy =
+                                        item.spicyLevels.find(
+                                          (level) =>
+                                            level.name === e.target.value
+                                        );
 
-        // Dispatch to update cart
-        dispatch({
-          type: "ADD_TO_CART",
-          payload: updatedItem,
-        });
-      }}
-    >
-      <option value="">Select a variety</option>
-      {item.varieties.map((variety, idx) => (
-        <option key={idx} value={variety.name} >
-          {variety.name} - £{variety.price.toFixed(2)}
-        </option>
-      ))}
-    </select>
-  </div>
-)}
-                              <button
-                                className="hover:underline"
-                                onClick={() => addToCart(item)}
-                                // Add item to cart
-                              >
-                                + £{item.price}
-                              </button>
+                                      const updatedItem = {
+                                        ...item,
+                                        variant: selectedSpicy.name || null,
+                                        variantPrice: selectedSpicy
+                                          ? selectedSpicy.price
+                                          : 0,
+                                        // Track the variant name for removing specific item
+                                        keyToRemove: selectedSpicy
+                                          ? selectedSpicy.name
+                                          : null,
+                                      };
+
+                                      // Dispatch to update cart
+                                      dispatch({
+                                        type: "ADD_TO_CART",
+                                        payload: updatedItem,
+                                      });
+                                    }}
+                                  >
+                                    <option value="">Select a spicyy</option>
+                                    {item.spicyLevels.map((spicy, idx) => (
+                                      <option key={idx} value={spicy.name}>
+                                        {spicy.name} - £{spicy.price.toFixed(2)}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                              )}
+
+                              {item.varieties.length > 0 ? (
+                                <div className="text-xs grid justify-end gap-1 text-gray-600 mt-1">
+                                  <select
+                                    className="bg-white text-black  w-44"
+                                    onChange={(e) => {
+                                      const selectedVariety =
+                                        item.varieties.find(
+                                          (variety) =>
+                                            variety.name === e.target.value
+                                        );
+
+                                      const updatedItem = {
+                                        ...item,
+                                        variant: selectedVariety.name || null,
+                                        variantPrice: selectedVariety
+                                          ? selectedVariety.price
+                                          : 0,
+                                        // Track the variant name for removing specific item
+                                        keyToRemove: selectedVariety
+                                          ? selectedVariety.name
+                                          : null,
+                                      };
+
+                                      // Dispatch to update cart
+                                      dispatch({
+                                        type: "ADD_TO_CART",
+                                        payload: updatedItem,
+                                      });
+                                    }}
+                                  >
+                                    <option value="">Select a variety</option>
+                                    {item.varieties.map((variety, idx) => (
+                                      <option key={idx} value={variety.name}>
+                                        {variety.name} - £
+                                        {variety.price.toFixed(2)}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                              ) : (
+                                <button
+                                  className="hover:underline"
+                                  onClick={() => {
+                                    const totalPrice =
+                                      calculateTotalPrice(item);
+                                    addToCart({ ...item, totalPrice });
+                                  }}
+                                >
+                                  + £{calculateTotalPrice(item)}
+                                </button>
+                              )}
                             </div>
-
-  
-
-
-
-
-      
                           </ul>
                         </div>
                       )}
                     </div>
                   ))}
-                  
                 </div>
               </div>
             </div>
           ))}
 
-<div></div>
-<div
+        <div></div>
+        <div
           className="flex justify-between items-center cursor-pointer p-2 bg-red-300 hover:bg-red-400"
           onClick={handleStillCantDecideClick}
         >
@@ -293,33 +341,32 @@ const MenuBox = ({ addToCart }) => {
           </span>
         </div>
         {/* still cant decide  */}
-        
 
         {isStillCantDecideOpen && (
-        <SpecialMenuModal
-          onClose={() => setIsStillCantDecideOpen(false)}
-  
-          subcategories={specialMenuCat}
-          price={specialMenuData?.find(item => item.category === "Mid Week Special Platter")?.Price}
-          onAddToCart={(platter) => {
-            // Ensure platter is an array and contains items
-            if (Array.isArray(platter.items) && platter.items.length <= 2) {
-              console.log(platter);
-              dispatch({ type: "ADD_TO_CART", payload: platter });
-              setIsStillCantDecideOpen(false);
-            } else {
-              Swal.fire({
-                icon: "warning",
-                title: "Limit Exceeded",
-                text: "You can only select up to two items.",
-              });
+          <SpecialMenuModal
+            onClose={() => setIsStillCantDecideOpen(false)}
+            subcategories={specialMenuCat}
+            price={
+              specialMenuData?.find(
+                (item) => item.category === "Mid Week Special Platter"
+              )?.Price
             }
-          }}
-          
-          
+            onAddToCart={(platter) => {
+              // Ensure platter is an array and contains items
+              if (Array.isArray(platter.items) && platter.items.length <= 2) {
+                console.log(platter);
+                dispatch({ type: "ADD_TO_CART", payload: platter });
+                setIsStillCantDecideOpen(false);
+              } else {
+                Swal.fire({
+                  icon: "warning",
+                  title: "Limit Exceeded",
+                  text: "You can only select up to two items.",
+                });
+              }
+            }}
           />
         )}
-
       </div>
     </div>
   );

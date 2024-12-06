@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2'; // Import Swal
 import { FaPen, FaTrash } from 'react-icons/fa';
+import Specialmenulist from './Specialmenulist';
 
 const AllMenuList = () => {
   const [menu, setMenu] = useState([]); // Default to an empty array
@@ -161,8 +162,11 @@ const handleCategoryUpdate = async (oldCategoryName) => {
   };
 
   return (
-    <div className="container mx-auto py-8 text-black">
-      <h2 className="text-2xl font-bold mb-4">Menu</h2>
+  <div className=' flex flex-wrap gap -4 text-black'>
+      <div className="container mx-auto py-8 text-black">
+      <h2 className=' text-center text-4xl font-chewy underline text-red-950 pt-10 '>
+      Regular Menus
+    </h2>
       {loading ? (
         <p>Loading...</p>
       ) : (
@@ -252,6 +256,14 @@ const handleCategoryUpdate = async (oldCategoryName) => {
       </div>
      
     </div>
+    <hr className=' text-black'></hr>
+   <div className=' bg-orange-200 p-10 '>
+    <h2 className=' text-center text-3xl font-chewy underline text-red-950 pt-10 '>
+      Special Platter Menus 
+    </h2>
+   <Specialmenulist></Specialmenulist>
+   </div>
+  </div>
   );
 };
 

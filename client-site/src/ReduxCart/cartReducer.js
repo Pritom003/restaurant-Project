@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 const initialState = {
   items: JSON.parse(localStorage.getItem('cartItems')) || [],
   totalPrice: JSON.parse(localStorage.getItem('cartItems'))
@@ -17,7 +18,7 @@ const cartReducer = (state = initialState, action) => {
       // Handle special menu items
       if (category === 'Special Platter') {
         const newItem = {
-          id,  // Unique ID for each special platter
+          id,  // Unique ID for each platter
           name: 'Special Platter',
           category,
           items,
