@@ -21,29 +21,33 @@ const useRestaurantStatus = () => {
 
     fetchRestaurantStatus();
   }, []);
-
   useEffect(() => {
     if (restaurantData) {
-      const { openingTime, closingTime, isOpen } = restaurantData;
-
+      const {NewopeningTime, NewclosingTime, isOpen } = restaurantData;
+  
       // Get the current time in Bangladesh (Dhaka timezone)
       const bdTime = new Date().toLocaleString('en-GB', { timeZone: 'Asia/Dhaka' });
       const currentTime = new Date(bdTime);
-
-      // Convert the opening and closing times to Date objects for comparison
-      const [openingHours, openingMinutes] = openingTime.split(":").map(Number);
-      const [closingHours, closingMinutes] = closingTime.split(":").map(Number);
-
+  
+      // Extract hours and minutes from opening and closing time strings
+      const [openingHours, openingMinutes] =NewopeningTime.split(":").map(Number);
+      const [closingHours, closingMinutes] = NewclosingTime.split(":").map(Number);
+  
+      // Create Date objects for opening and closing times on the current date
       const openingDate = new Date(currentTime);
-      openingDate.setHours(openingHours, openingMinutes, 0, 0);
-
+      openingDate.setHours(openingHours, openingMinutes, 0, 0); // Set opening time with current date
+  
       const closingDate = new Date(currentTime);
-      closingDate.setHours(closingHours, closingMinutes, 0, 0);
-
+      closingDate.setHours(closingHours, closingMinutes, 0, 0); // Set closing time with current date
+  
+      console.log(`Current Time: ${currentTime}`);
+      console.log(`Opening Time: ${openingDate}`);
+      console.log(`Closing Time: ${closingDate}`);
+  
       // Check if the current time is within the opening and closing times
       const isWithinTimeRange = currentTime >= openingDate && currentTime <= closingDate;
-
-      // If isOpen is false or the current time is outside of open hours, the restaurant is closed
+  
+      // If isOpen is true and the current time is within open hours, the restaurant is open
       if (isOpen && isWithinTimeRange) {
         setIsRestaurantOpen(true);
       } else {
@@ -51,12 +55,13 @@ const useRestaurantStatus = () => {
       }
     }
   }, [restaurantData]);
+  
 
   return { 
     isRestaurantOpen, 
-    loading, 
-    openingTime: restaurantData ? restaurantData.openingTime : null, 
-    closingTime: restaurantData ? restaurantData.closingTime : null 
+    loadings:loading, 
+    openingTime: restaurantData ? restaurantData.NewopeningTime : null, 
+    closingTime: restaurantData ? restaurantData.NewclosingTime : null 
   };
 };
 

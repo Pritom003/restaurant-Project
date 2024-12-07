@@ -26,6 +26,7 @@ const OrderSchema = new mongoose.Schema(
     // createdAt: { type: Date, default: Date.now },
     spiceLevel: { type: String, },
     status: { type: String, },
+    reason: { type: String ,required: true },
     time: { type: Number, },
     email: { type: String, },
     address: { type: String, },

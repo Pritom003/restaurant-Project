@@ -17,7 +17,7 @@ const MenuBox = ({ addToCart }) => {
   const [specialMenuData, setSpecialMenuData] = useState([]);
   const [specialMenuCat, setSpecialcatMenuData] = useState([]);
   const [isSpecialMenuOpen, setIsSpecialMenuOpen] = useState(false);
-  const { isRestaurantOpen,openingTime, closingTime} = useRestaurantStatus();
+  const { isRestaurantOpen,openingTime, closingTime ,loadings} = useRestaurantStatus();
   const [isStillCantDecideOpen, setIsStillCantDecideOpen] = useState(false);
   console.log(openingTime, closingTime);
   const dispatch = useDispatch();
@@ -94,13 +94,23 @@ const MenuBox = ({ addToCart }) => {
         <p className="text-xs text-center">
           “Serving Homestyle Authentic Indian & Bangladeshi Cuisine”
         </p>
-        {isRestaurantOpen?<p className="text-xl text-center text-green-700">
-  Online orders are available until: {closingTime} (UK Time)
-</p>: 
-        <p className="text-xl text-center text-red-700">
-        The restaurant is currently closed. Opening time: {openingTime}, Closing time: {closingTime}.
-      </p>
-      }
+        {loadings ? (
+ <p className="text-xl text-center text-green-700">
+ ........
+</p>
+) : (
+  isRestaurantOpen ? (
+    <p className="text-xl text-center text-green-700">
+      Online orders are available until: {closingTime} (UK Time)
+    </p>
+  ) : (
+    <p className="text-xl text-center text-red-700">
+      The restaurant is currently closed. Opening time: {openingTime}, Closing time: {closingTime}.
+    </p>
+  )
+)}
+
+    
       </div>
 
       <h2 className="text-2xl mb-4 text-center">Menu</h2>

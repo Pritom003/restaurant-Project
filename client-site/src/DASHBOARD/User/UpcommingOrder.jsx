@@ -95,7 +95,7 @@ const UpcomingOrders = () => {
           {filteredOrders.map((order) => {
             const remainingTime = calculateRemainingTime(order.updatedAt, order.time);
             const remainingMinutes = parseInt(remainingTime.split(':')[0]);
-            const canCancel = remainingMinutes > 5;
+            const canCancel = remainingMinutes > 0;
 
             return (
               <div

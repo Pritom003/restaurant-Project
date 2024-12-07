@@ -5,17 +5,17 @@ const router = express.Router();
 // Restaurant model (simplified)
 const Restaurant = mongoose.model("Restauranttime", new mongoose.Schema({
   isOpen: { type: Boolean, default: true },
-  openingTime: { type: String, default: "08:00" },
-  closingTime: { type: String, default: "22:00" },
+ NewopeningTime: { type: String, default: "08:00" },
+ NewclosingTime: { type: String, default: "22:00" },
 }));
 
 // Endpoint to update restaurant status
 router.post("/api/restaurant/status", async (req, res) => {
   try {
-    const { isOpen, openingTime, closingTime } = req.body;
+    const { isOpen, NewopeningTime, NewclosingTime } = req.body;
     const restaurant = await Restaurant.findOneAndUpdate(
       {},
-      { isOpen, openingTime, closingTime },
+      { isOpen,NewopeningTime,NewclosingTime },
       { new: true, upsert: true }
     );
     res.status(200).json(restaurant);
