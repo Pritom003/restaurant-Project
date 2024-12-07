@@ -17,7 +17,7 @@ const SpecialMenuModal = ({ onClose, subcategories, onAddToCart, price }) => {
       return prevTotal + subcategoryPrice; // Add new subcategory's price
     });
   };
-  console.log(totalSubcategoryPrice,"LOOOK HWEW I AM RHW PRIXEWEEEE");
+  // console.log(totalSubcategoryPrice,"LOOOK HWEW I AM RHW PRIXEWEEEE");
   const platter = Object.values(selectedItems);
 
 
@@ -35,7 +35,7 @@ const SpecialMenuModal = ({ onClose, subcategories, onAddToCart, price }) => {
     onClose(); 
   };
 
-  console.log(selectedItems,'hey gpt see how am receiveing my data '); 
+  // console.log(selectedItems,'hey gpt see how am receiveing my data '); 
 
 
 

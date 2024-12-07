@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux";
 import axios from "axios";
 import SpecialMenuModal from "./SpecialMenuModal";
 import Swal from "sweetalert2";
+import useRestaurantStatus from "../../../Hooks/useRestaurantStatus";
 
 const MenuBox = ({ addToCart }) => {
   const { menuData, loading, error } = MenuData();
@@ -16,8 +17,9 @@ const MenuBox = ({ addToCart }) => {
   const [specialMenuData, setSpecialMenuData] = useState([]);
   const [specialMenuCat, setSpecialcatMenuData] = useState([]);
   const [isSpecialMenuOpen, setIsSpecialMenuOpen] = useState(false);
-
+  const { isRestaurantOpen,openingTime, closingTime} = useRestaurantStatus();
   const [isStillCantDecideOpen, setIsStillCantDecideOpen] = useState(false);
+  console.log(openingTime, closingTime);
   const dispatch = useDispatch();
   const toggleCategory = (category) => {
     setExpandedCategories((prev) =>
@@ -45,12 +47,8 @@ const MenuBox = ({ addToCart }) => {
   const SpecialMenuprice = specialMenuData.find(
     (item) => item.category === "Mid Week Special Platter"
   )?.Price;
-  // console.log(specialMenuData,'here');
-  // Handle opening modal with special menu data
-  const currentDay = new Date().getDay();
-  // const currentDay = 2
-  // console.log(currentDay);
 
+  const currentDay = new Date().getDay();
   const handleSpecialMenuClick = () => {
     const specialMenu = specialMenuData.find(
       (item) => item.category === "Mid Week Special Platter"
@@ -96,6 +94,13 @@ const MenuBox = ({ addToCart }) => {
         <p className="text-xs text-center">
           “Serving Homestyle Authentic Indian & Bangladeshi Cuisine”
         </p>
+        {isRestaurantOpen?<p className="text-xl text-center text-green-700">
+  Online orders are available until: {closingTime} (UK Time)
+</p>: 
+        <p className="text-xl text-center text-red-700">
+        The restaurant is currently closed. Opening time: {openingTime}, Closing time: {closingTime}.
+      </p>
+      }
       </div>
 
       <h2 className="text-2xl mb-4 text-center">Menu</h2>

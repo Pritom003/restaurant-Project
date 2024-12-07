@@ -15,12 +15,12 @@ const useMenuData = () => {
       const fetchedData = response.data;
 
       setMenuData(fetchedData);
-      console.log(fetchedData);
+      // console.log(fetchedData);
 
       // Ensure we only list unique categories
       const uniqueCategories = fetchedData.map((menu) => menu.category);
       setCategories(uniqueCategories);
-      console.log(uniqueCategories);
+      // console.log(uniqueCategories);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to fetch menu data");
     } finally {

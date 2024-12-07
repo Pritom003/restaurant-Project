@@ -13,6 +13,8 @@ import {
 } from 'firebase/auth';
 import { app } from '../../firebase.config';
 import { clearCookie } from '../api/aUTH.JS';
+import { useDispatch } from 'react-redux';
+import Swal from 'sweetalert2';
 
 export const AuthContext = createContext(null);
 const auth = getAuth(app);
@@ -21,8 +23,8 @@ const googleProvider = new GoogleAuthProvider();
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  // Create user
+const dispatch =useDispatch()
+  // Create userc
   const createUser = (email, password) => {
     setLoading(true);
     return createUserWithEmailAndPassword(auth, email, password);
@@ -61,6 +63,13 @@ const AuthProvider = ({ children }) => {
       await signOut(auth);
       setUser(null); // Ensure user state is cleared immediately
       console.log('Logged out successfully');
+      Swal.fire(
+        "Success",
+        "Your Account has logged out !",
+        "success"
+      );
+      dispatch({ type: 'CLEAR_CART' });
+
     } catch (error) {
       console.error('Logout error:', error.message);
     } finally {
