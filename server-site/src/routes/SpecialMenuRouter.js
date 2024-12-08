@@ -141,29 +141,39 @@ router.delete('/api/special-menu/:category/subcategory/:subcategory', async (req
 router.delete('/api/special-menu/:category/subcategory/:subcategory/dish/:dish', async (req, res) => {
     try {
         const { category, subcategory: subcategoryName, dish } = req.params;
+        
+        // Find the menu by category
         const menu = await SpecialMenu.findOne({ category });
 
-        if (menu) {
-            const subcategory = menu.subcategories.find(sub => sub.name === subcategoryName);
-            if (subcategory) {
-                const dishIndex = subcategory.dishes.findIndex(d => d.name === dish);
-                if (dishIndex !== -1) {
-                    subcategory.dishes.splice(dishIndex, 1);
-                    await menu.save();
-                    res.status(200).json({ message: 'Dish deleted successfully' });
-                } else {
-                    res.status(404).json({ message: 'Dish not found' });
-                }
-            } else {
-                res.status(404).json({ message: 'Subcategory not found' });
-            }
-        } else {
-            res.status(404).json({ message: 'Category not found' });
+        if (!menu) {
+            return res.status(404).json({ message: 'Category not found' });
         }
+
+        // Find the subcategory within the menu
+        const subcategory = menu.subcategories.find(sub => sub.name === subcategoryName);
+        if (!subcategory) {
+            return res.status(404).json({ message: 'Subcategory not found' });
+        }
+
+        // Find the dish within the subcategory
+        const dishIndex = subcategory.dishes.findIndex(d => d.name === dish);
+        if (dishIndex === -1) {
+            return res.status(404).json({ message: 'Dish not found' });
+        }
+
+        // Remove the dish from the subcategory
+        subcategory.dishes.splice(dishIndex, 1);
+
+        // Save the updated menu to the database
+        await menu.save();
+        res.status(200).json({ message: 'Dish deleted successfully' });
+
     } catch (error) {
-        res.status(500).json({ message: 'Failed to delete dish', error });
+        console.error('Error deleting dish:', error);
+        res.status(500).json({ message: 'Failed to delete dish', error: error.message });
     }
 });
+
 
 
 module.exports = router;

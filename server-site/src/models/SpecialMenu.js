@@ -31,7 +31,7 @@ const specialMenuSchema = new mongoose.Schema({
     },
     set: {
         type: String, // The set can be "Set 1", "Set 2"
-        required: true,
+        // required: true,
     },
     subcategories: [subcategorySchema], // Array of subcategory objects
 });
