@@ -3,40 +3,40 @@ import axios from "axios";
 import { useState } from "react";
 
 const AddSpecialmenu = () => {
-  const { register, handleSubmit, reset } = useForm({
+  const { register, handleSubmit, reset, formState: { errors } } = useForm({
     defaultValues: {
       category: "Mid Week Special Platter",
-      Price: 0, // Add default price
-      subcategories: [], // Initialize subcategories as an array
+      Price: 0, 
+      set: "Set 1", 
+      subcategories: [], 
     },
   });
 
   const [subcategories, setSubcategories] = useState([]);
+  const [customSet, setCustomSet] = useState(false); // Track if the custom set is selected
 
-  // Handle adding a new subcategory dynamically
   const handleAddSubcategory = () => {
     setSubcategories([...subcategories, { name: "", price: 0, dishes: [] }]);
   };
 
-  // Handle adding items to a subcategory
   const handleAddItem = (index) => {
     const updatedSubcategories = [...subcategories];
-    updatedSubcategories[index].dishes.push({ name: "" }); // Ensure dishes is an object with a "name"
+    updatedSubcategories[index].dishes.push({ name: "" });
     setSubcategories(updatedSubcategories);
   };
 
   const onSubmit = async (data) => {
-    // Prepare the formatted data as before
-    if (data.Price === 0) {
-      alert("Please fill price for the category ");
-      return null;
+    if (data.Price <= 0) {
+      alert("Please fill in a valid price greater than 0.");
+      return;
     }
+
     const formattedData = {
       ...data,
       subcategories: subcategories
         .map((subcategory) => {
-          if (!subcategory.name || !subcategory.price) {
-            alert("Please fill in the subcategory name and price");
+          if (!subcategory.name || !subcategory.price || subcategory.price <= 0) {
+            alert("Please fill in valid subcategory details.");
             return null;
           }
           return {
@@ -45,7 +45,7 @@ const AddSpecialmenu = () => {
             dishes: subcategory.dishes
               .map((dish) => {
                 if (!dish.name) {
-                  alert("Please fill in the dish name");
+                  alert("Please fill in the dish name.");
                   return null;
                 }
                 return { name: dish.name };
@@ -58,18 +58,19 @@ const AddSpecialmenu = () => {
 
     try {
       const response = await axios.put(
-        `http://localhost:3000/api/special-menu/${data.category}`,
+        `http://localhost:3000/api/special-menu/${encodeURIComponent(data.category)}`,
         formattedData
       );
       console.log("Menu updated successfully:", response.data);
       alert("Special menu updated successfully!");
       reset();
-      setSubcategories([]); // Clear the subcategories state after submission
+      setSubcategories([]); 
     } catch (error) {
-      console.error("Error updating menu:", error);
+      console.error("Error updating menu:", error.message);
       alert("Failed to update menu. Please try again.");
     }
   };
+
   return (
     <div className="p-8 max-w-4xl mx-auto w-3/4 mt-20 shadow-lg bg-green-50">
       <h2 className="text-2xl font-bold mb-6">Add Special Menu</h2>
@@ -83,11 +84,35 @@ const AddSpecialmenu = () => {
             {...register("category", { required: "Category is required" })}
             className="select bg-white text-black select-bordered w-full max-w-md"
           >
-            <option value="Mid Week Special Platter">
-              Mid Week Special Platter
-            </option>
+            <option value="Mid Week Special Platter">Mid Week Special Platter</option>
             <option value="Chef Choice">Chef Choice</option>
           </select>
+        </div>
+
+        {/* Set selection */}
+        <div className="form-control">
+          <label className="label">
+            <span className="label-text">Set</span>
+          </label>
+          <select
+            {...register("set", { required: "Set is required" })}
+            className="select bg-white text-black select-bordered w-full max-w-md"
+            onChange={(e) => setCustomSet(e.target.value === "Set custom set")}
+          >
+            <option value="Set 1">Set 1</option>
+            <option value="Set 2">Set 2</option>
+            <option value="Set 3">Set 3</option>
+            <option value="Set 4">Set 4</option>
+            <option value="Set custom set">Set custom set</option>
+          </select>
+          {customSet && (
+            <input
+              type="text"
+              placeholder="Enter custom set name"
+              className="input input-bordered w-full mt-2"
+              {...register("setCustom", { required: "Custom set name is required" })}
+            />
+          )}
         </div>
 
         {/* Price field */}
@@ -97,11 +122,12 @@ const AddSpecialmenu = () => {
           </label>
           <input
             type="number"
-            {...register("Price", { required: "Price is required" })}
+            {...register("Price", { required: "Price is required", min: 0 })}
             className="input input-bordered bg-white text-black w-full max-w-md"
             step="0.01"
             min="0"
           />
+          {errors.Price && <span className="text-red-500">{errors.Price.message}</span>}
         </div>
 
         {/* Add dynamic subcategories */}
@@ -119,65 +145,66 @@ const AddSpecialmenu = () => {
                     updatedSubcategories[index].name = e.target.value;
                     setSubcategories(updatedSubcategories);
                   }}
-                  className="input input-bordered bg-white text-black w-full max-w-md"
+                  className="input input-bordered w-full"
                 />
                 <input
                   type="number"
-                  placeholder="Subcategory Price"
+                  placeholder="Price"
                   value={subcategory.price}
                   onChange={(e) => {
                     const updatedSubcategories = [...subcategories];
-                    updatedSubcategories[index].price = parseFloat(
-                      e.target.value
-                    ); // Convert to number
+                    updatedSubcategories[index].price = e.target.value;
                     setSubcategories(updatedSubcategories);
                   }}
-                  className="input input-bordered bg-white text-black w-full max-w-md"
-                  step="0.01"
-                  min="0"
+                  className="input input-bordered w-full"
                 />
               </div>
+
               <div className="mt-2">
-                <h4 className="font-semibold">Items for {subcategory.name}</h4>
-                {subcategory.dishes.map((dish, itemIndex) => (
-                  <div key={itemIndex} className="flex items-center gap-4 mt-2">
-                    <input
-                      type="text"
-                      placeholder={`Add ${subcategory.name} Dish`}
-                      value={dish.name}
-                      onChange={(e) => {
-                        const updatedSubcategories = [...subcategories];
-                        updatedSubcategories[index].dishes[itemIndex].name =
-                          e.target.value;
-                        setSubcategories(updatedSubcategories);
-                      }}
-                      className="input input-bordered bg-white text-black w-full max-w-md"
-                    />
-                  </div>
-                ))}
                 <button
                   type="button"
                   onClick={() => handleAddItem(index)}
-                  className="btn btn-success btn-sm mt-2"
+                  className="btn btn-sm mt-2"
                 >
-                  Add Item to {subcategory.name}
+                  Add Dish
                 </button>
+
+                <div className="mt-2">
+                  {subcategory.dishes.map((dish, dishIndex) => (
+                    <div key={dishIndex} className="mt-2">
+                      <input
+                        type="text"
+                        placeholder="Dish Name"
+                        value={dish.name}
+                        onChange={(e) => {
+                          const updatedSubcategories = [...subcategories];
+                          updatedSubcategories[index].dishes[dishIndex].name = e.target.value;
+                          setSubcategories(updatedSubcategories);
+                        }}
+                        className="input input-bordered w-full"
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           ))}
+
           <button
             type="button"
             onClick={handleAddSubcategory}
-            className="btn btn-primary btn-sm mt-2"
+            className="btn btn-sm mt-4"
           >
             Add Subcategory
           </button>
         </div>
 
         {/* Submit button */}
-        <button type="submit" className="btn btn-primary mt-4">
-          Submit
-        </button>
+        <div className="mt-8">
+          <button type="submit" className="btn btn-primary w-full max-w-md">
+            Submit
+          </button>
+        </div>
       </form>
     </div>
   );

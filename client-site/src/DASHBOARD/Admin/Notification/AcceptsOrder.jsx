@@ -149,11 +149,17 @@ const AcceptOrder = () => {
               <h5 className="font-medium mt-3">Items:</h5>
 
               {order.items.map((item, index) => (
-                <span key={index}>
-                  {item.name} (x{item.quantity}) - £{item.price}
-                </span>
-              ))}
-
+  <span className="flex text-xs flex-wrap gap-1" key={index}>
+ {item.subItems.length > 0 && item.subItems?.map(subItem => subItem.name).join(', ')} 
+   {item.name}   {item.subItems.map((subItem, idx) => (
+      <span className=" text-xs" key={idx}>
+        {subItem.name} 
+      </span>
+    ))} 
+    (x{item.quantity}) 
+  </span>
+))}
+     
               <div className="flex justify-between">
                 {/* Accept Section */}
                 <div className="w-1/2 border-r border-gray-300 pr-4">

@@ -316,28 +316,6 @@ router.patch("/api/orders/:id", async (req, res) => {
 });
 
 
-// router.patch('/api/orders/:id', async (req, res) => {
-//   const { time, status } = req.body;
-
-//   try {
-//     const updatedOrder = await Order.findByIdAndUpdate(
-//       req.params.id,
-//       { status: 'Preparing', $inc: { time: time } },
-//       { new: true }
-//     );
-//     if (!updatedOrder) {
-//       return res.status(404).json({ message: 'Order not found' });
-//     }
-//     res.status(200).json(updatedOrder);
-//   } catch (error) {
-//     console.error('Error updating order time:', error);
-//     res.status(500).json({ error: 'Failed to update order time' });
-//   }
-// });
-
-// In your Express server (example route to handle status update)
-
-// PATCH request to update order status to 'Expired' if preparation time exceeds
 router.patch('/api/orders/:id/expire', async (req, res) => {
   try {
     const orderId = req.params.id;

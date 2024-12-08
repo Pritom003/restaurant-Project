@@ -22,17 +22,25 @@ router.post('/api/special-menu', async (req, res) => {
 });
 
 // PUT /api/special-menu/:category
-// PUT /api/special-menu
+// PUT /api/special-menu/:category
 router.put('/api/special-menu/:category', async (req, res) => {
     try {
-        // Extract category name from the URL parameter
         const categoryName = req.params.category;
+        const { set } = req.body;
 
-        // Check if the category already exists in the database
-        const existingCategory = await SpecialMenu.findOne({ category: categoryName });
+        // Check if the category exists
+        const existingCategory = await SpecialMenu.findOne({ category: categoryName ,set:set});
 
         if (existingCategory) {
-            // Update the existing category with new data
+            // If the set does not match the existing set, return a 400 error
+            if (existingCategory.set !== set) {
+                // Create a new special menu entry if the set is different
+                const newSpecialMenu = new SpecialMenu(req.body);
+                await newSpecialMenu.save();
+                return res.status(201).json({ message: 'New special menu added with a different set!', data: newSpecialMenu });
+            }
+
+            // Continue updating the existing category if the set matches
             existingCategory.Price = req.body.Price;
 
             // Loop through subcategories to update or add new subcategories
@@ -65,10 +73,9 @@ router.put('/api/special-menu/:category', async (req, res) => {
             // Save the updated category
             await existingCategory.save();
 
-            // Return the updated category data
             res.status(200).json({ message: 'Special menu updated successfully!', data: existingCategory });
         } else {
-            // If category doesn't exist, create a new one
+            // If the category doesn't exist, create a new special menu entry
             const newSpecialMenu = new SpecialMenu(req.body);
             await newSpecialMenu.save();
             res.status(201).json({ message: 'Special menu added successfully!', data: newSpecialMenu });
@@ -78,6 +85,9 @@ router.put('/api/special-menu/:category', async (req, res) => {
         res.status(500).json({ message: 'Failed to update menu. Please try again.' });
     }
 });
+
+
+
 
 
 // GET /api/special-menu
@@ -130,29 +140,40 @@ router.delete('/api/special-menu/:category/subcategory/:subcategory', async (req
 // DELETE /api/special-menu/:category/subcategory/:subcategory/dish/:dish
 router.delete('/api/special-menu/:category/subcategory/:subcategory/dish/:dish', async (req, res) => {
     try {
-        const { category, subcategory, dish } = req.params;
+        const { category, subcategory: subcategoryName, dish } = req.params;
+        
+        // Find the menu by category
         const menu = await SpecialMenu.findOne({ category });
 
-        if (menu) {
-            const subcategory = menu.subcategories.find(sub => sub.name === subcategory);
-            if (subcategory) {
-                const dishIndex = subcategory.dishes.findIndex(d => d.name === dish);
-                if (dishIndex !== -1) {
-                    subcategory.dishes.splice(dishIndex, 1);
-                    await menu.save();
-                    res.status(200).json({ message: 'Dish deleted successfully' });
-                } else {
-                    res.status(404).json({ message: 'Dish not found' });
-                }
-            } else {
-                res.status(404).json({ message: 'Subcategory not found' });
-            }
-        } else {
-            res.status(404).json({ message: 'Category not found' });
+        if (!menu) {
+            return res.status(404).json({ message: 'Category not found' });
         }
+
+        // Find the subcategory within the menu
+        const subcategory = menu.subcategories.find(sub => sub.name === subcategoryName);
+        if (!subcategory) {
+            return res.status(404).json({ message: 'Subcategory not found' });
+        }
+
+        // Find the dish within the subcategory
+        const dishIndex = subcategory.dishes.findIndex(d => d.name === dish);
+        if (dishIndex === -1) {
+            return res.status(404).json({ message: 'Dish not found' });
+        }
+
+        // Remove the dish from the subcategory
+        subcategory.dishes.splice(dishIndex, 1);
+
+        // Save the updated menu to the database
+        await menu.save();
+        res.status(200).json({ message: 'Dish deleted successfully' });
+
     } catch (error) {
-        res.status(500).json({ message: 'Failed to delete dish', error });
+        console.error('Error deleting dish:', error);
+        res.status(500).json({ message: 'Failed to delete dish', error: error.message });
     }
 });
+
+
 
 module.exports = router;

@@ -73,9 +73,10 @@ const PickupOrderForm = () => {
     // Update extra charge
     setExtraCharge(selectedLocation ? selectedLocation.price : 0);
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isProcessing) return; // Prevent multiple form submissions
+    setIsProcessing(true); // Disable button immediately after clicking
     if (formData.paymentMethod === "stripe") {
       setIsProcessing(true);
     } else {
@@ -90,7 +91,6 @@ const PickupOrderForm = () => {
     localStorage.setItem("orderNumber", newOrderNumber);
     return newOrderNumber;
   };
-
   const handleOrderSubmission = async (paymentStatus) => {
     const orderData = {
       orderNumber: generateOrderNumber(),
@@ -111,9 +111,14 @@ const PickupOrderForm = () => {
       time: 1,
       extraCharge,
     };
-    console.log(orderData);
+
+    if (orderData.totalPrice <= 0) {
+      Swal.fire("Error", "Your total is £0, no items to pay for.", "error");
+      setIsProcessing(false);
+      return;
+    }
+
     try {
-      if(orderData.totalPrice>0 ){
       await axios.post("http://localhost:3000/api/orders", orderData);
       Swal.fire(
         "Success",
@@ -121,23 +126,16 @@ const PickupOrderForm = () => {
         "success"
       );
       dispatch({ type: "CLEAR_CART" });
-      navigate("/menus", )
-    }else {
-      Swal.fire(
-       "Error",
-        "Your total 0 item to pay ",
-        "error"
-      )
-    }
+      navigate("/menus");
     } catch (error) {
-      console.error(error);
+      console.error("Order submission error:", error);
       Swal.fire(
         "Error",
         "Failed to place your order. Please try again.",
         "error"
       );
     } finally {
-      setIsProcessing(false);
+      setIsProcessing(false); // Re-enable button after process finishes
     }
   };
 
@@ -253,21 +251,19 @@ const PickupOrderForm = () => {
           </Elements>
         )}
 
-        {formData.paymentMethod !== "stripe" && (
-          <button
-            type="submit"
-            className={`mt-4 text-white bg-blue-700 hover:bg-blue-800 rounded px-5 py-2.5 ${
-              isProcessing ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            disabled={isProcessing}
-          >
-            {isProcessing
-              ? "Processing..."
-              : formData.paymentMethod === "stripe"
-              ? `Pay £${(totalPrice + extraCharge).toFixed(2)}`
-              : "Place Order"}
-          </button>
-        )}
+        <button
+          type="submit"
+          className={`mt-4 text-white bg-blue-700 hover:bg-blue-800 rounded px-5 py-2.5 ${
+            isProcessing ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+          disabled={isProcessing}
+        >
+          {isProcessing
+            ? "Processing..."
+            : formData.paymentMethod === "stripe"
+            ? `Pay £${(totalPrice + extraCharge).toFixed(2)}`
+            : "Place Order"}
+        </button>
       </form>
     </div>
   );

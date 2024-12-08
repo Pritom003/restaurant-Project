@@ -19,7 +19,12 @@ const MenuBox = ({ addToCart }) => {
   const [isSpecialMenuOpen, setIsSpecialMenuOpen] = useState(false);
   const { isRestaurantOpen,openingTime, closingTime ,loadings} = useRestaurantStatus();
   const [isStillCantDecideOpen, setIsStillCantDecideOpen] = useState(false);
-  console.log(openingTime, closingTime);
+  const [isSpecialMenuExpanded, setIsSpecialMenuExpanded] = useState(false);
+  const [SpecialMenuPriceId, setSpecialMenuPriceId] = useState();
+  // Toggle function for special menu
+  const toggleSpecialMenu = () => {
+    setIsSpecialMenuExpanded((prev) => !prev);
+  };
   const dispatch = useDispatch();
   const toggleCategory = (category) => {
     setExpandedCategories((prev) =>
@@ -43,16 +48,20 @@ const MenuBox = ({ addToCart }) => {
     fetchSpecialMenu();
   }, []);
 
-  // Find price of Mid Week Special Platter
-  const SpecialMenuprice = specialMenuData.find(
-    (item) => item.category === "Mid Week Special Platter"
-  )?.Price;
 
-  const currentDay = new Date().getDay();
-  const handleSpecialMenuClick = () => {
-    const specialMenu = specialMenuData.find(
-      (item) => item.category === "Mid Week Special Platter"
+  // console.log(specialMenuData ,'lookjskjijeidheefrherufrhehuewfhehfu');
+  const SpecialMenuprice = specialMenuData.find(
+    (item ) => item.category === "Chef Choice"
+  )?.Price;
+  const currentDay = new Date().getDay();//(Sat and Sun    OFFF )
+  // const currentDay = 3;( for development )
+  const handleSpecialMenuClick = (item) => {
+
+    const specialMenu  = specialMenuData.find(
+      (items) => items.category === "Mid Week Special Platter" && item.set===items.set
     );
+    const specialMenuPrice = specialMenu?.Price;
+    setSpecialMenuPriceId(specialMenuPrice);
     if (currentDay >= 1 && currentDay <= 4) {
       // Show the special menu if it's Monday to Thursday
       setSpecialcatMenuData(specialMenu.subcategories || []);
@@ -84,6 +93,7 @@ const MenuBox = ({ addToCart }) => {
     if (item.variantPrice) totalPrice += item.variantPrice; // Add spicy level price if selected
     return totalPrice;
   };
+  console.log(SpecialMenuPriceId);
 
   return (
     <div>
@@ -156,25 +166,48 @@ const MenuBox = ({ addToCart }) => {
         {error && <p>Error loading menu: {error}</p>}
 
         {/* Special Menu Category */}
-
         <div
-          className="flex justify-between items-center cursor-pointer p-2 bg-red-300 hover:bg-red-400"
-          onClick={handleSpecialMenuClick}
-        >
-          <span className="text-xl font-semibold text-white">
-            Special Menu - Mid Week Special Platter
-          </span>
-          <span className="text-xl text-white flex gap-2">
-            £{SpecialMenuprice} <FaChevronDown />
-          </span>
-        </div>
+  className="flex justify-between items-center cursor-pointer p-2 bg-red-300 hover:bg-red-400"
+  onClick={toggleSpecialMenu}
+>
+  <span className="text-xl font-semibold text-white">
+    Mid Week Special Platters
+  </span>
+  <span className="text-xl text-white flex gap-2">
+    <FaChevronDown />
+  </span>
+</div>
 
+{isSpecialMenuExpanded && (
+  <div
+    className="transition-all duration-500 ease-in-out overflow-hidden"
+    style={{
+      maxHeight: isSpecialMenuExpanded ? "200px" : "0px",
+    }}
+  >
+    <ul>
+      {specialMenuData.map((item, idx) => (
+   
+    item.category==="Mid Week Special Platter" &&  <li
+    key={idx}
+    className="border-b-2 border-dotted flex justify-between align-middle items-center  border-red-900 pb-2 text-xl"
+    onClick={() => handleSpecialMenuClick(item,idx)}
+  >
+   <span> {item.set ? item.set : 'new set'}  </span>
+   <span>   £{item.Price} </span>
+  
+  </li>
+   
+      ))}
+    </ul>
+  </div>
+)}
         {/* Render SpecialMenuModal if the special menu is open */}
         {isSpecialMenuOpen && (
           <SpecialMenuModal
             onClose={() => setIsSpecialMenuOpen(false)}
-            subcategories={specialMenuCat} // Pass the subcategories here
-            price={SpecialMenuprice}
+            subcategories={specialMenuCat} 
+            priceId={SpecialMenuPriceId} //HOw do i send the selected set item price here Gpt fix it
             onAddToCart={(platter) => {
               dispatch({ type: "ADD_TO_CART", payload: platter });
               setIsSpecialMenuOpen(false);
@@ -361,11 +394,8 @@ const MenuBox = ({ addToCart }) => {
           <SpecialMenuModal
             onClose={() => setIsStillCantDecideOpen(false)}
             subcategories={specialMenuCat}
-            price={
-              specialMenuData?.find(
-                (item) => item.category === "Mid Week Special Platter"
-              )?.Price
-            }
+            priceId={SpecialMenuprice}
+           
             onAddToCart={(platter) => {
               // Ensure platter is an array and contains items
               if (Array.isArray(platter.items) && platter.items.length <= 2) {

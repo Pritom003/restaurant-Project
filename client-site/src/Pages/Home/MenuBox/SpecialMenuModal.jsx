@@ -1,10 +1,14 @@
 /* eslint-disable react/prop-types */
+// import { unix } from "moment/moment";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { v4 as uuidv4 } from "uuid"; 
-const SpecialMenuModal = ({ onClose, subcategories, onAddToCart, price }) => {
+const SpecialMenuModal = ({ onClose, subcategories, onAddToCart, priceId }) => {
+  
+  // console.log(priceId.index ,';sfefe');
   const [selectedItems, setSelectedItems] = useState({});
   const [totalSubcategoryPrice, setTotalSubcategoryPrice] = useState(0); // New State
-
+const dispatch =useDispatch()
   const handleSelect = (subcategoryName, subcategoryPrice, item) => {
     setSelectedItems((prev) => ({ ...prev, [subcategoryName]: item }));
 
@@ -23,17 +27,20 @@ const SpecialMenuModal = ({ onClose, subcategories, onAddToCart, price }) => {
 
  
   const handleSubmit = () => {
-    const totalPrice = price + totalSubcategoryPrice; 
+    const totalPrice = priceId + totalSubcategoryPrice;
     const platterWithCategory = {
-      id: uuidv4(),
+      name: uuidv4(), // Ensure this is unique
       category: "Special Platter", 
       items: platter, 
-      price: totalPrice, 
+      price: totalPrice,
     };
-
+  
     onAddToCart(platterWithCategory); 
-    onClose(); 
+    // Dispatch the correct action with the unique platter ID or key
+    dispatch({ type: "REMOVE_FROM_CART", payload: { keys: platterWithCategory.key } });
+    onClose();
   };
+  
 
   // console.log(selectedItems,'hey gpt see how am receiveing my data '); 
 

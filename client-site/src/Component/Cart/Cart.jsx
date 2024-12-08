@@ -1,4 +1,4 @@
-  // eslint-disable-next-line no-unused-vars
+// eslint-disable-next-line no-unused-vars
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { PiTrashSimpleThin } from "react-icons/pi";
@@ -17,11 +17,12 @@ const Cart = () => {
   const dispatch = useDispatch();
   const { user } = useAuth();
   const { items, totalPrice } = useSelector((state) => state);
-  const [orderType, setOrderType] = useState(""); 
+  const [orderType, setOrderType] = useState("");
   const [spiceLevel, setSpiceLevel] = useState("");
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
-  const { isRestaurantOpen} = useRestaurantStatus();
+  const { isRestaurantOpen } = useRestaurantStatus();
+  console.log(items);
   const removeFromCart = (item) =>
     dispatch({ type: "REMOVE_FROM_CART", payload: { key: item.key } });
 
@@ -31,12 +32,10 @@ const Cart = () => {
     name: item.name,
     price: item.variantPrice || item.price,
     quantity: item.quantity,
-    variant: item.variant || null, // Include variant if available
+    variant: item.variant || null,
     category: item.category,
-    subItems: item.items || [], // Include submenu items
+    subItems: item.items || [],
   }));
-
-  // console.log("Formated data", formattedItems);
 
   // eslint-disable-next-line no-unused-vars
   const handleOrderCompletion = async (method, status) => {
@@ -67,7 +66,6 @@ const Cart = () => {
       );
       dispatch({ type: "CLEAR_CART" });
     } catch (error) {
-  
       Swal.fire(
         "Error",
         `There was an issue placing your order. Please try again ${error}.`,
@@ -93,18 +91,19 @@ const Cart = () => {
         text: "The restaurant is currently closed. Please try again later.",
         confirmButtonText: "Okay",
         confirmButtonColor: "#f44336",
-      })
-    }else if (isRestaurantOpen){
-    if (orderType) {
-      navigate("/pickup-order", {
-        state: {
-          items: formattedItems,
-          totalPrice: getTotalPrice(),
-          spiceLevel,
-          orderType,
-        },
       });
-    }}
+    } else if (isRestaurantOpen) {
+      if (orderType) {
+        navigate("/pickup-order", {
+          state: {
+            items: formattedItems,
+            totalPrice: getTotalPrice(),
+            spiceLevel,
+            orderType,
+          },
+        });
+      }
+    }
   };
   // console.log(items)
 
@@ -137,9 +136,8 @@ const Cart = () => {
                 key={item.key}
                 className="flex justify-between items-center border-gray-600border-b  py-2 border-2"
               >
-              
                 <span className="flex-grow">
-                {/* <button
+                  {/* <button
   onClick={() =>
     dispatch({
       type: 'DECREMENT_QUANTITY',
@@ -149,7 +147,7 @@ const Cart = () => {
   className="text-gray-600 text-xs border-2 border-gray-400 p rounded-full px-2"
 >
   -
-</button> */}   
+</button> */}
                   <button
                     onClick={() =>
                       dispatch({
@@ -167,7 +165,9 @@ const Cart = () => {
                   {item.category === "Special Platter" && (
                     <span className="text-sm text-gray-600">
                       {" "}
-                      ({item.items.map((subItem) => subItem.name).join(", ")})
+                      {(item.name = "")}
+                      {item.category}(
+                      {item.items.map((subItem) => subItem.name).join(", ")})
                     </span>
                   )}
                   <span className="text-base">{item.quantity}</span>
@@ -187,26 +187,26 @@ const Cart = () => {
                 <span className="flex-shrink-0">
                   £{(item.variantPrice || item.price) * item.quantity}
                 </span>
-                {
-                  item.quantity >1?  <button
-                  onClick={() =>
-                    dispatch({
-                      type: 'DECREMENT_QUANTITY',
-                      payload: { key: item.key }, // Pass key, not id
-                    })
-                  }
-                  className="text-gray-600 text-xs border-2 border-gray-400 p rounded-full px-2"
-                >
-                  -
-                </button>  :<button
-                  onClick={() => removeFromCart(item)}
-                  className="pl-2 hover:text-red-800"
-                >
-                  <PiTrashSimpleThin />
-                </button>
-                }
- 
-                
+                {item.quantity > 1 ? (
+                  <button
+                    onClick={() =>
+                      dispatch({
+                        type: "DECREMENT_QUANTITY",
+                        payload: { key: item.key }, // Pass key, not id
+                      })
+                    }
+                    className="text-gray-600 text-xs border-2 border-gray-400 p rounded-full px-2"
+                  >
+                    -
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => removeFromCart(item)}
+                    className="pl-2 hover:text-red-800"
+                  >
+                    <PiTrashSimpleThin />
+                  </button>
+                )}
               </li>
             ))
           ) : (
@@ -277,13 +277,12 @@ const Cart = () => {
             </div>
 
             <button
-  onClick={handlePlaceOrder}
-  className="text-lg text-gray-600 hover:text-red-950 hover:underline mt-2 disabled:no-underline disabled:text-gray-700"
-  disabled={getTotalPrice().toFixed(2) === '0.00'}
->
-  Place Order
-</button>
-
+              onClick={handlePlaceOrder}
+              className="text-lg text-gray-600 hover:text-red-950 hover:underline mt-2 disabled:no-underline disabled:text-gray-700"
+              disabled={getTotalPrice().toFixed(2) === "0.00"}
+            >
+              Place Order
+            </button>
           </div>
         )}
       </div>
