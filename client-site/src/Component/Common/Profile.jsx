@@ -1,5 +1,5 @@
 import { useState } from "react";
-import useAuth from "../../hooks/useAuth";
+// import useAuth from "../../hooks/useAuth";
 import useRole from "../../Hooks/useRole";
 import {
   getAuth,
@@ -8,16 +8,25 @@ import {
   EmailAuthProvider,
 } from "firebase/auth";
 import Swal from "sweetalert2";
+import axios from "axios";
+import useAuth from "../../Hooks/useAuth";
+import useRestaurantStatus from "../../Hooks/useRestaurantStatus";
 
 const Profile = () => {
   const { user } = useAuth();
   const [role] = useRole();
-
+  const { isRestaurantOpen,openingTime, closingTime} = useRestaurantStatus();
   const [showModal, setShowModal] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [message, setMessage] = useState("");
+ // For restaurant open/close status and time settings
+ console.log(openingTime , closingTime);
+ const [isOpen, setIsOpen] = useState();
+ const [NewopeningTime, setOpeningTime] = useState( "");
 
+// /can i be the default value 08:00 22:00
+ const [NewclosingTime, setClosingTime] = useState("");
   const handlePasswordChange = async () => {
     try {
       const auth = getAuth();
@@ -52,9 +61,31 @@ const Profile = () => {
       }
     }
   };
+ // Handle open/close toggle
+ const handleRestaurantStatusChange = async () => {
+  try {
+    const response = await axios.post("http://localhost:3000/api/restaurant/status", {
+      isOpen,
+      NewopeningTime,
+      NewclosingTime,
+    });
 
+    if (response.status === 200) {
+      Swal.fire({
+        title: "Restaurant status updated successfully!",
+        icon: "success",
+      });
+    }
+  } catch (error) {
+    Swal.fire({
+      title: "Error updating restaurant status.",
+      text: error.message,
+      icon: "error",
+    });
+  }
+};
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="flex flex-col justify-center items-center h-screen">
       <div className="bg-white shadow-lg rounded-2xl w-3/5">
         <img
           alt="profile"
@@ -88,9 +119,7 @@ const Profile = () => {
               </p>
 
               <div>
-                {/* <button className="bg-[#F43F5E] px-10 py-1 rounded-lg text-white cursor-pointer hover:bg-[#af4053] block mb-1">
-                  Update Profile
-                </button> */}
+           
                 <button
                   className="bg-[#F43F5E] px-7 py-1 rounded-lg text-white cursor-pointer hover:bg-[#af4053]"
                   onClick={() => setShowModal(true)}
@@ -102,7 +131,7 @@ const Profile = () => {
           </div>
         </div>
       </div>
-
+     
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-lg p-6 w-96 shadow-lg">
@@ -112,7 +141,7 @@ const Profile = () => {
               placeholder="Enter current password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
-              className="w-full p-2 border rounded mb-4"
+              className="w-full p-2 bg-white text-black border rounded mb-4"
             />
             <input
               type="password"
@@ -141,6 +170,54 @@ const Profile = () => {
               </p>
             )}
           </div>
+        </div>
+      )}
+       {role === "Admin" && (
+        <div className="mt-6 p-4 bg-gray-100 rounded-lg shadow-md w-full text-black" >
+          <h3 className="text-lg font-semibold">Restaurant Hours {openingTime} to {closingTime}</h3>
+          <div className="flex items-center justify-between">
+            <div>
+              <label className="block text-sm"> Update Opening Time</label>
+              <input
+                type="time"
+                value={NewopeningTime}
+                onChange={(e) => setOpeningTime(e.target.value)}
+                className="border rounded p-2 mt-1 bg-white text-black"
+              />
+            </div>
+            <div>
+              <label className="block text-sm">  Update Closing Time</label>
+              <input
+                type="time"
+                value={NewclosingTime}
+                onChange={(e) => setClosingTime(e.target.value)}
+                className="border rounded p-2 mt-1 bg-white text-black"
+              />
+            </div>
+          </div>
+
+          <div className="mt-4 flex items-center">
+            <label className="mr-4">
+              {isRestaurantOpen === true ? (
+                <span className="text-xl font-bold text-red-700">Close</span>
+              ) : (
+                <span className="text-xl font-bold text-green-700">Open</span>
+              )}
+            </label>
+            <input
+              type="checkbox"
+              checked={isOpen}
+              onChange={() => setIsOpen(!isOpen)}
+              className="h-6 w-6 bg-white text-black"
+            />
+          </div>
+
+          <button
+            onClick={handleRestaurantStatusChange}
+            className="bg-blue-500 px-6 py-2 mt-4 text-white rounded-lg"
+          >
+            Update Restaurant Status
+          </button>
         </div>
       )}
     </div>

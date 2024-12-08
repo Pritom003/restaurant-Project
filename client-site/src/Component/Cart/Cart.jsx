@@ -1,20 +1,15 @@
+  // eslint-disable-next-line no-unused-vars
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { PiTrashSimpleThin } from "react-icons/pi";
 import Swal from "sweetalert2";
 import { TiShoppingCart } from "react-icons/ti";
 import { useState } from "react";
-// import PaymentForm from "./PaymentForm";
-// import { loadStripe } from "@stripe/stripe-js";
-// import { Elements } from "@stripe/react-stripe-js";
-// import { FaPoundSign } from "react-icons/fa";
-// import { BsStripe } from "react-icons/bs";
+
 import OutOfRangeModal from "./OutofRangle";
 import useAuth from "../../Hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-
-// const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
-// const stripePromise = loadStripe(stripePublicKey);
+import useRestaurantStatus from "../../Hooks/useRestaurantStatus";
 
 const DELIVERY_CHARGE = 0.0;
 
@@ -22,13 +17,11 @@ const Cart = () => {
   const dispatch = useDispatch();
   const { user } = useAuth();
   const { items, totalPrice } = useSelector((state) => state);
-  // const [showPaymentForm, setShowPaymentForm] = useState(false);
-  const [orderType, setOrderType] = useState(""); // Default to empty
+  const [orderType, setOrderType] = useState(""); 
   const [spiceLevel, setSpiceLevel] = useState("");
-  // const [paymentMethod, setPaymentMethod] = useState("");
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
-
+  const { isRestaurantOpen} = useRestaurantStatus();
   const removeFromCart = (item) =>
     dispatch({ type: "REMOVE_FROM_CART", payload: { key: item.key } });
 
@@ -43,7 +36,9 @@ const Cart = () => {
     subItems: item.items || [], // Include submenu items
   }));
 
-  console.log("Formated data", formattedItems);
+  // console.log("Formated data", formattedItems);
+
+  // eslint-disable-next-line no-unused-vars
   const handleOrderCompletion = async (method, status) => {
     const orderData = {
       chefEmail: "mkrefat5@gmail.com",
@@ -55,7 +50,7 @@ const Cart = () => {
       orderType,
       spiceLevel,
     };
-    console.log("Order data", orderData);
+    // console.log("Order data", orderData);
     try {
       await axios.post("http://localhost:3000/api/orders", orderData);
       // setShowPaymentForm(false);
@@ -72,10 +67,10 @@ const Cart = () => {
       );
       dispatch({ type: "CLEAR_CART" });
     } catch (error) {
-      console.error(error);
+  
       Swal.fire(
         "Error",
-        "There was an issue placing your order. Please try again.",
+        `There was an issue placing your order. Please try again ${error}.`,
         "error"
       );
     }
@@ -90,6 +85,16 @@ const Cart = () => {
       ); // Show login error modal
       return;
     }
+    if (!isRestaurantOpen) {
+      // If restaurant is closed, show an alert
+      Swal.fire({
+        icon: "warning",
+        title: "Sorry",
+        text: "The restaurant is currently closed. Please try again later.",
+        confirmButtonText: "Okay",
+        confirmButtonColor: "#f44336",
+      })
+    }else if (isRestaurantOpen){
     if (orderType) {
       navigate("/pickup-order", {
         state: {
@@ -99,20 +104,15 @@ const Cart = () => {
           orderType,
         },
       });
-    }
+    }}
   };
-  console.log(items);
-  // const closeErrorModal = () => setShowErrorModal(false);
-  // const handlePaymentMethodChange = (method) => {
-  //   setPaymentMethod(method === paymentMethod ? "" : method); // Toggle method
-  // };
+  // console.log(items)
 
   const handleOrderTypeChange = (type) => {
     if (type === "online" && !isInRange) {
       setShowModal(true);
     } else {
       setOrderType(type);
-      // setPaymentMethod(""); // Reset payment method when switching order type
     }
   };
 
@@ -130,14 +130,26 @@ const Cart = () => {
         Cart <TiShoppingCart />
       </h3>
       <div className="mt-2 p-2 border min-h-36 border-gray-300">
-        <ul className="text-xs">
+        <ul className="text-xs ">
           {items.length > 0 ? (
             items.map((item) => (
               <li
                 key={item.key}
-                className="flex justify-between items-center py-1"
+                className="flex justify-between items-center border-gray-600border-b  py-2 border-2"
               >
+              
                 <span className="flex-grow">
+                {/* <button
+  onClick={() =>
+    dispatch({
+      type: 'DECREMENT_QUANTITY',
+      payload: { key: item.key }, // Pass key, not id
+    })
+  }
+  className="text-gray-600 text-xs border-2 border-gray-400 p rounded-full px-2"
+>
+  -
+</button> */}   
                   <button
                     onClick={() =>
                       dispatch({
@@ -175,13 +187,26 @@ const Cart = () => {
                 <span className="flex-shrink-0">
                   £{(item.variantPrice || item.price) * item.quantity}
                 </span>
-
-                <button
+                {
+                  item.quantity >1?  <button
+                  onClick={() =>
+                    dispatch({
+                      type: 'DECREMENT_QUANTITY',
+                      payload: { key: item.key }, // Pass key, not id
+                    })
+                  }
+                  className="text-gray-600 text-xs border-2 border-gray-400 p rounded-full px-2"
+                >
+                  -
+                </button>  :<button
                   onClick={() => removeFromCart(item)}
                   className="pl-2 hover:text-red-800"
                 >
                   <PiTrashSimpleThin />
                 </button>
+                }
+ 
+                
               </li>
             ))
           ) : (
@@ -251,58 +276,14 @@ const Cart = () => {
               </label>
             </div>
 
-            {/* Payment Method Selection */}
-            {/* {orderType === "online" ? (
-              <div className="mt-4 flex flex-wrap lg:flex-col lg:items-start lg:gap-4 items-center justify-between">
-                <label className="text-lg flex items-center text-black">
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="stripe"
-                    checked={paymentMethod === "stripe"}
-                    onChange={() => handlePaymentMethodChange("stripe")}
-                    className="hidden"
-                  />
-                  <span
-                    className={`inline-block w-6 h-6 mr-2 border-2 border-gray-500 rounded-sm ${
-                      paymentMethod === "stripe" ? "bg-red-950" : ""
-                    }`}
-                  ></span>
-                  <span className="flex items-center gap-1">
-                    <BsStripe /> Card Payment
-                  </span>
-                </label>
-
-                <label className="text-lg flex items-center text-black">
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="cash"
-                    checked={paymentMethod === "cash"}
-                    onChange={() => handlePaymentMethodChange("cash")}
-                    className="hidden"
-                  />
-                  <span
-                    className={`inline-block w-6 h-6 mr-2 border-2 border-gray-500 rounded-sm ${
-                      paymentMethod === "cash" ? "bg-red-950" : ""
-                    }`}
-                  ></span>
-                  <span className="flex items-center gap-1">
-                    <FaPoundSign />
-                    Cash Payment
-                  </span>
-                </label>
-              </div>
-            ) : (
-              ""
-            )} */}
-
             <button
-              onClick={handlePlaceOrder}
-              className="text-lg text-gray-600 hover:text-red-950 hover:underline mt-2"
-            >
-              Place Order
-            </button>
+  onClick={handlePlaceOrder}
+  className="text-lg text-gray-600 hover:text-red-950 hover:underline mt-2 disabled:no-underline disabled:text-gray-700"
+  disabled={getTotalPrice().toFixed(2) === '0.00'}
+>
+  Place Order
+</button>
+
           </div>
         )}
       </div>

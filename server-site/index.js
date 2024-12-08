@@ -12,6 +12,7 @@ const paymentRoutes = require('./src/routes/PaymentRutes');
 const userRoutes = require('./src/routes/UsersRoutes');
 const SpecialMenuRoutes = require('./src/routes/SpecialMenuRouter');
 const DeliveryLocationRoutes = require('./src/routes/LocationRoutes');
+const OpenandcloseRoutes = require('./src/routes/OpenAndCLose');
 
 dotenv.config(); // Ensure your .env file is loaded
 
@@ -46,8 +47,9 @@ app.use(revenueRoutes);
 app.use(paymentRoutes);
 app.use(userRoutes);
 app.use(SpecialMenuRoutes);
-app.use(DeliveryLocationRoutes);
+app.use(OpenandcloseRoutes);
 
+app.use(DeliveryLocationRoutes);
 // Welcome route
 app.get('/', (req, res) => {
   res.send('Welcome to the Restaurant API');

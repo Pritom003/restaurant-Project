@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Elements,
   CardElement,
@@ -34,9 +34,9 @@ const PickupOrderForm = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [extraCharge, setExtraCharge] = useState(0);
   const [deliveryLocations, setDeliveryLocations] = useState([]);
-
-  const removeFromCart = (item) =>
-    dispatch({ type: "REMOVE_FROM_CART", payload: item });
+  const navigate = useNavigate();
+  // const removeFromCart = (item) =>
+  //   dispatch({ type: "REMOVE_FROM_CART", payload: item });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -113,6 +113,7 @@ const PickupOrderForm = () => {
     };
     console.log(orderData);
     try {
+      if(orderData.totalPrice>0 ){
       await axios.post("http://localhost:3000/api/orders", orderData);
       Swal.fire(
         "Success",
@@ -120,6 +121,14 @@ const PickupOrderForm = () => {
         "success"
       );
       dispatch({ type: "CLEAR_CART" });
+      navigate("/menus", )
+    }else {
+      Swal.fire(
+       "Error",
+        "Your total 0 item to pay ",
+        "error"
+      )
+    }
     } catch (error) {
       console.error(error);
       Swal.fire(

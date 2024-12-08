@@ -91,6 +91,7 @@ router.post("/api/orders", async (req, res) => {
       items,
       totalPrice,
       status: "Pending",
+      reason:'Ongoing',
       spiceLevel,
       email,
       address,
@@ -243,26 +244,53 @@ router.get('/api/orders/user', async (req, res) => {
     res.status(500).json({ message: 'Error retrieving user orders', error });
   }
 });
-
-
-router.patch('/api/orders/:id', async (req, res) => {
-  const { time, status } = req.body;
-
+router.patch("/api/orders/:id", async (req, res) => {
+  const { time, status, reason } = req.body; // Get the time and status (and reason for rejection)
+  
   try {
+    // Find and update the order by ID
     const updatedOrder = await Order.findByIdAndUpdate(
       req.params.id,
-      { status: 'Preparing', $inc: { time: time } },
-      { new: true }
+      { 
+        time, 
+        status, 
+        reason: reason || null, // Include the rejection reason if provided
+      },
+      { new: true } // Return the updated order
     );
+
     if (!updatedOrder) {
-      return res.status(404).json({ message: 'Order not found' });
+      return res.status(404).json({ error: "Order not found" });
     }
-    res.status(200).json(updatedOrder);
+
+    res.json(updatedOrder); // Return the updated order data
   } catch (error) {
-    console.error('Error updating order time:', error);
-    res.status(500).json({ error: 'Failed to update order time' });
+    console.error("Error updating order:", error);
+    res.status(500).json({
+      error: "Failed to update order.",
+    });
   }
 });
+
+
+// router.patch('/api/orders/:id', async (req, res) => {
+//   const { time, status } = req.body;
+
+//   try {
+//     const updatedOrder = await Order.findByIdAndUpdate(
+//       req.params.id,
+//       { status: 'Preparing', $inc: { time: time } },
+//       { new: true }
+//     );
+//     if (!updatedOrder) {
+//       return res.status(404).json({ message: 'Order not found' });
+//     }
+//     res.status(200).json(updatedOrder);
+//   } catch (error) {
+//     console.error('Error updating order time:', error);
+//     res.status(500).json({ error: 'Failed to update order time' });
+//   }
+// });
 
 // In your Express server (example route to handle status update)
 
@@ -319,60 +347,36 @@ router.patch('/api/orders/:id/expire', async (req, res) => {
 
 
 // PATCH request to update order status
-// PATCH request to update order status to 'Expired' if preparation time exceeds
+router.post('/api/orders/user', async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
+  }
+
+  try {
+    const orders = await Order.find({ userEmail: email }).sort({ createdAt: -1 });
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error('Error fetching user orders:', error);
+    res.status(500).json({ error: 'Error fetching orders' });
+  }
+});
 
 // PATCH request to cancel an order
 router.patch('/api/orders/:id/cancel', async (req, res) => {
-  const orderId = req.params.id;
-  const { status } = req.body; // Get new status from request body
-
   try {
-    // Check if the order exists
-    const order = await Order.findById(orderId);
+    const { id } = req.params;
+    const order = await Order.findByIdAndUpdate(id, { status: 'Canceled' }, { new: true });
+
     if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
+      return res.status(404).json({ error: 'Order not found' });
     }
 
-    // Ensure the order is only canceled before the 5-minute mark
-    const now = new Date();
-    const orderTime = new Date(order.updatedAt);
-    const remainingTimeInMinutes = (now - orderTime) / 1000 / 60;
-
-    if (remainingTimeInMinutes > 5) {
-      return res.status(400).json({ message: 'Cannot cancel order after 5 minutes' });
-    }
-
-    // Update the order status to 'Canceled'
-    order.status = status || 'Canceled';
-    const updatedOrder = await order.save();
-
-    res.status(200).json({
-      message: 'Order status updated to Canceled',
-      data: updatedOrder,
-    });
+    res.status(200).json({ message: 'Order canceled', order });
   } catch (error) {
     console.error('Error canceling order:', error);
-    res.status(500).json({ error: 'Failed to cancel order' });
-  }
-});
-// GET request to fetch all orders for a specific user (filtered by email)
-router.get('/api/orders/:email', async (req, res) => {
-  const { email } = req.params;
-
-  if (!email) {
-    return res.status(400).json({ message: "User email is required" });
-  }
-
-  try {
-    // Find orders that match the user's email and sort by creation date
-    const userOrders = await Order.find({
-      userEmail: email,
-      status: { $in: ['Expired', 'Preparing'] } // Use $in to match either 'Expired' or 'Preparing'
-    }).sort({ createdAt: -1 });
-    res.status(200).json(userOrders);
-  } catch (error) {
-    console.error('Error fetching user orders:', error);
-    res.status(500).json({ message: 'Error retrieving user orders', error });
+    res.status(500).json({ error: 'Error canceling order' });
   }
 });
 

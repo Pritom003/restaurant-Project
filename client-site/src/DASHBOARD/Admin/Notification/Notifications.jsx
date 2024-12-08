@@ -33,9 +33,7 @@ const Notifications = () => {
       });
     });
 
-    // return () => {
-    //   socket.disconnect();
-    // };
+   
   }, []);
 
   return (

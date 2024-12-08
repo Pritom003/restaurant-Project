@@ -4,6 +4,8 @@ import Swal from "sweetalert2";
 const AcceptOrder = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedTime, setSelectedTime] = useState('30');
+  const [selectedReason, setSelectedReason] = useState("Out of Stock");
 
   // Fetch pending orders on component mount
   useEffect(() => {
@@ -23,58 +25,96 @@ const AcceptOrder = () => {
     fetchPendingOrders();
   }, []);
 
-  // Handle adding preparation time and updating order status
-  const handleUpdateOrder = async (orderId, time) => {
-    // SweetAlert2 permission check before updating the order
-    Swal.fire({
-      title: "Are you sure?",
-      text: `Do you want to set the preparation time for Order #${orderId}?`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, Update!",
-      cancelButtonText: "No, Cancel",
-      reverseButtons: true,
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          const response = await fetch(
-            `http://localhost:3000/api/orders/${orderId}`,
-            {
-              method: "PATCH",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ time, status: "Preparing" }),
-            }
-          );
+  // Accept order and set preparation time
+  const handleAccept = async (orderId) => {
+    if (!selectedTime) {
+      alert("Please select a time before accepting!");
+      return;
+    }
 
-          if (response.ok) {
-            await response.json();
-            Swal.fire({
-              title: "Order Updated!",
-              text: `Order #${orderId} status updated to Preparing.`,
-              icon: "success",
-            });
-            setOrders((prevOrders) =>
-              prevOrders.filter((order) => order._id !== orderId)
-            );
-          } else {
-            Swal.fire({
-              title: "Error!",
-              text: "There was an issue updating the order.",
-              icon: "error",
-            });
-          }
-        } catch (error) {
-          console.error("Error updating order status:", error);
-          Swal.fire({
-            title: "Failed!",
-            text: "Failed to update order status.",
-            icon: "error",
-          });
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/orders/${orderId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ time: selectedTime, status: "Preparing" }),
         }
+      );
+
+      if (response.ok) {
+        const updatedOrder = await response.json();
+        Swal.fire({
+          title: "Order Updated!",
+          text: `Order #${updatedOrder.orderNumber} status updated to Preparing.`,
+          icon: "success",
+        });
+        setOrders((prevOrders) =>
+          prevOrders.filter((order) => order._id !== updatedOrder._id)
+        );
+      } else {
+        Swal.fire({
+          title: "Error!",
+          text: "There was an issue updating the order.",
+          icon: "error",
+        });
       }
-    });
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      Swal.fire({
+        title: "Failed!",
+        text: "Failed to update order status.",
+        icon: "error",
+      });
+    }
+  };
+
+  // Reject order with reason
+  const handleReject = async (orderId) => {
+    if (!selectedReason) {
+      alert("Please select a reason for rejection!");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/orders/${orderId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status: "Rejected", reason: selectedReason }),
+        }
+      );
+
+      if (response.ok) {
+        const updatedOrder = await response.json();
+        Swal.fire({
+          title: "Order Rejected",
+          text: `Order #${updatedOrder.orderNumber} has been rejected.`,
+          icon: "info",
+        });
+        setOrders((prevOrders) =>
+          prevOrders.filter((order) => order._id !== updatedOrder._id)
+        );
+      } else {
+        Swal.fire({
+          title: "Error!",
+          text: "There was an issue rejecting the order.",
+          icon: "error",
+        });
+      }
+    } catch (error) {
+      console.error("Error rejecting order:", error);
+      Swal.fire({
+        title: "Failed!",
+        text: "Failed to reject order.",
+        icon: "error",
+      });
+    }
   };
 
   if (loading) {
@@ -101,7 +141,10 @@ const AcceptOrder = () => {
                 <strong>Total Price:</strong> £{order.totalPrice}
               </p>
               <p>
-                <strong>status</strong> £{order.status}
+                <strong>Status:</strong> {order.status}
+              </p>
+              <p>
+                <strong>reason:</strong> {order.reason? order.reason :''}
               </p>
               <h5 className="font-medium mt-3">Items:</h5>
 
@@ -111,38 +154,58 @@ const AcceptOrder = () => {
                 </span>
               ))}
 
-              <div className="mt-3">
-                <h5 className="font-medium">Set Preparation Time:</h5>
-                <div className="flex gap-3 flex-wrap space-x-2">
+              <div className="flex justify-between">
+                {/* Accept Section */}
+                <div className="w-1/2 border-r border-gray-300 pr-4">
+                  <h2 className="text-lg font-semibold mb-2">Accept</h2>
+                  <div className="flex flex-col gap-2 h-20 overflow-y-auto">
+                    {["15", "30", "45", "50"].map((time) => (
+                      <button
+                        key={time}
+                        className={`py-2 px-4 rounded-lg text-center ${
+                          selectedTime === time
+                            ? "bg-green-500 text-white"
+                            : "bg-gray-100 hover:bg-green-200"
+                        }`}
+                        onClick={() => setSelectedTime(time)}
+                      >
+                        {time}
+                      </button>
+                    ))}
+                  </div>
                   <button
-                    onClick={() => handleUpdateOrder(order._id, 15)}
-                    className="text-green-800 border-green-500 border-2 hover:border-blue-700 p-2"
+                    onClick={() => handleAccept(order._id)}
+                    className="w-full mt-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold"
                   >
-                    15 min
+                    Accept
                   </button>
+                </div>
+
+                {/* Reject Section */}
+                <div className="w-1/2 pl-4">
+                  <h2 className="text-lg font-semibold mb-2">Reject</h2>
+                  <div className="flex flex-col gap-2 h-20 overflow-y-auto">
+                    {["Too Busy", "Too Far", "Out of Stock", "Closed Today", "Please Call"].map(
+                      (reason) => (
+                        <button
+                          key={reason}
+                          className={`py-2 px-4 rounded-lg text-center ${
+                            selectedReason === reason
+                              ? "bg-red-500 text-white"
+                              : "bg-gray-100 hover:bg-red-200"
+                          }`}
+                          onClick={() => setSelectedReason(reason)}
+                        >
+                          {reason}
+                        </button>
+                      )
+                    )}
+                  </div>
                   <button
-                    onClick={() => handleUpdateOrder(order._id, 25)}
-                    className="text-green-800 border-green-500 border-2 hover:border-blue-700 p-2"
+                    onClick={() => handleReject(order._id)}
+                    className="w-full mt-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold"
                   >
-                    25 min
-                  </button>
-                  <button
-                    onClick={() => handleUpdateOrder(order._id, 30)}
-                    className="text-green-800 border-green-500 border-2 hover:border-blue-700 p-2"
-                  >
-                    30 min
-                  </button>
-                  <button
-                    onClick={() => handleUpdateOrder(order._id, 45)}
-                    className="text-green-800 border-green-500 border-2 hover:border-blue-700 p-2"
-                  >
-                    45 min
-                  </button>
-                  <button
-                    onClick={() => handleUpdateOrder(order._id, 50)}
-                    className="text-green-800 border-green-500 border-2 hover:border-blue-700 p-2"
-                  >
-                    50 min
+                    Reject
                   </button>
                 </div>
               </div>
