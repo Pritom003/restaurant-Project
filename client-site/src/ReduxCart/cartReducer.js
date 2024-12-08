@@ -92,9 +92,9 @@ const cartReducer = (state = initialState, action) => {
 
 
     case 'INCREMENT_QUANTITY': {
-      const { id } = action.payload;
+      const { key } = action.payload; // Use unique key instead of id
       const updatedItems = state.items.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
+        item.key === key ? { ...item, quantity: item.quantity + 1 } : item
       );
 
       localStorage.setItem('cartItems', JSON.stringify(updatedItems));
@@ -108,11 +108,12 @@ const cartReducer = (state = initialState, action) => {
       };
     }
 
+
     case 'DECREMENT_QUANTITY': {
-      const { id } = action.payload;
+      const { key } = action.payload; // Use unique key instead of id
       const updatedItems = state.items
         .map((item) =>
-          item.id === id && item.quantity > 1
+          item.key === key && item.quantity > 1
             ? { ...item, quantity: item.quantity - 1 }
             : item
         )

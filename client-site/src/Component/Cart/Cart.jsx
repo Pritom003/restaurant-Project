@@ -82,6 +82,14 @@ const Cart = () => {
   };
 
   const handlePlaceOrder = () => {
+    if (!user) {
+      Swal.fire(
+        "Error",
+        "You need to log in to add items to your cart or place an order.",
+        "error"
+      ); // Show login error modal
+      return;
+    }
     if (orderType) {
       navigate("/pickup-order", {
         state: {
@@ -94,7 +102,7 @@ const Cart = () => {
     }
   };
   console.log(items);
-
+  // const closeErrorModal = () => setShowErrorModal(false);
   // const handlePaymentMethodChange = (method) => {
   //   setPaymentMethod(method === paymentMethod ? "" : method); // Toggle method
   // };
@@ -134,7 +142,7 @@ const Cart = () => {
                     onClick={() =>
                       dispatch({
                         type: "DECREMENT_QUANTITY",
-                        payload: { id: item.id },
+                        payload: { key: item.key }, // Pass unique key
                       })
                     }
                     className="text-gray-600 text-lg bg-red-200 hover:text-red-800 px-3 py-1 border rounded"
@@ -155,7 +163,7 @@ const Cart = () => {
                     onClick={() =>
                       dispatch({
                         type: "INCREMENT_QUANTITY",
-                        payload: { id: item.id },
+                        payload: { key: item.key }, // Pass unique key
                       })
                     }
                     className="text-gray-600 text-lg bg-red-200 hover:text-red-800 px-3 py-1 border rounded"
@@ -321,6 +329,8 @@ const Cart = () => {
           </div>
         </div>
       )} */}
+
+      {/* Login Error Modal */}
 
       {/* Out of Range Modal */}
       {showModal && <OutOfRangeModal onClose={closeModal} />}

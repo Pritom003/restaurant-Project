@@ -244,19 +244,21 @@ const PickupOrderForm = () => {
           </Elements>
         )}
 
-        <button
-          type="submit"
-          className={`mt-4 text-white bg-blue-700 hover:bg-blue-800 rounded px-5 py-2.5 ${
-            isProcessing ? "opacity-50 cursor-not-allowed" : ""
-          }`}
-          disabled={isProcessing}
-        >
-          {isProcessing
-            ? "Processing..."
-            : formData.paymentMethod === "stripe"
-            ? `Pay £${(totalPrice + extraCharge).toFixed(2)}`
-            : "Place Order"}
-        </button>
+        {formData.paymentMethod !== "stripe" && (
+          <button
+            type="submit"
+            className={`mt-4 text-white bg-blue-700 hover:bg-blue-800 rounded px-5 py-2.5 ${
+              isProcessing ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            disabled={isProcessing}
+          >
+            {isProcessing
+              ? "Processing..."
+              : formData.paymentMethod === "stripe"
+              ? `Pay £${(totalPrice + extraCharge).toFixed(2)}`
+              : "Place Order"}
+          </button>
+        )}
       </form>
     </div>
   );
