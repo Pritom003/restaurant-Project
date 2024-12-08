@@ -125,6 +125,50 @@ router.put('/api/menu/:category/:itemName', async (req, res) => {
 
 
 
+
+
+// Update a specific variety's price
+router.put('/api/menu/:category/:itemName/variety/:varietyName', async (req, res) => {
+  const { category, itemName, varietyName } = req.params;
+  const { price } = req.body;
+
+  try {
+    // Find the category
+    const menu = await MenuItem.findOne({ category });
+
+    if (!menu) {
+      return res.status(404).json({ message: 'Category not found' });
+    }
+
+    // Find the item within the category
+    const item = menu.items.find((item) => item.name === itemName);
+
+    if (!item) {
+      return res.status(404).json({ message: 'Item not found' });
+    }
+
+    // Find the variety within the item
+    const variety = item.varieties.find((v) => v.name === varietyName);
+
+    if (!variety) {
+      return res.status(404).json({ message: 'Variety not found' });
+    }
+
+    // Update the variety price
+    variety.price = price;
+    await menu.save();
+
+    res.status(200).json({ message: 'Variety updated successfully', menu });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error updating variety' });
+  }
+});
+
+
+
+
+
 module.exports = router;
 
 
