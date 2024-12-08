@@ -50,6 +50,35 @@ The Deedar.UK Restaurant Team
 };
 
 
+const sendCancellationEmail = async (email, reason) => {
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "Order Cancellation Notice - Deedar.UK Restaurant 🍴",
+    text: `Dear Valued Customer,
+
+We regret to inform you that we are unable to process your order due to the following reason:
+
+"${reason}"
+
+We sincerely apologize for any inconvenience caused. Please feel free to reach out to us for assistance or to place a new order.
+
+Thank you for your understanding.
+
+Warm regards,  
+The Deedar.UK Restaurant Team
+`,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Cancellation email sent successfully to ${email}`);
+  } catch (error) {
+    console.error(`Failed to send cancellation email to ${email}:`, error);
+  }
+};
+
+
 // API endpoint to place an order
 router.post("/api/orders", async (req, res) => {
   const {
@@ -91,7 +120,7 @@ router.post("/api/orders", async (req, res) => {
       items,
       totalPrice,
       status: "Pending",
-      reason:'Ongoing',
+      reason: 'Ongoing',
       spiceLevel,
       email,
       address,
@@ -244,23 +273,37 @@ router.get('/api/orders/user', async (req, res) => {
     res.status(500).json({ message: 'Error retrieving user orders', error });
   }
 });
-router.patch("/api/orders/:id", async (req, res) => {
-  const { time, status, reason } = req.body; // Get the time and status (and reason for rejection)
-  
-  try {
-    // Find and update the order by ID
-    const updatedOrder = await Order.findByIdAndUpdate(
-      req.params.id,
-      { 
-        time, 
-        status, 
-        reason: reason || null, // Include the rejection reason if provided
-      },
-      { new: true } // Return the updated order
-    );
 
-    if (!updatedOrder) {
+
+
+router.patch("/api/orders/:id", async (req, res) => {
+  const { time, status, reason } = req.body;
+
+  try {
+    // Find the order by ID
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
       return res.status(404).json({ error: "Order not found" });
+    }
+
+    // Update the order fields
+    order.time = time || order.time;
+    order.status = status || order.status;
+    order.reason = reason || 'Ongoing';
+
+    // Save the updated order
+    const updatedOrder = await order.save();
+
+    // Send emails based on the conditions
+    if (time && !reason) {
+      // Send a welcome email if time is available and reason is null
+      await sendWelcomeEmail(order.email, order.orderNumber, order.items);
+    }
+
+    if (reason) {
+      // Send a cancellation email if a reason is provided
+      await sendCancellationEmail(order.email, reason);
     }
 
     res.json(updatedOrder); // Return the updated order data
