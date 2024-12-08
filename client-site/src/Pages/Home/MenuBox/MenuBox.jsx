@@ -53,8 +53,8 @@ const MenuBox = ({ addToCart }) => {
   const SpecialMenuprice = specialMenuData.find(
     (item ) => item.category === "Chef Choice"
   )?.Price;
-  
-  const currentDay = 3;
+  const currentDay = new Date().getDay();//(Sat and Sun    OFFF )
+  // const currentDay = 3;( for development )
   const handleSpecialMenuClick = (item) => {
 
     const specialMenu  = specialMenuData.find(
