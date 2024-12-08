@@ -15,32 +15,10 @@ if (initialState.items.length > 0) {
 const cartReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'ADD_TO_CART':
-      const { name, variant, price, variantPrice, category, items, id } = action.payload;
+      const { name, variant, price, variantPrice, category, items} = action.payload;
       const key = variant ? `${name} (${variant})` : name;
 
-      if (category === "Special Platter") {
-        const newItem = {
-          id,  // Unique ID for each platter
-          name: 'Special Platter',
-          category,
-          items,
-          price,
-          variantPrice: 0,
-          quantity: 1,
-        };
-
-        const updatedItems = [...state.items, newItem];
-
-        localStorage.setItem('cartItems', JSON.stringify(updatedItems));
-        return {
-          ...state,
-          items: updatedItems,
-          totalPrice: updatedItems.reduce(
-            (total, item) => total + (item.variantPrice || item.price) * item.quantity,
-            0
-          ),
-        };
-      }
+   
 
       // Regular items handling
       const existingItemIndex = state.items.findIndex((item) => item.key === key);
@@ -58,6 +36,8 @@ const cartReducer = (state = initialState, action) => {
         updatedItems[existingItemIndex] = updatedItem;
       } else {
         const newItem = {
+          category,
+          items,
           key,
           name,
           variant: variant || null,
@@ -67,7 +47,7 @@ const cartReducer = (state = initialState, action) => {
         };
         updatedItems = [...state.items, newItem];
       }
-
+console.log(updatedItems);
       localStorage.setItem('cartItems', JSON.stringify(updatedItems));
       return {
         ...state,
@@ -78,26 +58,23 @@ const cartReducer = (state = initialState, action) => {
         ),
       };
 
-    case 'REMOVE_FROM_CART':
-      const { id: removeId, key: removeKey, category: removeCategory } = action.payload;
-
-      const newItems = state.items.filter((item) => {
-        if (removeCategory === "Special Platter") {
-          // Only remove the exact special platter matching by id and category
-          return !(item.id === removeId && item.category === removeCategory);
-        }
-        return item.key !== removeKey; // Regular item removal by key
-      });
-
-      localStorage.setItem('cartItems', JSON.stringify(newItems));
-      return {
-        ...state,
-        items: newItems,
-        totalPrice: newItems.reduce(
-          (total, item) => total + (item.variantPrice || item.price) * (item.quantity || 1),
-          0
-        ),
-      };
+      case 'REMOVE_FROM_CART':
+        const { key: removeKey } = action.payload;
+    
+        const newItems = state.items.filter((item) => {
+      
+          return item.key !== removeKey; // For regular items
+        });
+      
+        localStorage.setItem('cartItems', JSON.stringify(newItems));
+        return {
+          ...state,
+          items: newItems,
+          totalPrice: newItems.reduce(
+            (total, item) => total + (item.variantPrice || item.price) * (item.quantity || 1),
+            0
+          ),
+        };
       case 'DECREMENT_QUANTITY': {
         const { key } = action.payload; // Use key, not id
         const updatedItems = state.items

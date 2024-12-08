@@ -40,10 +40,7 @@ const useRestaurantStatus = () => {
       const closingDate = new Date(currentTime);
       closingDate.setHours(closingHours, closingMinutes, 0, 0); // Set closing time with current date
   
-      console.log(`Current Time: ${currentTime}`);
-      console.log(`Opening Time: ${openingDate}`);
-      console.log(`Closing Time: ${closingDate}`);
-  
+ 
       // Check if the current time is within the opening and closing times
       const isWithinTimeRange = currentTime >= openingDate && currentTime <= closingDate;
   

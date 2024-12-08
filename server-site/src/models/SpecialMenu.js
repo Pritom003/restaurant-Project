@@ -29,11 +29,11 @@ const specialMenuSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-    subcategories: [subcategorySchema], // Array of subcategory objects
-    createdAt: {
-        type: Date,
-        default: Date.now,
+    set: {
+        type: String, // The set can be "Set 1", "Set 2"
+        required: true,
     },
+    subcategories: [subcategorySchema], // Array of subcategory objects
 });
 
 module.exports = mongoose.model('SpecialMenu', specialMenuSchema);

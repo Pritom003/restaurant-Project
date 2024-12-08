@@ -168,11 +168,15 @@ const PreparingOrders = () => {
               </p>
               <h5 className="font-medium mt-3">Items:</h5>
               <ul>
-                {order.items.map((item, index) => (
-                  <li key={index}>
-                    {item.name} (x{item.quantity}) -£{item.price}
-                  </li>
-                ))}
+              {order.items.map((item, index) => (
+  <li className="text-xs" key={index}>
+    {item.subItems.length > 0 && item.subItems?.map(subItem => subItem.name).join(', ')} 
+  
+    {item.items?.map((name) => name.name).join(', ')} 
+    (x{item.quantity}) - £{item.price}
+  </li>
+))}
+
               </ul>
               <div className="mt-3">
                 <h5 className="font-medium text-red-500">

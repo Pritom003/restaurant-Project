@@ -22,8 +22,9 @@ const Cart = () => {
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
   const { isRestaurantOpen} = useRestaurantStatus();
+  console.log(items);
   const removeFromCart = (item) =>
-    dispatch({ type: "REMOVE_FROM_CART", payload: { key: item.key } });
+    dispatch({ type: "REMOVE_FROM_CART", payload: { key: item.key} });
 
   const isInRange = true;
 
@@ -31,12 +32,11 @@ const Cart = () => {
     name: item.name,
     price: item.variantPrice || item.price,
     quantity: item.quantity,
-    variant: item.variant || null, // Include variant if available
+    variant: item.variant || null,
     category: item.category,
-    subItems: item.items || [], // Include submenu items
+    subItems: item.items || [], 
   }));
 
-  // console.log("Formated data", formattedItems);
 
   // eslint-disable-next-line no-unused-vars
   const handleOrderCompletion = async (method, status) => {
@@ -156,9 +156,11 @@ const Cart = () => {
                   {item.name} {item.variant && `(${item.variant})`}{" "}
                   {item.quantity > 1 && `(${item.quantity}x)`}
                   {/* Display special menu platter items under the category name */}
-                  {item.category === "Special Platter" && (
+                  {item.category === "Special Platter" &&  (
                     <span className="text-sm text-gray-600">
                       {" "}
+                      {item.name=''}
+                      {item.category}
                       ({item.items.map((subItem) => subItem.name).join(", ")})
                     </span>
                   )}
