@@ -39,7 +39,7 @@ router.get('/api/menu', async (req, res) => {
 });
 // Update Menu Item in Backend
 // Backend: PUT route to update menu item
-router.put('/menu/item', async (req, res) => {
+router.put('api/menu/item', async (req, res) => {
   const { category, name, updatedName, updatedPrice } = req.body;
 
   try {
@@ -89,39 +89,51 @@ router.delete('/api/menu/:category/item/:name', async (req, res) => {
   }
 });
 
-
-// PUT route to update menu item
-
-
-// Update item in the menu
-router.put('/api/menu/:category/:itemName', async (req, res) => {
+// Update menu item
+router.put('/v4/menu/:category/item/:itemName', async (req, res) => {
   const { category, itemName } = req.params;
-  const { name, price } = req.body;
+  const { name, price, varieties, spicyLevels, itemsIncluded } = req.body;
 
+  console.log(req.body, category,);
+   // Debugging output
+  console.log("itemname",itemName);
   try {
-    // Find the category and update the item
-    const menu = await MenuItem.findOne({ category });
+    // Find the category that matches the category name
+    const categoryDoc = await MenuItem.findOne({ category });
+console.log(categoryDoc);
 
-    if (!menu) {
-      return res.status(404).json({ message: 'Category not found' });
+// hey gpt i got category donc and the itemnem also mtch the item name then why item is undefined ?
+    if (!categoryDoc) {
+      return res.status(404).json({ error: 'Category not found' });
     }
 
-    const itemIndex = menu.items.findIndex((item) => item.name === itemName);
+    // Find the item within the category's items array
+    const item = categoryDoc.items.find((item) => item.name.trim() === itemName.trim());
 
-    if (itemIndex === -1) {
-      return res.status(404).json({ message: 'Item not found' });
+console.log(item);
+    if (!item) {
+      return res.status(404).json({ error: 'Item not found' });
     }
 
-    // Update the item
-    menu.items[itemIndex] = { name, price };
-    await menu.save();
+    // Update item details if provided, otherwise keep the existing ones
+    item.name = name || item.name;
+    item.price = price ? parseFloat(price) : item.price; // Ensure price is a number
+    item.varieties = varieties || item.varieties;
+    item.spicyLevels = spicyLevels || item.spicyLevels;
+    item.itemsIncluded = itemsIncluded || item.itemsIncluded;
 
-    res.status(200).json(menu);
+    // Save the updated category document
+    await categoryDoc.save();
+
+    return res.status(200).json({ message: 'Item updated successfully', item });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error updating item' });
+    console.error('Error updating item:', error);
+    return res.status(500).json({ error: 'Server error' });
   }
 });
+
+
+// PUT route to update menu item  hey gpt now give me the backend updata route
 
 
 
