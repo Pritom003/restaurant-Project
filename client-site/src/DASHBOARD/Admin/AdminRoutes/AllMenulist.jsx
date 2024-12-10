@@ -5,11 +5,12 @@ import Swal from 'sweetalert2'; // Import Swal
 import { FaPen, FaTrash } from 'react-icons/fa';
 import { useForm } from 'react-hook-form'; // Import React Hook Form
 import Modal from 'react-modal';
+import Specialmenulist from "./Specialmenulist";
 Modal.setAppElement('#root'); // Accessibility fix
 const AllMenuList = () => {
   const [menu, setMenu] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [categoriesPerPage, setCategoriesPerPage] = useState(3); 
+  const [categoriesPerPage, setCategoriesPerPage] = useState(2); 
   const [loading, setLoading] = useState(true);
   const [editingItem, setEditingItem] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -181,7 +182,8 @@ const handleUpdate = async (data) => {
   
 
   return (
-    <div className="flex flex-wrap gap-4 text-black">
+<div>
+<div className="flex flex-wrap gap-4 text-black">
       <div className="container mx-auto py-8 text-black">
         <h2 className="text-center text-4xl font-chewy underline text-red-950 pt-10">Regular Menus</h2>
         {loading ? (
@@ -344,6 +346,14 @@ const handleUpdate = async (data) => {
         </form>
       </Modal>
     </div>
+    <hr className="text-black"></hr>
+      <div className="bg-orange-200 p-10">
+        <h2 className="text-center text-3xl font-chewy underline text-red-950 pt-10">
+          Special Platter Menus
+        </h2>
+        <Specialmenulist></Specialmenulist>
+      </div>
+</div> 
   );
 };
 
