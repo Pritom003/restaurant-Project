@@ -124,7 +124,7 @@ const handleUpdate = async (data) => {
   const updatedItem = {
     ...editingItem,
     name: data.name,
-    price: data.price,
+    price: parseFloat(data.price),
     varieties: data.varieties || editingItem.varieties,
     spicyLevels: data.spicyLevels || editingItem.spicyLevels,
     itemsIncluded: data.itemsIncluded || editingItem.itemsIncluded,
@@ -221,7 +221,8 @@ const handleUpdate = async (data) => {
                 {category.items.map((item,id) => (
                   <div key={id} className="card p-4 border shadow-md rounded-lg">
                     <h4 className="text-lg font-bold">{item.name}</h4>
-                    <p className="text-sm">Price: {item.price.toFixed(2)}</p>
+                    <p className="text-sm">Price: {item.price ? item.price.toFixed(2) : 0.00}</p>
+
 
                   
                       {item.itemsIncluded.length > 0 ? item.itemsIncluded.map((includedItem, idx) => (

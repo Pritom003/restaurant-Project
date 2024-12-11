@@ -303,11 +303,11 @@ const MenuBox = ({ addToCart }) => {
                 className={`transition-all duration-500 ease-in-out overflow-hidden`}
                 style={{
                   maxHeight: expandedCategories.includes(menu.category)
-                    ? `${menu.items.length * 80}px`
+                    ? `${menu.items.length * 60}vh`
                     : "0px",
                 }}
               >
-                <div className="pl-4 pt-2">
+                <div className="pl-4 pt-2 ">
                   {menu.items.map((item, index) => (
                     <div key={index} className="mb-2">
                       {menu.category === "Set Meals" ? (
@@ -425,7 +425,7 @@ const MenuBox = ({ addToCart }) => {
                               )}
                             </div>
                           </ul>
-                          <span className=" text-xs text-gray-600"> {item.descrpition? item.descrpition:''}</span>
+                          <span className=" text-lg text-gray-600"> {item.descrpition? item.descrpition:''}</span>
                         
                         </div>
                       )}
