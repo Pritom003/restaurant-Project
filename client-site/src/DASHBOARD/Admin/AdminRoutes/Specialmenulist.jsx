@@ -50,17 +50,53 @@ const Specialmenulist = () => {
               subcategoryName
             )}/dish/${encodeURIComponent(dishName)}`
           );
+          // Update state to remove dish from specific subcategory
+          setSpecialmenulist((prevList) =>
+            prevList.map((category) =>
+              category.category === id
+                ? {
+                    ...category,
+                    subcategories: category.subcategories.map((subcategory) =>
+                      subcategory.name === subcategoryName
+                        ? {
+                            ...subcategory,
+                            dishes: subcategory.dishes.filter(
+                              (dish) => dish.name !== dishName
+                            ),
+                          }
+                        : subcategory
+                    ),
+                  }
+                : category
+            )
+          );
         } else if (subcategoryName) {
           await axios.delete(
             `http://localhost:3000/api/special-menu/${id}/subcategory/${encodeURIComponent(
               subcategoryName
             )}`
           );
+          // Update state to remove subcategory from the category
+          setSpecialmenulist((prevList) =>
+            prevList.map((category) =>
+              category.category === id
+                ? {
+                    ...category,
+                    subcategories: category.subcategories.filter(
+                      (subcategory) => subcategory.name !== subcategoryName
+                    ),
+                  }
+                : category
+            )
+          );
         } else {
           await axios.delete(`http://localhost:3000/api/special-menu/${id}`);
+          // Update state to remove the entire category
+          setSpecialmenulist((prevList) =>
+            prevList.filter((item) => item._id !== id)
+          );
         }
 
-        setSpecialmenulist(specialmenulist.filter((item) => item._id !== id));
         Swal.fire("Deleted!", `${itemType} has been deleted.`, "success");
       } catch (error) {
         console.error("Error deleting item:", error.message);
@@ -70,6 +106,7 @@ const Specialmenulist = () => {
       Swal.fire("Cancelled", "The item was not deleted.", "info");
     }
   };
+
   return (
     <div>
       {loading ? (
@@ -80,7 +117,7 @@ const Specialmenulist = () => {
             <div key={id}>
               <span className=" flex justify-center align-middle items-center gap-2 ">
                 <h3 className=" text-2xl font-bold  underline  pt-10 pb-5">
-                  {category.category}-{category.set}{" "}
+                  {category.category} - {category.set}{" "}
                 </h3>
                 <button
                   onClick={() => deleteItem(category._id)}

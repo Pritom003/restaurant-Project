@@ -125,60 +125,53 @@ router.delete('/api/special-menu/:id', async (req, res) => {
     }
 });
 
-// DELETE /api/special-menu/:category/subcategory/:subcategory
 router.delete('/api/special-menu/:category/subcategory/:subcategory', async (req, res) => {
     try {
         const { category, subcategory } = req.params;
-        const menu = await SpecialMenu.findOne({ category });
-
-        if (menu) {
-            const subcategoryIndex = menu.subcategories.findIndex(sub => sub.name === subcategory);
-            if (subcategoryIndex !== -1) {
-                menu.subcategories.splice(subcategoryIndex, 1);
-                await menu.save();
-                res.status(200).json({ message: 'Subcategory deleted successfully' });
-            } else {
-                res.status(404).json({ message: 'Subcategory not found' });
-            }
-        } else {
-            res.status(404).json({ message: 'Category not found' });
-        }
-    } catch (error) {
-        res.status(500).json({ message: 'Failed to delete subcategory', error });
-    }
-});
-
-// DELETE /api/special-menu/:category/subcategory/:subcategory/dish/:dish
-router.delete('/api/special-menu/:category/subcategory/:subcategory/dish/:dish', async (req, res) => {
-    try {
-        const { category, subcategory: subcategoryName, dish } = req.params;
-        
-        // Find the menu by category
         const menu = await SpecialMenu.findOne({ category });
 
         if (!menu) {
             return res.status(404).json({ message: 'Category not found' });
         }
 
-        // Find the subcategory within the menu
-        const subcategory = menu.subcategories.find(sub => sub.name === subcategoryName);
-        if (!subcategory) {
+        menu.subcategories = menu.subcategories.filter(
+            sub => sub.name.toLowerCase() !== subcategory.toLowerCase()
+        );
+
+        menu.markModified('subcategories');
+        await menu.save();
+
+        res.status(200).json({ message: 'Subcategory deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting subcategory:', error);
+        res.status(500).json({ message: 'Failed to delete subcategory', error });
+    }
+});
+router.delete('/api/special-menu/:category/subcategory/:subcategory/dish/:dish', async (req, res) => {
+    try {
+        const { category, subcategory, dish } = req.params;
+        const menu = await SpecialMenu.findOne({ category });
+
+        if (!menu) {
+            return res.status(404).json({ message: 'Category not found' });
+        }
+
+        const subcategoryItem = menu.subcategories.find(
+            sub => sub.name.toLowerCase() === subcategory.toLowerCase()
+        );
+
+        if (!subcategoryItem) {
             return res.status(404).json({ message: 'Subcategory not found' });
         }
 
-        // Find the dish within the subcategory
-        const dishIndex = subcategory.dishes.findIndex(d => d.name === dish);
-        if (dishIndex === -1) {
-            return res.status(404).json({ message: 'Dish not found' });
-        }
+        subcategoryItem.dishes = subcategoryItem.dishes.filter(
+            d => d.name.toLowerCase() !== dish.toLowerCase()
+        );
 
-        // Remove the dish from the subcategory
-        subcategory.dishes.splice(dishIndex, 1);
-
-        // Save the updated menu to the database
+        menu.markModified('subcategories');
         await menu.save();
-        res.status(200).json({ message: 'Dish deleted successfully' });
 
+        res.status(200).json({ message: 'Dish deleted successfully' });
     } catch (error) {
         console.error('Error deleting dish:', error);
         res.status(500).json({ message: 'Failed to delete dish', error: error.message });
