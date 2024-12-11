@@ -17,7 +17,8 @@ const MenuBox = ({ addToCart }) => {
   const [specialMenuData, setSpecialMenuData] = useState([]);
   const [specialMenuCat, setSpecialcatMenuData] = useState([]);
   const [isSpecialMenuOpen, setIsSpecialMenuOpen] = useState(false);
-  const { isRestaurantOpen,openingTime, closingTime ,loadings} = useRestaurantStatus();
+  const { isRestaurantOpen, openingTime, closingTime, loadings } =
+    useRestaurantStatus();
   const [isStillCantDecideOpen, setIsStillCantDecideOpen] = useState(false);
   const [isSpecialMenuExpanded, setIsSpecialMenuExpanded] = useState(false);
   const [SpecialMenuPriceId, setSpecialMenuPriceId] = useState();
@@ -48,17 +49,16 @@ const MenuBox = ({ addToCart }) => {
     fetchSpecialMenu();
   }, []);
 
-
   // console.log(specialMenuData ,'lookjskjijeidheefrherufrhehuewfhehfu');
   const SpecialMenuprice = specialMenuData.find(
-    (item ) => item.category === "Chef Choice"
+    (item) => item.category === "Chef Choice"
   )?.Price;
   const currentDay = new Date().getDay();//(Sat and Sun    OFFF )
-  // const currentDay = 3;( for development )
+  // const currentDay = 0;
   const handleSpecialMenuClick = (item) => {
-
-    const specialMenu  = specialMenuData.find(
-      (items) => items.category === "Mid Week Special Platter" && item.set===items.set
+    const specialMenu = specialMenuData.find(
+      (items) =>
+        items.category === "Mid Week Special Platter" && item.set === items.set
     );
     const specialMenuPrice = specialMenu?.Price;
     setSpecialMenuPriceId(specialMenuPrice);
@@ -105,22 +105,17 @@ const MenuBox = ({ addToCart }) => {
           “Serving Homestyle Authentic Indian & Bangladeshi Cuisine”
         </p>
         {loadings ? (
- <p className="text-xl text-center text-green-700">
- ........
-</p>
-) : (
-  isRestaurantOpen ? (
-    <p className="text-xl text-center text-green-700">
-      Online orders are available until: {closingTime} (UK Time)
-    </p>
-  ) : (
-    <p className="text-xl text-center text-red-700">
-      The restaurant is currently closed. Opening time: {openingTime}, Closing time: {closingTime}.
-    </p>
-  )
-)}
-
-    
+          <p className="text-xl text-center text-green-700">........</p>
+        ) : isRestaurantOpen ? (
+          <p className="text-xl text-center text-green-700">
+            Online orders are available until: {closingTime} (UK Time)
+          </p>
+        ) : (
+          <p className="text-xl text-center text-red-700">
+            The restaurant is currently closed. Opening time: {openingTime},
+            Closing time: {closingTime}.
+          </p>
+        )}
       </div>
 
       <h2 className="text-2xl mb-4 text-center">Menu</h2>
@@ -167,46 +162,118 @@ const MenuBox = ({ addToCart }) => {
 
         {/* Special Menu Category */}
         <div
-  className="flex justify-between items-center cursor-pointer p-2 bg-red-300 hover:bg-red-400"
-  onClick={toggleSpecialMenu}
->
-  <span className="text-xl font-semibold text-white">
-    Mid Week Special Platters
-  </span>
-  <span className="text-xl text-white flex gap-2">
-    <FaChevronDown />
-  </span>
-</div>
+          className="flex justify-between items-center cursor-pointer  bg-gray-300  hover:bg-orange-400"
+          onClick={toggleSpecialMenu}
+        >
+          {/* hey gpt if the  (currentDay >= 1 && currentDay <= 4 ) then  add a white opacity over the midweek menu and a text whic will say only availbale from mon -thursday and the text will show in a red bg diago*/}
+          <span className="text-xl font-semibold text-black">
+            Mid Week Special Platters
+          </span>
+          <span className="text-xl text-white flex gap-2">
+            <FaChevronDown />
+          </span>
+        </div>
 
-{isSpecialMenuExpanded && (
-  <div
-    className="transition-all duration-500 ease-in-out overflow-hidden"
-    style={{
-      maxHeight: isSpecialMenuExpanded ? "200px" : "0px",
-    }}
-  >
-    <ul>
-      {specialMenuData.map((item, idx) => (
+        {isSpecialMenuExpanded &&
+          (currentDay >= 1 && currentDay <= 4 ? (
+            <div
+              className="transition-all duration-500 ease-in-out py-10 overflow-hidden"
+              style={{
+                maxHeight: isSpecialMenuExpanded ? "[full]" : "0px",
+              }}
+            >
+              <ul className="border-b-2 border-dotted pt-2 border-red-900 ">
+                {specialMenuData.map(
+                  (item, idx) =>
+                    item.category === "Mid Week Special Platter" && (
+                      <li
+                        key={idx}
+                       
+                      >
+                   <div  className=" flex justify-between align-middle items-center pb-2 text-xl">
+                   <span onClick={() => handleSpecialMenuClick(item, idx)}>
+                          {item.set ? item.set : "new set"}{" "}
+                          <span className="text-xs text-gray-600">
+                            (Tuesday, Wednesday & Thursday ONLY)
+                          </span>
+                        </span>
+                        <span onClick={() => handleSpecialMenuClick(item, idx)}>
+                          £{item.Price}
+                        </span>
+                   </div>
+                        <li className="border-b-2 border-dotted flex flex-col items-start pb-2 text-xl">
+                  <ul className="list-disc text-xs text-gray-800 ml-4 mt-2">
+                    <li>1 Poppadom (plain OR spice)</li>
+                    <li>1 Starter</li>
+                    <li>1 Main dish</li>
+                    <li>1 Side dish</li>
+                    <li>1 Plain Naan</li>
+                    <li>1 Rice</li>
+                  </ul>
+                </li>
+                      </li>
+                    )
+                )}
+
+               
+              </ul>
+            </div>
+          ) : (
+            <>
+              {/* Apply white opacity overlay with warning text */}
+
+              <ul className="border-b-2 pt-2 border-dotted border-red-900 z-20">
+  {specialMenuData.map((item, idx) =>
+    item.category === "Mid Week Special Platter" ? (
+      <li
+        key={idx}
+        className="relative overflow-hidden"
+      >
+        {/* Rotated Text */}
+        <div className="absolute top-10 left-0 right-0 bottom-0 flex 
+        justify-center items-center">
+          <p className="bg-red-400 text-white text-xs w-full h-8
+           text-center transform rotate-[-10deg] absolute top-0 left-0 
+           right-0 bottom-0">
+            Available only from Monday to Thursday!
+          </p>
+        </div> 
+      <div className="flex justify-between items-center pb-2 text-xl "> 
+      <span onClick={() => handleSpecialMenuClick(item, idx)}>
+          {item.set ? item.set : "new set"}
+        </span>
+        <span onClick={() => handleSpecialMenuClick(item, idx)}>
+          £{item.Price}
+        </span>
+      </div>
+          <li className="border-b-2 border-dotted flex flex-col items-start pb-2 text-xl relative">
    
-    item.category==="Mid Week Special Platter" &&  <li
-    key={idx}
-    className="border-b-2 border-dotted flex justify-between align-middle items-center  border-red-900 pb-2 text-xl"
-    onClick={() => handleSpecialMenuClick(item,idx)}
-  >
-   <span> {item.set ? item.set : 'new set'}  </span>
-   <span>   £{item.Price} </span>
-  
-  </li>
-   
-      ))}
+    <ul className="list-disc text-xs text-gray-800 ml-4 mt-2">
+      <li>1 Poppadom (plain OR spice)</li>
+      <li>1 Starter</li>
+      <li>1 Main dish</li>
+      <li>1 Side dish</li>
+      <li>1 Plain Naan</li>
+      <li>1 Rice</li>
     </ul>
-  </div>
-)}
+  </li>
+
+      </li>
+      
+    ) : null
+  )}
+</ul>
+
+
+
+            </>
+          ))}
+
         {/* Render SpecialMenuModal if the special menu is open */}
         {isSpecialMenuOpen && (
           <SpecialMenuModal
             onClose={() => setIsSpecialMenuOpen(false)}
-            subcategories={specialMenuCat} 
+            subcategories={specialMenuCat}
             priceId={SpecialMenuPriceId} //HOw do i send the selected set item price here Gpt fix it
             onAddToCart={(platter) => {
               dispatch({ type: "ADD_TO_CART", payload: platter });
@@ -395,7 +462,6 @@ const MenuBox = ({ addToCart }) => {
             onClose={() => setIsStillCantDecideOpen(false)}
             subcategories={specialMenuCat}
             priceId={SpecialMenuprice}
-           
             onAddToCart={(platter) => {
               // Ensure platter is an array and contains items
               if (Array.isArray(platter.items) && platter.items.length <= 2) {

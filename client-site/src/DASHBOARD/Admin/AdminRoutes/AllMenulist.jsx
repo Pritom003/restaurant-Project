@@ -1,21 +1,22 @@
+/* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2"; // Import Swal
 import { FaPen, FaTrash } from "react-icons/fa";
+import { useForm } from "react-hook-form"; // Import React Hook Form
+import Modal from "react-modal";
 import Specialmenulist from "./Specialmenulist";
-
+Modal.setAppElement("#root"); // Accessibility fix
 const AllMenuList = () => {
   const [menu, setMenu] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [categoriesPerPage, setCategoriesPerPage] = useState(3);
+  const [categoriesPerPage, setCategoriesPerPage] = useState(2);
   const [loading, setLoading] = useState(true);
   const [editingItem, setEditingItem] = useState(null);
-  const [updatedName, setUpdatedName] = useState("");
-  const [updatedPrice, setUpdatedPrice] = useState("");
-  const [editingCategory, setEditingCategory] = useState(null);
-  const [updatedCategoryName, setUpdatedCategoryName] = useState("");
-  const [editingVariety, setEditingVariety] = useState(null); // Track variety being edited
-  const [updatedVarietyPrice, setUpdatedVarietyPrice] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // React Hook Form setup
+  const { register, handleSubmit, setValue, reset } = useForm();
 
   // Fetch menu data
   useEffect(() => {
@@ -28,7 +29,6 @@ const AllMenuList = () => {
         console.error("Error fetching menu:", error);
       }
     };
-
     fetchMenu();
   }, []);
 
@@ -67,129 +67,97 @@ const AllMenuList = () => {
     }
   };
 
+  const cleanName = (name) => name.replace(/[^a-zA-Z0-9\s]/g, "").trim();
+  const addVariety = () => {
+    const newVariety = { name: "", price: "" };
+    const updatedVarieties = [...editingItem.varieties, newVariety];
+    setEditingItem({ ...editingItem, varieties: updatedVarieties });
+    setValue("varieties", updatedVarieties); // Sync with form state
+  };
+
+  const addSpicyLevel = () => {
+    const newSpicyLevel = { name: "", price: "" };
+    const updatedSpicyLevels = [...editingItem.spicyLevels, newSpicyLevel];
+    setEditingItem({ ...editingItem, spicyLevels: updatedSpicyLevels });
+    setValue("spicyLevels", updatedSpicyLevels); // Sync with form state
+  };
+
+  const handleVarietyChange = (index, field, value) => {
+    const updatedVarieties = [...editingItem.varieties];
+    updatedVarieties[index][field] = value;
+    setEditingItem({ ...editingItem, varieties: updatedVarieties });
+    setValue("varieties", updatedVarieties); // Sync with form state
+  };
+
+  const handleSpicyLevelChange = (index, field, value) => {
+    console.log(value, "here");
+    const updatedSpicyLevels = [...editingItem.spicyLevels];
+    updatedSpicyLevels[index][field] = value;
+    setEditingItem({ ...editingItem, spicyLevels: updatedSpicyLevels });
+    setValue("spicyLevels", updatedSpicyLevels); // Sync with form state
+  };
+
   // Handle update click to enter edit mode
-  const handleUpdateClick = (item) => {
-    setEditingItem(item);
-    setUpdatedName(item.name);
-    setUpdatedPrice(item.price);
+  const handleUpdateClick = (item, category) => {
+    item.category = category;
+    setEditingItem({
+      ...item,
+      varieties: item.varieties || [],
+      spicyLevels: item.spicyLevels || [],
+    });
+    setIsModalOpen(true);
+
+    setValue("name", item.name);
+    setValue("price", item.price);
+    setValue("varieties", item.varieties || []);
+    setValue("spicyLevels", item.spicyLevels || []);
+    setValue("itemsIncluded", item.itemsIncluded || []);
+    setValue("category", category);
   };
 
-  // Handle update submission with confirmation
-  const handleUpdate = async (category) => {
-    const updatedItem = {
-      name: updatedName,
-      price: updatedPrice,
-    };
+  const handleUpdate = async (data) => {
+    console.log("Form Data:", data); // Log the form data to check if varieties and spicy levels are updated
 
-    const result = await Swal.fire({
-      title: "Are you sure?",
-      text: `You are about to update ${updatedName}.`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, update it!",
-      cancelButtonText: "Cancel",
-      reverseButtons: true,
-    });
-
-    if (result.isConfirmed) {
-      try {
-        const response = await axios.put(
-          `http://localhost:3000/api/menu/${category}/${editingItem.name}`,
-          updatedItem
-        );
-
-        if (response.status === 200) {
-          setMenu((prevMenu) =>
-            prevMenu.map((cat) =>
-              cat.category === category
-                ? {
-                    ...cat,
-                    items: cat.items.map((i) =>
-                      i.name === editingItem.name ? { ...i, ...updatedItem } : i
-                    ),
-                  }
-                : cat
-            )
-          );
-          setEditingItem(null);
-          Swal.fire("Updated!", `${updatedName} has been updated.`, "success");
-        }
-      } catch (error) {
-        console.error("Error updating item:", error);
-        Swal.fire("Error!", "There was an issue updating the item.", "error");
-      }
+    if (!editingItem) {
+      console.error("Editing item or category is missing");
+      return;
     }
-  };
 
-  // Handle variety update click
-  const handleVarietyUpdateClick = (category, itemName, variety) => {
-    setEditingVariety({ category, itemName, variety });
-    setUpdatedVarietyPrice(variety.price);
-  };
-
-  // Handle variety update submission
-  const handleVarietyUpdate = async () => {
-    const { category, itemName, variety } = editingVariety;
-
-    const updatedVariety = {
-      name: variety.name,
-      price: updatedVarietyPrice,
+    const updatedItem = {
+      ...editingItem,
+      name: data.name,
+      price: data.price,
+      varieties: data.varieties || editingItem.varieties,
+      spicyLevels: data.spicyLevels || editingItem.spicyLevels,
+      itemsIncluded: data.itemsIncluded || editingItem.itemsIncluded,
     };
 
-    const result = await Swal.fire({
-      title: "Are you sure?",
-      text: `You are about to update the price of ${variety.name}.`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, update it!",
-      cancelButtonText: "Cancel",
-      reverseButtons: true,
-    });
-
-    if (result.isConfirmed) {
-      try {
-        const response = await axios.put(
-          `http://localhost:3000/api/menu/${category}/${itemName}/variety/${variety.name}`,
-          updatedVariety
+    try {
+      const response = await axios.put(
+        `http://localhost:3000/v4/menu/${
+          editingItem.category
+        }/item/${encodeURIComponent(cleanName(editingItem.name))}`,
+        updatedItem
+      );
+      if (response.status === 200) {
+        setMenu((prevMenu) =>
+          prevMenu.map((cat) =>
+            cat.category === editingItem.category
+              ? {
+                  ...cat,
+                  items: cat.items.map((i) =>
+                    i.name === editingItem.name ? { ...i, ...updatedItem } : i
+                  ),
+                }
+              : cat
+          )
         );
-
-        if (response.status === 200) {
-          setMenu((prevMenu) =>
-            prevMenu.map((cat) =>
-              cat.category === category
-                ? {
-                    ...cat,
-                    items: cat.items.map((item) =>
-                      item.name === itemName
-                        ? {
-                            ...item,
-                            varieties: item.varieties.map((v) =>
-                              v.name === variety.name
-                                ? { ...v, price: updatedVarietyPrice }
-                                : v
-                            ),
-                          }
-                        : item
-                    ),
-                  }
-                : cat
-            )
-          );
-          setEditingVariety(null);
-          Swal.fire(
-            "Updated!",
-            `${variety.name}'s price has been updated.`,
-            "success"
-          );
-        }
-      } catch (error) {
-        console.error("Error updating variety:", error);
-        Swal.fire(
-          "Error!",
-          "There was an issue updating the variety's price.",
-          "error"
-        );
+        setIsModalOpen(false);
+        Swal.fire("Updated!", `${data.name} has been updated.`, "success");
       }
+    } catch (error) {
+      console.error("Error updating item:", error);
+      Swal.fire("Error!", "There was an issue updating the item.", "error");
     }
   };
 
@@ -206,153 +174,249 @@ const AllMenuList = () => {
     setCurrentPage(page);
   };
 
+  const closeModal = () => {
+    setIsModalOpen(false);
+    reset(); // Clear form values when closing modal
+    setEditingItem(null); // Clear editing item state
+  };
+
   return (
-    <div className="flex flex-wrap gap-4 text-black">
-      <div className="container mx-auto py-8 text-black">
-        <h2 className="text-center text-4xl font-chewy underline text-red-950 pt-10">
-          Regular Menus
-        </h2>
-        {loading ? (
-          <p>Loading...</p>
-        ) : (
-          slicedCategories.map((category) => (
-            <div key={category.category} className="mb-8">
-              <h3 className="font-semibold p-4 text-3xl text-orange-400">
-                {category.category}
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {category.items.map((item) => (
-                  <div
-                    key={item.name}
-                    className="bg-white border p-4 rounded shadow-md"
-                  >
-                    {editingItem && editingItem.name === item.name ? (
-                      <div>
-                        <input
-                          type="text"
-                          value={updatedName}
-                          onChange={(e) => setUpdatedName(e.target.value)}
-                          className="border px-2 bg-white py-1 mb-2 w-full"
-                        />
-                        <input
-                          type="number"
-                          value={updatedPrice}
-                          onChange={(e) => setUpdatedPrice(e.target.value)}
-                          className="border px-2 py-1 mb-2 bg-white w-full"
-                        />
-                        <div className="flex space-x-2 mt-4">
-                          <button
-                            onClick={() => handleUpdate(category.category)}
-                            className="bg-green-500 text-white px-2 py-1 rounded"
-                          >
-                            Confirm
-                          </button>
-                          <button
-                            onClick={() => setEditingItem(null)}
-                            className="bg-gray-500 text-white px-2 py-1 rounded"
-                          >
-                            Cancel
-                          </button>
-                        </div>
+    <div>
+      <div className="flex flex-wrap gap-4 text-black">
+        <div className="container mx-auto py-8 text-black">
+          <h2 className="text-center text-4xl font-chewy underline text-red-950 pt-10">
+            Regular Menus
+          </h2>
+          {loading ? (
+            <p>Loading...</p>
+          ) : (
+            slicedCategories.map((category, ids) => (
+              <div key={ids} className="mb-8">
+                <h3 className="font-semibold p-4 text-3xl text-orange-400">
+                  {category.category}
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {category.items.map((item, id) => (
+                    <div
+                      key={id}
+                      className="card p-4 border shadow-md rounded-lg"
+                    >
+                      <h4 className="text-lg font-bold">{item.name}</h4>
+                      <p className="text-sm">Price: {item.price}</p>
+
+                      {item.itemsIncluded.length > 0
+                        ? item.itemsIncluded.map((includedItem, idx) => (
+                            <p key={idx} className="text-sm">
+                              <strong>Items Included:</strong>
+                              <span>
+                                {includedItem.name} (x{includedItem.quantity}){" "}
+                              </span>
+                            </p>
+                          ))
+                        : " "}
+
+                      {item.spicyLevels.length > 0
+                        ? item.spicyLevels.map((level, idx) => (
+                            <p key={idx} className="text-sm">
+                              <strong>Spicy Levels:</strong>
+                              <span>
+                                <span key={idx}>
+                                  {level.name} (+${level.price}){" "}
+                                </span>{" "}
+                              </span>
+                            </p>
+                          ))
+                        : " "}
+
+                      <p className="text-sm">
+                        <strong>Varieties:</strong>
+                        {item.varieties.length > 0
+                          ? item.varieties.map((variety, idx) => (
+                              <span key={idx}>
+                                {variety.name} (+${variety.price}){" "}
+                              </span>
+                            ))
+                          : ""}
+                      </p>
+
+                      <div className="flex justify-between mt-2">
+                        <button
+                          onClick={() =>
+                            handleUpdateClick(item, category.category)
+                          }
+                          className="text-blue-500"
+                        >
+                          <FaPen /> Update
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleDelete(category.category, item.name)
+                          }
+                          className="text-red-500"
+                        >
+                          <FaTrash /> Delete
+                        </button>
                       </div>
-                    ) : (
-                      <div>
-                        <h4 className="font-semibold text-lg">{item.name}</h4>
-                        <p>Price: £{item.price}</p>
-                        {item.varieties && item.varieties.length > 0 && (
-                          <div className="mt-4">
-                            <h5 className="font-medium text-base text-gray-700">
-                              Varieties:
-                            </h5>
-                            <ul className="ml-4 list-disc">
-                              {item.varieties.map((variety) => (
-                                <li key={variety.name} className="text-sm">
-                                  {variety.name} - £{variety.price}
-                                  {editingVariety &&
-                                  editingVariety.variety.name ===
-                                    variety.name ? (
-                                    <div className="mt-2">
-                                      <input
-                                        type="number"
-                                        value={updatedVarietyPrice}
-                                        onChange={(e) =>
-                                          setUpdatedVarietyPrice(e.target.value)
-                                        }
-                                        className="border px-2 py-1 w-full"
-                                      />
-                                      <button
-                                        onClick={handleVarietyUpdate}
-                                        className="bg-green-500 text-white px-2 py-1 mt-2 rounded"
-                                      >
-                                        Update
-                                      </button>
-                                    </div>
-                                  ) : (
-                                    <button
-                                      onClick={() =>
-                                        handleVarietyUpdateClick(
-                                          category.category,
-                                          item.name,
-                                          variety
-                                        )
-                                      }
-                                      className="text-blue-600 px-2 py-1 mt-2 rounded"
-                                    >
-                                      <FaPen />
-                                    </button>
-                                  )}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                        <div className="flex space-x-2 mt-4">
-                          <button
-                            onClick={() =>
-                              handleDelete(category.category, item.name)
-                            }
-                            className="text-red-600 px-2 py-1 rounded"
-                          >
-                            <FaTrash />
-                          </button>
-                          <button
-                            onClick={() => handleUpdateClick(item)}
-                            className="text-blue-600 px-2 py-1 rounded"
-                          >
-                            <FaPen />
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))
-        )}
-        <div className="grid justify-center items-center align-middle text-center mt-6">
-          <div className="flex gap-10 text-2xl justify-center mt-6">
-            <button
-              disabled={currentPage === 1}
-              onClick={() => handlePageChange(currentPage - 1)}
-              className="px-4 py-2 border"
-            >
-              Prev
-            </button>
+            ))
+          )}
 
-            <button
-              disabled={currentPage === totalPages}
-              onClick={() => handlePageChange(currentPage + 1)}
-              className="px-4 py-2 border"
-            >
-              Next
-            </button>
+          <div className="flex justify-center mt-4">
+            {Array.from({ length: totalPages }, (_, index) => (
+              <button
+                key={index}
+                onClick={() => handlePageChange(index + 1)}
+                className={`px-4 py-2 mx-1 rounded ${
+                  currentPage === index + 1
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-200"
+                }`}
+              >
+                {index + 1}
+              </button>
+            ))}
           </div>
-
-          <span className="mx-4">
-            Page {currentPage} of {totalPages}
-          </span>
         </div>
+
+        <Modal
+          className="px-5 bg-gray-300 mx-auto w-96 text-black overflow-y-scroll max-h-[80vh]"
+          isOpen={isModalOpen}
+          onRequestClose={closeModal}
+          contentLabel="Update Item"
+        >
+          <h2 className="text-center text-xl font-semibold mb-4">
+            Update Item
+          </h2>
+          <form onSubmit={handleSubmit(handleUpdate)} className="space-y-4">
+            <div>
+              <label htmlFor="name">Item Name</label>
+              <input
+                type="text"
+                id="name"
+                {...register("name")}
+                className="w-full p-2 border rounded bg-white"
+              />
+            </div>
+            <div>
+              <label htmlFor="price">Price</label>
+              <input
+                type="number"
+                id="price"
+                {...register("price")}
+                step="0.01"
+                min="0"
+                className="w-full p-2 border rounded bg-white"
+              />
+            </div>
+
+            {/* Conditionally render Varieties input fields if varieties array has more than 0 */}
+            {editingItem?.varieties?.length > 0 && (
+              <div>
+                <label htmlFor="varieties">Varieties</label>
+                <div className="space-y-2">
+                  {editingItem.varieties.map((variety, index) => (
+                    <div key={index} className="flex space-x-2">
+                      <input
+                        type="text"
+                        placeholder="Variety Name"
+                        value={variety.name}
+                        onChange={(e) =>
+                          handleVarietyChange(index, "name", e.target.value)
+                        } // Use handleVarietyChange here
+                        className="w-full p-2 border rounded bg-white"
+                      />
+                      <input
+                        type="number"
+                        placeholder="Price"
+                        value={variety.price}
+                        onChange={(e) =>
+                          handleVarietyChange(index, "price", e.target.value)
+                        } // Use handleVarietyChange here
+                        className="w-full p-2 border rounded bg-white"
+                      />
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={addVariety}
+                    className="text-blue-500"
+                  >
+                    Add Variety
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* hey gpt please check why i am not getting the newly added or edited   varities and spices data i am not  */}
+            {/* Conditionally render Spicy Levels input fields if spicyLevels array has more than 0 */}
+            {editingItem?.spicyLevels?.length > 0 && (
+              <div>
+                <label htmlFor="spicyLevels">Spicy Levels</label>
+                <div className="space-y-2">
+                  {editingItem.spicyLevels.map((level, index) => (
+                    <div key={index} className="flex space-x-2">
+                      <input
+                        type="text"
+                        placeholder="Spicy Level Name"
+                        value={level.name}
+                        onChange={(e) =>
+                          handleSpicyLevelChange(index, "name", e.target.value)
+                        } // Use handleSpicyLevelChange here
+                        className="w-full p-2 border rounded bg-white"
+                      />
+                      <input
+                        type="number"
+                        placeholder="Price"
+                        value={level.price}
+                        onChange={(e) =>
+                          handleSpicyLevelChange(index, "price", e.target.value)
+                        } // Use handleSpicyLevelChange here
+                        className="w-full p-2 border rounded bg-white"
+                      />
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={addSpicyLevel}
+                    className="text-blue-500"
+                  >
+                    Add Spicy Level
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {editingItem?.itemsIncluded?.length > 0 && (
+              <div>
+                <label htmlFor="itemsIncluded">Items Included</label>
+                <input
+                  type="text"
+                  id="itemsIncluded"
+                  {...register("itemsIncluded")}
+                  className="w-full p-2 border rounded bg-white"
+                />
+              </div>
+            )}
+            <div className="flex justify-between">
+              <button
+                type="button"
+                onClick={closeModal}
+                className="px-4 py-2 bg-gray-500 text-white rounded"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-blue-500 text-white rounded"
+              >
+                Update
+              </button>
+            </div>
+          </form>
+        </Modal>
       </div>
       <hr className="text-black"></hr>
       <div className="bg-orange-200 p-10">
