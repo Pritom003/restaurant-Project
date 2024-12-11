@@ -10,13 +10,13 @@ const dishSchema = new mongoose.Schema({
 const subcategorySchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true,
+        // required: true,
     },
     price: {
         type: Number,
         // required: true,
     },
-    dishes: [dishSchema], 
+    dishes: [dishSchema],
 });
 
 const specialMenuSchema = new mongoose.Schema({

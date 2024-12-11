@@ -53,46 +53,39 @@ const PreparingOrders = () => {
   }, []);
 
   const updateOrderStatus = async (orderId) => {
-    // Show confirmation dialog
-    const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "This will mark the order as expired.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, Expire it!",
-      cancelButtonText: "Cancel",
-    });
+    try {
+      // Optimistically remove the item immediately from the state
+      setOrders((prevOrders) =>
+        prevOrders.filter((order) => order._id !== orderId)
+      );
 
-    if (result.isConfirmed) {
-      try {
-        const response = await fetch(
-          `http://localhost:3000/api/orders/${orderId}/expire`,
-          {
-            method: "PATCH",
-          }
-        );
-
-        if (response.ok) {
-          const updatedOrder = await response.json();
-          console.log("Order status updated to Expired:", updatedOrder);
-          setOrders((prevOrders) =>
-            prevOrders.map((order) =>
-              order._id === orderId ? { ...order, status: "Expired" } : order
-            )
-          );
-          Swal.fire({
-            title: "Order Expired!",
-            text: "The order status has been updated to Expired.",
-            icon: "error",
-          });
-        } else {
-          console.error("Failed to update order status", await response.json());
+      const response = await fetch(
+        `http://localhost:3000/api/orders/${orderId}/expire`,
+        {
+          method: "PATCH",
         }
-      } catch (error) {
-        console.error("Error updating order status:", error);
+      );
+
+      if (response.ok) {
+        const updatedOrder = await response.json();
+        console.log("Order status updated to Expired:", updatedOrder);
+        Swal.fire({
+          title: "Order Done!",
+          text: "The order status has been updated to Done.",
+          icon: "success",
+        });
+      } else {
+        console.error("Failed to update order status", await response.json());
+        // Rollback if API call fails
+        setOrders((prevOrders) => [...prevOrders, { _id: orderId }]);
       }
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      // Rollback if an error occurs
+      setOrders((prevOrders) => [...prevOrders, { _id: orderId }]);
     }
   };
+
   // Add 5 more minutes to the order
   const addTimeToOrder = async (orderId) => {
     // Show confirmation dialog
@@ -168,15 +161,14 @@ const PreparingOrders = () => {
               </p>
               <h5 className="font-medium mt-3">Items:</h5>
               <ul>
-              {order.items.map((item, index) => (
-  <li className="text-xs" key={index}>
-    {item.subItems.length > 0 && item.subItems?.map(subItem => subItem.name).join(', ')} 
-  
-    {item.items?.map((name) => name.name).join(', ')} 
-    (x{item.quantity}) - £{item.price}
-  </li>
-))}
-
+                {order.items.map((item, index) => (
+                  <li className="text-xs" key={index}>
+                    {item.subItems.length > 0 &&
+                      item.subItems?.map((subItem) => subItem.name).join(", ")}
+                    {item.items?.map((name) => name.name).join(", ")}
+                    (x{item.quantity}) - £{item.price}
+                  </li>
+                ))}
               </ul>
               <div className="mt-3">
                 <h5 className="font-medium text-red-500">
@@ -190,9 +182,9 @@ const PreparingOrders = () => {
                 {/* {calculateRemainingTime(order.updatedAt, order.time) === "00:00" && ( */}
                 <button
                   onClick={() => updateOrderStatus(order._id)}
-                  className="mt-3 border-2 border-red-300 text-red-600 py-1 px-3 rounded"
+                  className="mt-3 border-2 border-green-300 text-green-600 py-1 px-3 rounded"
                 >
-                  Expired
+                  DONE
                 </button>
                 {/* )} */}
 

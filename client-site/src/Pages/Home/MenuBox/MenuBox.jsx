@@ -22,7 +22,10 @@ const MenuBox = ({ addToCart }) => {
   const [isStillCantDecideOpen, setIsStillCantDecideOpen] = useState(false);
   const [isSpecialMenuExpanded, setIsSpecialMenuExpanded] = useState(false);
   const [SpecialMenuPriceId, setSpecialMenuPriceId] = useState();
-  const [SpecePriceName, setSpicenameandprice] = useState({ name: '', price: 0 });
+  const [SpecePriceName, setSpicenameandprice] = useState({
+    name: "",
+    price: 0,
+  });
 
   // Toggle function for special menu
   const toggleSpecialMenu = () => {
@@ -67,7 +70,6 @@ const MenuBox = ({ addToCart }) => {
       setSpecialcatMenuData(specialMenu.subcategories || []);
       setIsSpecialMenuOpen(true);
     } else {
-     
       Swal.fire({
         icon: "warning",
         title: "Sorry",
@@ -87,16 +89,15 @@ const MenuBox = ({ addToCart }) => {
     setIsStillCantDecideOpen(true);
   };
 
-  const calculateTotalPrice = (item ) => {
-    console.log(item,'hello price ');
-    let totalPrice = item.price ||0;
+  const calculateTotalPrice = (item) => {
+    console.log(item, "hello price ");
+    let totalPrice = item.price || 0;
     if (SpecePriceName) totalPrice += SpecePriceName.price; // Add variant price
-    if (item.variantPrice) totalPrice = item.variantPrice +SpecePriceName.price; // Add spicy level price if selected
+    if (item.variantPrice)
+      totalPrice = item.variantPrice + SpecePriceName.price; // Add spicy level price if selected
     console.log(totalPrice);
-    return totalPrice.toFixed(2) ;
-    
+    return totalPrice.toFixed(2);
   };
-
 
   return (
     <div>
@@ -216,8 +217,6 @@ const MenuBox = ({ addToCart }) => {
                       </li>
                     )
                 )}
-
-               
               </ul>
             </div>
           ) : (
@@ -225,16 +224,16 @@ const MenuBox = ({ addToCart }) => {
               {/* Apply white opacity overlay with warning text */}
 
               <ul className="border-b-2 pt-2 border-dotted border-red-900 z-20">
-  {specialMenuData.map((item, idx) =>
-    item.category === "Mid Week Special Platter" ? (
-      <li
-        key={idx}
-        className="relative overflow-hidden"
-      >
-        {/* Rotated Text */}
-        <div className="absolute top-10 left-0 right-0 bottom-0 flex 
-        justify-center items-center">
-          <p className="bg-red-400 text-white text-xs w-full h-8
+                {specialMenuData.map((item, idx) =>
+                  item.category === "Mid Week Special Platter" ? (
+                    <li key={idx} className="relative overflow-hidden">
+                      {/* Rotated Text */}
+                      <div
+                        className="absolute top-10 left-0 right-0 bottom-0 flex 
+        justify-center items-center"
+                      >
+                        <p
+                          className="bg-red-400 text-white text-xs w-full h-8
            text-center transform rotate-[-10deg] absolute top-0 left-0 
            right-0 bottom-0">
             Available only from Monday to Thursday!
@@ -276,7 +275,7 @@ const MenuBox = ({ addToCart }) => {
           <SpecialMenuModal
             onClose={() => setIsSpecialMenuOpen(false)}
             subcategories={specialMenuCat}
-            priceId={SpecialMenuPriceId} 
+            priceId={SpecialMenuPriceId}
             onAddToCart={(platter) => {
               dispatch({ type: "ADD_TO_CART", payload: platter });
               setIsSpecialMenuOpen(false);
@@ -320,11 +319,10 @@ const MenuBox = ({ addToCart }) => {
                               className=" hover:boder-b-2 hover:border-b  hover:border-b-red-950 cursor-pointer "
                               onClick={() => addToCart(item)}
                             >
-                               + £{item?.price?.toFixed(2)}
+                              + £{item?.price?.toFixed(2)}
                             </button>
                           </div>
                           <div className="text-xs text-gray-600 mt-1">
-                          
                             {item.itemsIncluded.length > 0 &&
                               item.itemsIncluded.map((includedItem) => (
                                 <ul  className="list-disc text-xs text-gray-800 ml-4 mt-2" key={includedItem.name}>
@@ -345,32 +343,34 @@ const MenuBox = ({ addToCart }) => {
                                   }} className=" hover:boder-b-2 hover:border-b hover:border-b-red-950 cursor-pointer ">  {item.name}</span>  
                               
                               {item.spicyLevels.length > 0 && (
-  <div className="text-xs grid justify-end gap-1 text-gray-600 mt-1">
-    <select
-      className="bg-white text-black w-44"
-      onChange={(e) => {
-        const spice = item.spicyLevels.find(
-          (level) => level.name === e.target.value
-        );
+                                <div className="text-xs grid justify-end gap-1 text-gray-600 mt-1">
+                                  <select
+                                    className="bg-white text-black w-44"
+                                    onChange={(e) => {
+                                      const spice = item.spicyLevels.find(
+                                        (level) => level.name === e.target.value
+                                      );
 
-        if (spice) {
-          // Assuming `setSpicenameandprice` updates the spice name and price in the state
-          setSpicenameandprice({ name: spice.name, price: spice.price });
-
-         
-        }
-      }}
-    >
-      <option value="">Select a spicy level</option>
-      {item.spicyLevels.map((spicy, idx) => (
-        <option key={idx} value={spicy.name}>
-          {spicy.name} - £{spicy.price.toFixed(2)}
-        </option>
-      ))}
-    </select>
-  </div>
-)}
-
+                                      if (spice) {
+                                        // Assuming `setSpicenameandprice` updates the spice name and price in the state
+                                        setSpicenameandprice({
+                                          name: spice.name,
+                                          price: spice.price,
+                                        });
+                                      }
+                                    }}
+                                  >
+                                    <option value="">
+                                      Select a spicy level
+                                    </option>
+                                    {item.spicyLevels.map((spicy, idx) => (
+                                      <option key={idx} value={spicy.name}>
+                                        {spicy.name} - £{spicy.price.toFixed(2)}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                              )}
 
                               {item.varieties.length > 0 ? (
                                 <div className="text-xs grid justify-end gap-1 text-gray-600 mt-1">
@@ -385,7 +385,7 @@ const MenuBox = ({ addToCart }) => {
 
                                       const updatedItem = {
                                         ...item,
-                                        spice:SpecePriceName||null,
+                                        spice: SpecePriceName || null,
                                         variant: selectedVariety.name || null,
                                         variantPrice: selectedVariety
                                           ? selectedVariety.price
@@ -418,11 +418,14 @@ const MenuBox = ({ addToCart }) => {
                                   onClick={() => {
                                     const totalPrice =
                                       calculateTotalPrice(item);
-                                    addToCart({ ...item,  spice:SpecePriceName?.name||null, totalPrice });
+                                    addToCart({
+                                      ...item,
+                                      spice: SpecePriceName?.name || null,
+                                      totalPrice,
+                                    });
                                   }}
                                 >
                                   + £{calculateTotalPrice(item)}
-                                
                                 </button>
                               )}
                             </div>
