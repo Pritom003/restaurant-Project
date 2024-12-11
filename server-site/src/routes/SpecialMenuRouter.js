@@ -20,6 +20,17 @@ router.post('/api/special-menu', async (req, res) => {
         res.status(500).json({ message: 'Failed to add menu. Please try again.' });
     }
 });
+// GET /api/special-menu/sets
+router.get('/api/special-menu/sets', async (req, res) => {
+    try {
+        // Get distinct set names from the SpecialMenu collection
+        const sets = await SpecialMenu.distinct('set');
+        res.status(200).json({ sets });
+    } catch (error) {
+        console.error('Error fetching set names:', error);
+        res.status(500).json({ message: 'Failed to fetch set names. Please try again.' });
+    }
+});
 
 // PUT /api/special-menu/:category
 // PUT /api/special-menu/:category
