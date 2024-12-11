@@ -100,7 +100,7 @@ const DashboardLayout = () => {
               <MenuItem
                 to="Preparing-list"
                 icon={<FaClock />}
-                label="Countdown"
+                label="Preparing"
               />
               <MenuItem
                 to="dishes"

@@ -12,8 +12,8 @@ const VarietySchema = new mongoose.Schema({
 }, { _id: false });
 
 const SpicyLevelSchema = new mongoose.Schema({
-  name: { type: String, required: true }, 
-  price: { type: Number, } 
+  name: { type: String, required: true },
+  price: { type: Number, }
 }, { _id: false });
 
 
@@ -21,17 +21,17 @@ const SpicyLevelSchema = new mongoose.Schema({
 const ItemSchema = new mongoose.Schema({
   name: { type: String, required: true },
   price: { type: Number, required: true },
-  descrpition:{ type: String, required: true },// hey  can you please send the description from the frontend 
-  varieties: [VarietySchema], 
+  descrpition: { type: String },// hey  can you please send the description from the frontend 
+  varieties: [VarietySchema],
   itemsIncluded: [IncludedItemSchema],
   spicyLevels: [SpicyLevelSchema]
- 
+
 });
 
 
 const MenuSchema = new mongoose.Schema({
   category: { type: String, required: true, unique: true },
-  items: [ItemSchema] 
+  items: [ItemSchema]
 });
 
 module.exports = mongoose.model('MenuItem', MenuSchema);
