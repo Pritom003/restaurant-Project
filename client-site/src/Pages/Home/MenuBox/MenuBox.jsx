@@ -89,20 +89,12 @@ const MenuBox = ({ addToCart }) => {
     setIsStillCantDecideOpen(true);
   };
 
-<<<<<<< HEAD
   const calculateTotalPrice = (item) => {
-    console.log(item);
+    console.log(item, "hello price ");
     let totalPrice = item.price || 0;
-    if (item.variantPrice) totalPrice += SpecePriceName.price; // Add variant price
+    if (SpecePriceName) totalPrice += SpecePriceName.price; // Add variant price
     if (item.variantPrice)
       totalPrice = item.variantPrice + SpecePriceName.price; // Add spicy level price if selected
-=======
-  const calculateTotalPrice = (item ) => {
-    console.log(item,'hello price ');
-    let totalPrice = item.price ||0;
-    if (SpecePriceName) totalPrice += SpecePriceName.price; // Add variant price
-    if (item.variantPrice) totalPrice = item.variantPrice +SpecePriceName.price; // Add spicy level price if selected
->>>>>>> 6c8e9ceb3afa027b56ee10e29774f7ae5bd3b27d
     console.log(totalPrice);
     return totalPrice;
   };
@@ -316,8 +308,7 @@ const MenuBox = ({ addToCart }) => {
                       {menu.category === "Set Menu" ? (
                         <div className="border-b-2 border-dotted border-red-900 pb-2">
                           <div className="flex w-full text-xl justify-between">
-                            <span>{item.name} 
-                         </span>
+                            <span>{item.name}</span>
 
                             <button
                               className="hover:underline"
@@ -346,7 +337,7 @@ const MenuBox = ({ addToCart }) => {
                           <ul className="text-red-900 font-semibold">
                             <div className="flex w-full justify-between">
                               {item.name}
-                              
+
                               {item.spicyLevels.length > 0 && (
                                 <div className="text-xs grid justify-end gap-1 text-gray-600 mt-1">
                                   <select
@@ -423,15 +414,11 @@ const MenuBox = ({ addToCart }) => {
                                   onClick={() => {
                                     const totalPrice =
                                       calculateTotalPrice(item);
-<<<<<<< HEAD
                                     addToCart({
                                       ...item,
-                                      spice: SpecePriceName.name || null,
+                                      spice: SpecePriceName?.name || null,
                                       totalPrice,
                                     });
-=======
-                                    addToCart({ ...item,  spice:SpecePriceName?.name||null, totalPrice });
->>>>>>> 6c8e9ceb3afa027b56ee10e29774f7ae5bd3b27d
                                   }}
                                 >
                                   + £{calculateTotalPrice(item)}
@@ -439,8 +426,10 @@ const MenuBox = ({ addToCart }) => {
                               )}
                             </div>
                           </ul>
-                          <span className=" text-xs text-gray-600"> {item.descrpition? item.descrpition:''}</span>
-                        
+                          <span className=" text-xs text-gray-600">
+                            {" "}
+                            {item.descrpition ? item.descrpition : ""}
+                          </span>
                         </div>
                       )}
                     </div>

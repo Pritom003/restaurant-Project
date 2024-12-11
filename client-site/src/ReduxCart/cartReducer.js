@@ -19,11 +19,7 @@ const cartReducer = (state = initialState, action) => {
       const { name, variant, spice, price, variantPrice, category, items } = action.payload;
       const key = variant ? `${name} (${variant})` : name;
 
-<<<<<<< HEAD
-
-=======
-   console.log(action.payload);
->>>>>>> 6c8e9ceb3afa027b56ee10e29774f7ae5bd3b27d
+      console.log(action.payload);
 
       // Regular items handling
       const existingItemIndex = state.items.findIndex((item) => item.key === key);
@@ -45,13 +41,8 @@ const cartReducer = (state = initialState, action) => {
           items,
           key,
           name,
-<<<<<<< HEAD
           spicelevel: spice?.name || null,
           spiceprice: spice?.price || null,
-=======
-          spicelevel:spice?.name||null,
-          spiceprice:spice?.price||null,
->>>>>>> 6c8e9ceb3afa027b56ee10e29774f7ae5bd3b27d
           variant: variant || null,
           price: price + (variantPrice || 0),
           variantPrice: variantPrice || 0,
@@ -59,21 +50,13 @@ const cartReducer = (state = initialState, action) => {
         };
         updatedItems = [...state.items, newItem];
       }
-<<<<<<< HEAD
-      console.log(updatedItems);
-=======
-console.log(updatedItems ,'hellohere ');
->>>>>>> 6c8e9ceb3afa027b56ee10e29774f7ae5bd3b27d
+      console.log(updatedItems, 'hellohere ');
       localStorage.setItem('cartItems', JSON.stringify(updatedItems));
       return {
         ...state,
         items: updatedItems,
         totalPrice: updatedItems.reduce(
-<<<<<<< HEAD
-          (total, item) => total + ((item.variantPrice || item.price) + (item.spiceprice || 0)) * item.quantity,
-=======
-          (total, item) => total +  ((item.variantPrice || item.price) + (item.spiceprice ||item.price ))* item.quantity,
->>>>>>> 6c8e9ceb3afa027b56ee10e29774f7ae5bd3b27d
+          (total, item) => total + ((item.variantPrice || item.price) + (item.spiceprice || item.price)) * item.quantity,
           0
         ),
       };
