@@ -64,14 +64,14 @@ const AllMenuList = () => {
 
    const cleanName = (name) => name.replace(/[^a-zA-Z0-9\s]/g, '').trim();
    const addVariety = () => {
-    const newVariety = { name: '', price: '' };
+    const newVariety = { name: '', price: 0 };
     const updatedVarieties = [...editingItem.varieties, newVariety];
     setEditingItem({ ...editingItem, varieties: updatedVarieties });
     setValue('varieties', updatedVarieties); // Sync with form state
   };
   
   const addSpicyLevel = () => {
-    const newSpicyLevel = { name: '', price: '' };
+    const newSpicyLevel = { name: '', price: 0 };
     const updatedSpicyLevels = [...editingItem.spicyLevels, newSpicyLevel];
     setEditingItem({ ...editingItem, spicyLevels: updatedSpicyLevels });
     setValue('spicyLevels', updatedSpicyLevels); // Sync with form state
@@ -124,7 +124,7 @@ const handleUpdate = async (data) => {
   const updatedItem = {
     ...editingItem,
     name: data.name,
-    price: data.price,
+    price: parseFloat(data.price),
     varieties: data.varieties || editingItem.varieties,
     spicyLevels: data.spicyLevels || editingItem.spicyLevels,
     itemsIncluded: data.itemsIncluded || editingItem.itemsIncluded,
@@ -221,7 +221,8 @@ const handleUpdate = async (data) => {
                 {category.items.map((item,id) => (
                   <div key={id} className="card p-4 border shadow-md rounded-lg">
                     <h4 className="text-lg font-bold">{item.name}</h4>
-                    <p className="text-sm">Price: {item.price}</p>
+                    <p className="text-sm">Price: {item.price ? item.price.toFixed(2) : 0.00}</p>
+
 
                   
                       {item.itemsIncluded.length > 0 ? item.itemsIncluded.map((includedItem, idx) => (
