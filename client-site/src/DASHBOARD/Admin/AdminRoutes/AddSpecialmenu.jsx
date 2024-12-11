@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 const AddSpecialmenu = () => {
   const { register, handleSubmit, reset, formState: { errors } } = useForm({
@@ -11,10 +12,20 @@ const AddSpecialmenu = () => {
       subcategories: [], 
     },
   });
-
+  const [setOptions, setSetOptions] = useState([]); 
   const [subcategories, setSubcategories] = useState([]);
   const [customSet, setCustomSet] = useState(false); // Track if the custom set is selected
-
+  useEffect(() => {
+    const fetchSetOptions = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/api/special-menu/sets');
+        setSetOptions(response.data.sets);
+      } catch (error) {
+        console.error('Error fetching set options:', error);
+      }
+    };
+    fetchSetOptions();
+  }, []);
   const handleAddSubcategory = () => {
     setSubcategories([...subcategories, { name: "", price: 0, dishes: [] }]);
   };
@@ -61,12 +72,17 @@ const AddSpecialmenu = () => {
     };
 
     try {
-      const response = await axios.put(
+   await axios.put(
         `http://localhost:3000/api/special-menu/${encodeURIComponent(data.category)}`,
         formattedData
       );
-      console.log("Menu updated successfully:", response.data);
-      alert("Special menu updated successfully!");
+     
+      Swal.fire({
+        title: "Success!",
+        text: "Menu item added successfully!",
+        icon: "success",
+        confirmButtonText: "Okay",
+      });
       reset();
       setSubcategories([]); 
     } catch (error) {
@@ -92,7 +108,6 @@ const AddSpecialmenu = () => {
             <option value="Chef Choice">Chef Choice</option>
           </select>
         </div>
-
       {/* Set selection */}
       <div className="form-control">
           <label className="label">
@@ -103,10 +118,9 @@ const AddSpecialmenu = () => {
             className="select bg-white text-black select-bordered w-full max-w-md"
             onChange={(e) => setCustomSet(e.target.value === "Set custom set")}
           >
-            <option value="Set 1">Set 1</option>
-            <option value="Set 2">Set 2</option>
-            <option value="Set 3">Set 3</option>
-            <option value="Set 4">Set 4</option>
+            {setOptions.map((set, index) => (
+              <option key={index} value={set}>{set}</option>
+            ))}
             <option value="Set custom set">Set custom set</option>
           </select>
           {customSet && (
