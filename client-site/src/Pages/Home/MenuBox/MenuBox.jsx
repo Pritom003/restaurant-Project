@@ -22,6 +22,8 @@ const MenuBox = ({ addToCart }) => {
   const [isStillCantDecideOpen, setIsStillCantDecideOpen] = useState(false);
   const [isSpecialMenuExpanded, setIsSpecialMenuExpanded] = useState(false);
   const [SpecialMenuPriceId, setSpecialMenuPriceId] = useState();
+  const [SpecePriceName, setSpicenameandprice] = useState({ name: '', price: 0 });
+
   // Toggle function for special menu
   const toggleSpecialMenu = () => {
     setIsSpecialMenuExpanded((prev) => !prev);
@@ -49,11 +51,10 @@ const MenuBox = ({ addToCart }) => {
     fetchSpecialMenu();
   }, []);
 
-  // console.log(specialMenuData ,'lookjskjijeidheefrherufrhehuewfhehfu');
   const SpecialMenuprice = specialMenuData.find(
     (item) => item.category === "Chef Choice"
   )?.Price;
-  const currentDay = new Date().getDay();//(Sat and Sun    OFFF )
+  const currentDay = new Date().getDay();
   // const currentDay = 0;
   const handleSpecialMenuClick = (item) => {
     const specialMenu = specialMenuData.find(
@@ -63,11 +64,10 @@ const MenuBox = ({ addToCart }) => {
     const specialMenuPrice = specialMenu?.Price;
     setSpecialMenuPriceId(specialMenuPrice);
     if (currentDay >= 1 && currentDay <= 4) {
-      // Show the special menu if it's Monday to Thursday
       setSpecialcatMenuData(specialMenu.subcategories || []);
       setIsSpecialMenuOpen(true);
     } else {
-      // If it's not Monday to Thursday, show the SweetAlert2 message
+     
       Swal.fire({
         icon: "warning",
         title: "Sorry",
@@ -87,13 +87,16 @@ const MenuBox = ({ addToCart }) => {
     setIsStillCantDecideOpen(true);
   };
 
-  const calculateTotalPrice = (item) => {
-    let totalPrice = item.price;
-    if (item.variantPrice) totalPrice += item.variantPrice; // Add variant price
-    if (item.variantPrice) totalPrice += item.variantPrice; // Add spicy level price if selected
+  const calculateTotalPrice = (item ) => {
+    console.log(item);
+    let totalPrice = item.price ||0;
+    if (item.variantPrice) totalPrice += SpecePriceName.price; // Add variant price
+    if (item.variantPrice) totalPrice = item.variantPrice +SpecePriceName.price; // Add spicy level price if selected
+    console.log(totalPrice);
     return totalPrice;
+    
   };
-  console.log(SpecialMenuPriceId);
+
 
   return (
     <div>
@@ -165,7 +168,6 @@ const MenuBox = ({ addToCart }) => {
           className="flex justify-between items-center cursor-pointer  bg-gray-300  hover:bg-orange-400"
           onClick={toggleSpecialMenu}
         >
-          {/* hey gpt if the  (currentDay >= 1 && currentDay <= 4 ) then  add a white opacity over the midweek menu and a text whic will say only availbale from mon -thursday and the text will show in a red bg diago*/}
           <span className="text-xl font-semibold text-black">
             Mid Week Special Platters
           </span>
@@ -274,7 +276,7 @@ const MenuBox = ({ addToCart }) => {
           <SpecialMenuModal
             onClose={() => setIsSpecialMenuOpen(false)}
             subcategories={specialMenuCat}
-            priceId={SpecialMenuPriceId} //HOw do i send the selected set item price here Gpt fix it
+            priceId={SpecialMenuPriceId} 
             onAddToCart={(platter) => {
               dispatch({ type: "ADD_TO_CART", payload: platter });
               setIsSpecialMenuOpen(false);
@@ -340,46 +342,33 @@ const MenuBox = ({ addToCart }) => {
                           <ul className="text-red-900 font-semibold">
                             <div className="flex w-full justify-between">
                               {item.name}
-
                               {item.spicyLevels.length > 0 && (
-                                <div className="text-xs grid justify-end gap-1 text-gray-600 mt-1">
-                                  <select
-                                    className="bg-white text-black  w-44"
-                                    onChange={(e) => {
-                                      const selectedSpicy =
-                                        item.spicyLevels.find(
-                                          (level) =>
-                                            level.name === e.target.value
-                                        );
+  <div className="text-xs grid justify-end gap-1 text-gray-600 mt-1">
+    <select
+      className="bg-white text-black w-44"
+      onChange={(e) => {
+        const spice = item.spicyLevels.find(
+          (level) => level.name === e.target.value
+        );
 
-                                      const updatedItem = {
-                                        ...item,
-                                        variant: selectedSpicy.name || null,
-                                        variantPrice: selectedSpicy
-                                          ? selectedSpicy.price
-                                          : 0,
-                                        // Track the variant name for removing specific item
-                                        keyToRemove: selectedSpicy
-                                          ? selectedSpicy.name
-                                          : null,
-                                      };
+        if (spice) {
+          // Assuming `setSpicenameandprice` updates the spice name and price in the state
+          setSpicenameandprice({ name: spice.name, price: spice.price });
 
-                                      // Dispatch to update cart
-                                      dispatch({
-                                        type: "ADD_TO_CART",
-                                        payload: updatedItem,
-                                      });
-                                    }}
-                                  >
-                                    <option value="">Select a spicyy</option>
-                                    {item.spicyLevels.map((spicy, idx) => (
-                                      <option key={idx} value={spicy.name}>
-                                        {spicy.name} - £{spicy.price.toFixed(2)}
-                                      </option>
-                                    ))}
-                                  </select>
-                                </div>
-                              )}
+         
+        }
+      }}
+    >
+      <option value="">Select a spicy level</option>
+      {item.spicyLevels.map((spicy, idx) => (
+        <option key={idx} value={spicy.name}>
+          {spicy.name} - £{spicy.price.toFixed(2)}
+        </option>
+      ))}
+    </select>
+  </div>
+)}
+
 
                               {item.varieties.length > 0 ? (
                                 <div className="text-xs grid justify-end gap-1 text-gray-600 mt-1">
@@ -394,6 +383,7 @@ const MenuBox = ({ addToCart }) => {
 
                                       const updatedItem = {
                                         ...item,
+                                        spice:SpecePriceName||null,
                                         variant: selectedVariety.name || null,
                                         variantPrice: selectedVariety
                                           ? selectedVariety.price
@@ -426,7 +416,7 @@ const MenuBox = ({ addToCart }) => {
                                   onClick={() => {
                                     const totalPrice =
                                       calculateTotalPrice(item);
-                                    addToCart({ ...item, totalPrice });
+                                    addToCart({ ...item,  spice:SpecePriceName.name||null, totalPrice });
                                   }}
                                 >
                                   + £{calculateTotalPrice(item)}

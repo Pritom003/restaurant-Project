@@ -131,17 +131,7 @@ const Cart = () => {
               >
               
                 <span className="flex-grow">
-                {/* <button
-  onClick={() =>
-    dispatch({
-      type: 'DECREMENT_QUANTITY',
-      payload: { key: item.key }, // Pass key, not id
-    })
-  }
-  className="text-gray-600 text-xs border-2 border-gray-400 p rounded-full px-2"
->
-  -
-</button> */}   
+               
                   <button
   onClick={() =>
     dispatch({
@@ -153,7 +143,7 @@ const Cart = () => {
 >
   +
 </button>
-                  {item.name} {item.variant && `(${item.variant})`}{" "}
+                  {item.name} {item.variant && `(${item.variant})`}{" "}{item.spicelevel && `(${item.spicelevel})`}
                   {item.quantity > 1 && `(${item.quantity}x)`}
                   {/* Display special menu platter items under the category name */}
                   {item.category === "Special Platter" &&  (
@@ -168,8 +158,9 @@ const Cart = () => {
                 </span>
 
                 <span className="flex-shrink-0">
-                  £{(item.variantPrice || item.price) * item.quantity}
-                </span>
+  £{(item.spicelevel ? (item.variantPrice + item.spiceprice || item.price + item.spiceprice) : (item.variantPrice || item.price)) * item.quantity}
+</span>
+
                 {
                   item.quantity >1?  <button
                   onClick={() =>
