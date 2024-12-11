@@ -88,9 +88,9 @@ const MenuBox = ({ addToCart }) => {
   };
 
   const calculateTotalPrice = (item ) => {
-    console.log(item);
+    console.log(item,'hello price ');
     let totalPrice = item.price ||0;
-    if (item.variantPrice) totalPrice += SpecePriceName.price; // Add variant price
+    if (SpecePriceName) totalPrice += SpecePriceName.price; // Add variant price
     if (item.variantPrice) totalPrice = item.variantPrice +SpecePriceName.price; // Add spicy level price if selected
     console.log(totalPrice);
     return totalPrice;
@@ -165,10 +165,10 @@ const MenuBox = ({ addToCart }) => {
 
         {/* Special Menu Category */}
         <div
-          className="flex justify-between items-center cursor-pointer  bg-gray-300  hover:bg-orange-400"
+          className="flex justify-between items-center cursor-pointer my-2  bg-gray-300  hover:bg-gray-400"
           onClick={toggleSpecialMenu}
         >
-          <span className="text-xl font-semibold text-black">
+          <span className="text-xl font-semibold text-black px-2">
             Mid Week Special Platters
           </span>
           <span className="text-xl text-white flex gap-2">
@@ -418,7 +418,7 @@ const MenuBox = ({ addToCart }) => {
                                   onClick={() => {
                                     const totalPrice =
                                       calculateTotalPrice(item);
-                                    addToCart({ ...item,  spice:SpecePriceName.name||null, totalPrice });
+                                    addToCart({ ...item,  spice:SpecePriceName?.name||null, totalPrice });
                                   }}
                                 >
                                   + £{calculateTotalPrice(item)}
