@@ -24,7 +24,7 @@ const Specialmenulist = () => {
     const deleteItem = async (id, subcategoryName, dishName) => {
         const itemType = dishName ? 'Dish' : subcategoryName ? 'Subcategory' : 'Category';
         const itemName = dishName || subcategoryName || id;
-
+    
         const result = await Swal.fire({
             title: `Are you sure you want to delete this ${itemType}?`,
             text: `This will delete the ${itemName} permanently.`,
@@ -35,18 +35,48 @@ const Specialmenulist = () => {
             confirmButtonText: 'Yes, delete it!',
             cancelButtonText: 'No, cancel',
         });
-
+    
         if (result.isConfirmed) {
             try {
                 if (dishName) {
                     await axios.delete(`http://localhost:3000/api/special-menu/${id}/subcategory/${encodeURIComponent(subcategoryName)}/dish/${encodeURIComponent(dishName)}`);
+                    // Update state to remove dish from specific subcategory
+                    setSpecialmenulist(prevList =>
+                        prevList.map(category => 
+                            category.category === id
+                                ? {
+                                    ...category,
+                                    subcategories: category.subcategories.map(subcategory =>
+                                        subcategory.name === subcategoryName
+                                            ? { 
+                                                ...subcategory, 
+                                                dishes: subcategory.dishes.filter(dish => dish.name !== dishName) 
+                                              }
+                                            : subcategory
+                                    )
+                                }
+                                : category
+                        )
+                    );
                 } else if (subcategoryName) {
                     await axios.delete(`http://localhost:3000/api/special-menu/${id}/subcategory/${encodeURIComponent(subcategoryName)}`);
+                    // Update state to remove subcategory from the category
+                    setSpecialmenulist(prevList =>
+                        prevList.map(category => 
+                            category.category === id
+                                ? { 
+                                    ...category, 
+                                    subcategories: category.subcategories.filter(subcategory => subcategory.name !== subcategoryName) 
+                                  }
+                                : category
+                        )
+                    );
                 } else {
                     await axios.delete(`http://localhost:3000/api/special-menu/${id}`);
+                    // Update state to remove the entire category
+                    setSpecialmenulist(prevList => prevList.filter((item) => item._id !== id));
                 }
-
-                setSpecialmenulist(specialmenulist.filter((item) => item._id !== id));
+    
                 Swal.fire('Deleted!', `${itemType} has been deleted.`, 'success');
             } catch (error) {
                 console.error('Error deleting item:', error.message);
@@ -56,6 +86,7 @@ const Specialmenulist = () => {
             Swal.fire('Cancelled', 'The item was not deleted.', 'info');
         }
     };
+    
     return (
         <div>
             {loading ? (
