@@ -93,7 +93,7 @@ const MenuBox = ({ addToCart }) => {
     if (SpecePriceName) totalPrice += SpecePriceName.price; // Add variant price
     if (item.variantPrice) totalPrice = item.variantPrice +SpecePriceName.price; // Add spicy level price if selected
     console.log(totalPrice);
-    return totalPrice;
+    return totalPrice.toFixed(2) ;
     
   };
 
@@ -320,7 +320,7 @@ const MenuBox = ({ addToCart }) => {
                               className="hover:underline"
                               onClick={() => addToCart(item)}
                             >
-                              + £{item.price}
+                               + £{item?.price?.toFixed(2)}
                             </button>
                           </div>
                           <div className="text-xs text-gray-600 mt-1">
@@ -420,6 +420,7 @@ const MenuBox = ({ addToCart }) => {
                                   }}
                                 >
                                   + £{calculateTotalPrice(item)}
+                                
                                 </button>
                               )}
                             </div>
