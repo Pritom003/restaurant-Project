@@ -179,6 +179,28 @@ const handleUpdate = async (data) => {
     reset(); // Clear form values when closing modal
     setEditingItem(null); // Clear editing item state
   };
+  const handleDeleteCat = async (id, category) => {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: `You are about to delete the category: ${category}.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true
+    });
+  
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(`http://localhost:3000/api/menu/category/${id}`);
+        setMenu(prevMenu => prevMenu.filter(cat => cat.category !== category));
+        Swal.fire('Deleted!', `The category "${category}" has been deleted.`, 'success');
+      } catch (error) {
+        console.error('Error deleting category:', error);
+        Swal.fire('Error!', 'There was an issue deleting the category.', 'error');
+      }
+    }
+  };
   
 
   return (
@@ -191,7 +213,10 @@ const handleUpdate = async (data) => {
         ) : (
           slicedCategories.map((category,ids) => (
             <div key={ids} className="mb-8">
-              <h3 className="font-semibold p-4 text-3xl text-orange-400">{category.category}</h3>
+              <h3 className="font-semibold p-4 text-3xl text-orange-400">{category.category }      
+                <button onClick={() => handleDeleteCat(category._id,category.category)} className="text-red-500 text-xs ml-2">
+                        <FaTrash />
+                      </button></h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {category.items.map((item,id) => (
                   <div key={id} className="card p-4 border shadow-md rounded-lg">
