@@ -9,7 +9,7 @@ import axios from "axios";
 import SpecialMenuModal from "./SpecialMenuModal";
 import Swal from "sweetalert2";
 import useRestaurantStatus from "../../../Hooks/useRestaurantStatus";
-
+import { MdSignalWifiConnectedNoInternet1 } from "react-icons/md";
 const MenuBox = ({ addToCart }) => {
   const { menuData, loading, error } = MenuData();
   const [expandedCategories, setExpandedCategories] = useState([]);
@@ -161,10 +161,10 @@ const MenuBox = ({ addToCart }) => {
             <Loader />
           </div>
         )}
-        {error && <p>Error loading menu: {error}</p>}
+        {error && <p>      <span className="text-2xl grid justify-center align-middle items-center text-red-700  "> <MdSignalWifiConnectedNoInternet1 />internet issue! Please Check you Connection</span>  <Loader /> </p>}
 
         {/* Special Menu Category */}
-        <div
+        {error ?'':  <div
           className="flex justify-between items-center cursor-pointer my-2  bg-gray-300  hover:bg-gray-400"
           onClick={toggleSpecialMenu}
         >
@@ -174,7 +174,7 @@ const MenuBox = ({ addToCart }) => {
           <span className="text-xl text-white flex gap-2">
             <FaChevronDown />
           </span>
-        </div>
+        </div>}
 
         {isSpecialMenuExpanded &&
           (currentDay >= 1 && currentDay <= 4 ? (
@@ -192,25 +192,25 @@ const MenuBox = ({ addToCart }) => {
                         key={idx}
                        
                       >
-                   <div  className=" flex justify-between align-middle items-center pb-2 text-xl">
-                   <span onClick={() => handleSpecialMenuClick(item, idx)}>
+                   <div  className=" flex justify-between align-middle items-center 
+                   pb-2 text-xl cursor-pointer ">
+                   <span  className=" hover:boder-b-2 hover:border-b hover:border-b-red-950 cursor-pointer " onClick={() => handleSpecialMenuClick(item, idx)}>
                           {item.set ? item.set : "new set"}{" "}
                           <span className="text-xs text-gray-600">
                             (Tuesday, Wednesday & Thursday ONLY)
                           </span>
                         </span>
-                        <span onClick={() => handleSpecialMenuClick(item, idx)}>
+                        <span  className=" hover:boder-b-2 hover:border-b hover:border-b-red-950 cursor-pointer " onClick={() => handleSpecialMenuClick(item, idx)}>
                           £{item.Price}
                         </span>
                    </div>
                         <li className="border-b-2 border-dotted flex flex-col items-start pb-2 text-xl">
                   <ul className="list-disc text-xs text-gray-800 ml-4 mt-2">
-                    <li>1 Poppadom (plain OR spice)</li>
-                    <li>1 Starter</li>
-                    <li>1 Main dish</li>
-                    <li>1 Side dish</li>
-                    <li>1 Plain Naan</li>
-                    <li>1 Rice</li>
+                   
+                  {
+       item.subcategories.map ((item,idx)=>  <li key={idx}> {item.name}</li>)
+      }
+   
                   </ul>
                 </li>
                       </li>
@@ -240,7 +240,7 @@ const MenuBox = ({ addToCart }) => {
             Available only from Monday to Thursday!
           </p>
         </div> 
-      <div className="flex justify-between items-center pb-2 text-xl "> 
+      <div className="flex justify-between items-center pb-2 text-xl cursor-pointer hover:underline-offset-2 hover:underline"> 
       <span onClick={() => handleSpecialMenuClick(item, idx)}>
           {item.set ? item.set : "new set"}
         </span>
@@ -251,12 +251,12 @@ const MenuBox = ({ addToCart }) => {
           <li className="border-b-2 border-dotted flex flex-col items-start pb-2 text-xl relative">
    
     <ul className="list-disc text-xs text-gray-800 ml-4 mt-2">
-      <li>1 Poppadom (plain OR spice)</li>
-      <li>1 Starter</li>
-      <li>1 Main dish</li>
-      <li>1 Side dish</li>
-      <li>1 Plain Naan</li>
-      <li>1 Rice</li>
+    {
+       item.subcategories.map ((item,idx)=>  <li key={idx}> {item.name}</li>)
+      }
+   
+   
+    
     </ul>
   </li>
 
@@ -313,11 +313,11 @@ const MenuBox = ({ addToCart }) => {
                       {menu.category === "Set Meals" ? (
                         <div className="border-b-2 border-dotted border-red-900 pb-2">
                           <div className="flex w-full text-xl justify-between">
-                            <span>{item.name} 
+                            <span  className=" hover:boder-b-2 hover:border-b hover:border-b-red-950 cursor-pointer " onClick={() => addToCart(item)}>{item.name} 
                          </span>
 
                             <button
-                              className="hover:underline"
+                              className=" hover:boder-b-2 hover:border-b  hover:border-b-red-950 cursor-pointer "
                               onClick={() => addToCart(item)}
                             >
                                + £{item?.price?.toFixed(2)}
@@ -329,9 +329,7 @@ const MenuBox = ({ addToCart }) => {
                               item.itemsIncluded.map((includedItem) => (
                                 <ul  className="list-disc text-xs text-gray-800 ml-4 mt-2" key={includedItem.name}>
                                 <li>  {includedItem.name} ({includedItem.quantity})</li>
-                                  {/* {idx < item.itemsIncluded.length - 1
-                                    ? ", "
-                                    : ""} */}
+                             
                                 </ul>
                               ))}
                           </div>
@@ -340,7 +338,11 @@ const MenuBox = ({ addToCart }) => {
                         <div className="mb-1 text-xl border-b-2 border-dotted py-4 border-red-900">
                           <ul className="text-red-900 font-semibold">
                             <div className="flex w-full justify-between">
-                              {item.name}
+                           <span  onClick={() => {
+                                    const totalPrice =
+                                      calculateTotalPrice(item);
+                                    addToCart({ ...item,  spice:SpecePriceName?.name||null, totalPrice });
+                                  }} className=" hover:boder-b-2 hover:border-b hover:border-b-red-950 cursor-pointer ">  {item.name}</span>  
                               
                               {item.spicyLevels.length > 0 && (
   <div className="text-xs grid justify-end gap-1 text-gray-600 mt-1">
@@ -425,7 +427,7 @@ const MenuBox = ({ addToCart }) => {
                               )}
                             </div>
                           </ul>
-                          <span className=" text-lg text-gray-600"> {item.descrpition? item.descrpition:''}</span>
+                          <span className=" text-lga text-gray-600"> {item.descrpition? item.descrpition:''}</span>
                         
                         </div>
                       )}
@@ -437,7 +439,7 @@ const MenuBox = ({ addToCart }) => {
           ))}
 
         <div></div>
-        <div
+        {error ?'':   <div
           className="flex justify-between items-center cursor-pointer p-2 bg-red-300 hover:bg-red-400"
           onClick={handleStillCantDecideClick}
         >
@@ -447,7 +449,7 @@ const MenuBox = ({ addToCart }) => {
           <span className="text-xl text-white flex gap-2">
             £{SpecialMenuprice} <FaChevronDown />
           </span>
-        </div>
+        </div>}
         {/* still cant decide  */}
 
         {isStillCantDecideOpen && (

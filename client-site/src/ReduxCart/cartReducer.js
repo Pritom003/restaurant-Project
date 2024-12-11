@@ -15,7 +15,7 @@ if (initialState.items.length > 0) {
 const cartReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'ADD_TO_CART':
-      const { name, variant,spice, price, variantPrice, category, items} = action.payload;
+      const { name, variant,spice, price, variantPrice, category, items,} = action.payload;
       const key = variant ? `${name} (${variant})` : name;
 
    console.log(action.payload);
@@ -28,9 +28,7 @@ const cartReducer = (state = initialState, action) => {
         const updatedItem = {
           ...state.items[existingItemIndex],
           quantity: state.items[existingItemIndex].quantity + 1,
-          // price: price + (variantPrice || 0),
-          // variant: variant || state.items[existingItemIndex].variant,
-          // variantPrice: variantPrice || state.items[existingItemIndex].variantPrice,
+      
         };
         updatedItems = [...state.items];
         updatedItems[existingItemIndex] = updatedItem;
@@ -55,7 +53,7 @@ console.log(updatedItems ,'hellohere ');
         ...state,
         items: updatedItems,
         totalPrice: updatedItems.reduce(
-          (total, item) => total +  ((item.variantPrice || item.price) + (item.spiceprice ||item.price ))* item.quantity,
+          (total, item) => total +  ((item.variantPrice || item.price) + (item.spiceprice ||0 ))* item.quantity,
           0
         ),
       };
