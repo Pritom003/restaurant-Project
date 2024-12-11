@@ -56,10 +56,10 @@ const PreparingOrders = () => {
     // Show confirmation dialog
     const result = await Swal.fire({
       title: "Are you sure?",
-      text: "This will mark the order as expired.",
+      text: "This will mark the order as done",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Yes, Expire it!",
+      confirmButtonText: "Yes, Done it!",
       cancelButtonText: "Cancel",
     });
 
@@ -189,9 +189,9 @@ const PreparingOrders = () => {
                 {/* {calculateRemainingTime(order.updatedAt, order.time) === "00:00" && ( */}
                 <button
                   onClick={() => updateOrderStatus(order._id)}
-                  className="mt-3 border-2 border-red-300 text-red-600 py-1 px-3 rounded"
+                  className="mt-3 border-2 border-green-300 text-green-600 py-1 px-3 rounded"
                 >
-                  Expired
+                  DONE
                 </button>
                 {/* )} */}
 

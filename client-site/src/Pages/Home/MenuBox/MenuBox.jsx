@@ -53,7 +53,7 @@ const MenuBox = ({ addToCart }) => {
   const SpecialMenuprice = specialMenuData.find(
     (item) => item.category === "Chef Choice"
   )?.Price;
-  const currentDay = new Date().getDay();//(Sat and Sun    OFFF )
+  const currentDay = new Date().getDay(); //(Sat and Sun    OFFF )
   // const currentDay = 0;
   const handleSpecialMenuClick = (item) => {
     const specialMenu = specialMenuData.find(
@@ -186,36 +186,35 @@ const MenuBox = ({ addToCart }) => {
                 {specialMenuData.map(
                   (item, idx) =>
                     item.category === "Mid Week Special Platter" && (
-                      <li
-                        key={idx}
-                       
-                      >
-                   <div  className=" flex justify-between align-middle items-center pb-2 text-xl">
-                   <span onClick={() => handleSpecialMenuClick(item, idx)}>
-                          {item.set ? item.set : "new set"}{" "}
-                          <span className="text-xs text-gray-600">
-                            (Tuesday, Wednesday & Thursday ONLY)
+                      <li key={idx}>
+                        <div className=" flex justify-between align-middle items-center pb-2 text-xl">
+                          <span
+                            onClick={() => handleSpecialMenuClick(item, idx)}
+                          >
+                            {item.set ? item.set : "new set"}{" "}
+                            <span className="text-xs text-gray-600">
+                              (Tuesday, Wednesday & Thursday ONLY)
+                            </span>
                           </span>
-                        </span>
-                        <span onClick={() => handleSpecialMenuClick(item, idx)}>
-                          £{item.Price}
-                        </span>
-                   </div>
+                          <span
+                            onClick={() => handleSpecialMenuClick(item, idx)}
+                          >
+                            £{item.Price}
+                          </span>
+                        </div>
                         <li className="border-b-2 border-dotted flex flex-col items-start pb-2 text-xl">
-                  <ul className="list-disc text-xs text-gray-800 ml-4 mt-2">
-                    <li>1 Poppadom (plain OR spice)</li>
-                    <li>1 Starter</li>
-                    <li>1 Main dish</li>
-                    <li>1 Side dish</li>
-                    <li>1 Plain Naan</li>
-                    <li>1 Rice</li>
-                  </ul>
-                </li>
+                          <ul className="list-disc text-xs text-gray-800 ml-4 mt-2">
+                            <li>1 Poppadom (plain OR spice)</li>
+                            <li>1 Starter</li>
+                            <li>1 Main dish</li>
+                            <li>1 Side dish</li>
+                            <li>1 Plain Naan</li>
+                            <li>1 Rice</li>
+                          </ul>
+                        </li>
                       </li>
                     )
                 )}
-
-               
               </ul>
             </div>
           ) : (
@@ -223,49 +222,44 @@ const MenuBox = ({ addToCart }) => {
               {/* Apply white opacity overlay with warning text */}
 
               <ul className="border-b-2 pt-2 border-dotted border-red-900 z-20">
-  {specialMenuData.map((item, idx) =>
-    item.category === "Mid Week Special Platter" ? (
-      <li
-        key={idx}
-        className="relative overflow-hidden"
-      >
-        {/* Rotated Text */}
-        <div className="absolute top-10 left-0 right-0 bottom-0 flex 
-        justify-center items-center">
-          <p className="bg-red-400 text-white text-xs w-full h-8
+                {specialMenuData.map((item, idx) =>
+                  item.category === "Mid Week Special Platter" ? (
+                    <li key={idx} className="relative overflow-hidden">
+                      {/* Rotated Text */}
+                      <div
+                        className="absolute top-10 left-0 right-0 bottom-0 flex 
+        justify-center items-center"
+                      >
+                        <p
+                          className="bg-red-400 text-white text-xs w-full h-8
            text-center transform rotate-[-10deg] absolute top-0 left-0 
-           right-0 bottom-0">
-            Available only from Monday to Thursday!
-          </p>
-        </div> 
-      <div className="flex justify-between items-center pb-2 text-xl "> 
-      <span onClick={() => handleSpecialMenuClick(item, idx)}>
-          {item.set ? item.set : "new set"}
-        </span>
-        <span onClick={() => handleSpecialMenuClick(item, idx)}>
-          £{item.Price}
-        </span>
-      </div>
-          <li className="border-b-2 border-dotted flex flex-col items-start pb-2 text-xl relative">
-   
-    <ul className="list-disc text-xs text-gray-800 ml-4 mt-2">
-      <li>1 Poppadom (plain OR spice)</li>
-      <li>1 Starter</li>
-      <li>1 Main dish</li>
-      <li>1 Side dish</li>
-      <li>1 Plain Naan</li>
-      <li>1 Rice</li>
-    </ul>
-  </li>
-
-      </li>
-      
-    ) : null
-  )}
-</ul>
-
-
-
+           right-0 bottom-0"
+                        >
+                          Available only from Monday to Thursday!
+                        </p>
+                      </div>
+                      <div className="flex justify-between items-center pb-2 text-xl ">
+                        <span onClick={() => handleSpecialMenuClick(item, idx)}>
+                          {item.set ? item.set : "new set"}
+                        </span>
+                        <span onClick={() => handleSpecialMenuClick(item, idx)}>
+                          £{item.Price}
+                        </span>
+                      </div>
+                      <li className="border-b-2 border-dotted flex flex-col items-start pb-2 text-xl relative">
+                        <ul className="list-disc text-xs text-gray-800 ml-4 mt-2">
+                          <li>1 Poppadom (plain OR spice)</li>
+                          <li>1 Starter</li>
+                          <li>1 Main dish</li>
+                          <li>1 Side dish</li>
+                          <li>1 Plain Naan</li>
+                          <li>1 Rice</li>
+                        </ul>
+                      </li>
+                    </li>
+                  ) : null
+                )}
+              </ul>
             </>
           ))}
 

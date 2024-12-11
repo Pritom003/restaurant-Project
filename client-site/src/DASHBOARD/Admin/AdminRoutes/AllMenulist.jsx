@@ -6,7 +6,9 @@ import { FaPen, FaTrash } from "react-icons/fa";
 import { useForm } from "react-hook-form"; // Import React Hook Form
 import Modal from "react-modal";
 import Specialmenulist from "./Specialmenulist";
+
 Modal.setAppElement("#root"); // Accessibility fix
+
 const AllMenuList = () => {
   const [menu, setMenu] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -68,18 +70,12 @@ const AllMenuList = () => {
   };
 
   const cleanName = (name) => name.replace(/[^a-zA-Z0-9\s]/g, "").trim();
+
   const addVariety = () => {
     const newVariety = { name: "", price: "" };
     const updatedVarieties = [...editingItem.varieties, newVariety];
     setEditingItem({ ...editingItem, varieties: updatedVarieties });
     setValue("varieties", updatedVarieties); // Sync with form state
-  };
-
-  const addSpicyLevel = () => {
-    const newSpicyLevel = { name: "", price: "" };
-    const updatedSpicyLevels = [...editingItem.spicyLevels, newSpicyLevel];
-    setEditingItem({ ...editingItem, spicyLevels: updatedSpicyLevels });
-    setValue("spicyLevels", updatedSpicyLevels); // Sync with form state
   };
 
   const handleVarietyChange = (index, field, value) => {
@@ -89,34 +85,22 @@ const AllMenuList = () => {
     setValue("varieties", updatedVarieties); // Sync with form state
   };
 
-  const handleSpicyLevelChange = (index, field, value) => {
-    console.log(value, "here");
-    const updatedSpicyLevels = [...editingItem.spicyLevels];
-    updatedSpicyLevels[index][field] = value;
-    setEditingItem({ ...editingItem, spicyLevels: updatedSpicyLevels });
-    setValue("spicyLevels", updatedSpicyLevels); // Sync with form state
-  };
-
   // Handle update click to enter edit mode
   const handleUpdateClick = (item, category) => {
     item.category = category;
     setEditingItem({
       ...item,
       varieties: item.varieties || [],
-      spicyLevels: item.spicyLevels || [],
     });
     setIsModalOpen(true);
 
     setValue("name", item.name);
     setValue("price", item.price);
     setValue("varieties", item.varieties || []);
-    setValue("spicyLevels", item.spicyLevels || []);
-    setValue("itemsIncluded", item.itemsIncluded || []);
-    setValue("category", category);
   };
 
   const handleUpdate = async (data) => {
-    console.log("Form Data:", data); // Log the form data to check if varieties and spicy levels are updated
+    console.log("Form Data:", data);
 
     if (!editingItem) {
       console.error("Editing item or category is missing");
@@ -128,8 +112,6 @@ const AllMenuList = () => {
       name: data.name,
       price: data.price,
       varieties: data.varieties || editingItem.varieties,
-      spicyLevels: data.spicyLevels || editingItem.spicyLevels,
-      itemsIncluded: data.itemsIncluded || editingItem.itemsIncluded,
     };
 
     try {
@@ -161,19 +143,6 @@ const AllMenuList = () => {
     }
   };
 
-  // Pagination logic
-  const indexOfLastCategory = currentPage * categoriesPerPage;
-  const indexOfFirstCategory = indexOfLastCategory - categoriesPerPage;
-  const slicedCategories = menu.slice(
-    indexOfFirstCategory,
-    indexOfLastCategory
-  );
-  const totalPages = Math.ceil(menu.length / categoriesPerPage);
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
   const closeModal = () => {
     setIsModalOpen(false);
     reset(); // Clear form values when closing modal
@@ -190,7 +159,7 @@ const AllMenuList = () => {
           {loading ? (
             <p>Loading...</p>
           ) : (
-            slicedCategories.map((category, ids) => (
+            menu.map((category, ids) => (
               <div key={ids} className="mb-8">
                 <h3 className="font-semibold p-4 text-3xl text-orange-400">
                   {category.category}
@@ -204,39 +173,15 @@ const AllMenuList = () => {
                       <h4 className="text-lg font-bold">{item.name}</h4>
                       <p className="text-sm">Price: {item.price}</p>
 
-                      {item.itemsIncluded.length > 0
-                        ? item.itemsIncluded.map((includedItem, idx) => (
-                            <p key={idx} className="text-sm">
-                              <strong>Items Included:</strong>
-                              <span>
-                                {includedItem.name} (x{includedItem.quantity}){" "}
-                              </span>
-                            </p>
-                          ))
-                        : " "}
-
-                      {item.spicyLevels.length > 0
-                        ? item.spicyLevels.map((level, idx) => (
-                            <p key={idx} className="text-sm">
-                              <strong>Spicy Levels:</strong>
-                              <span>
-                                <span key={idx}>
-                                  {level.name} (+${level.price}){" "}
-                                </span>{" "}
-                              </span>
-                            </p>
-                          ))
-                        : " "}
-
                       <p className="text-sm">
                         <strong>Varieties:</strong>
-                        {item.varieties.length > 0
+                        {item.varieties?.length > 0
                           ? item.varieties.map((variety, idx) => (
                               <span key={idx}>
                                 {variety.name} (+${variety.price}){" "}
                               </span>
                             ))
-                          : ""}
+                          : "No varieties available."}
                       </p>
 
                       <div className="flex justify-between mt-2">
@@ -263,22 +208,6 @@ const AllMenuList = () => {
               </div>
             ))
           )}
-
-          <div className="flex justify-center mt-4">
-            {Array.from({ length: totalPages }, (_, index) => (
-              <button
-                key={index}
-                onClick={() => handlePageChange(index + 1)}
-                className={`px-4 py-2 mx-1 rounded ${
-                  currentPage === index + 1
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200"
-                }`}
-              >
-                {index + 1}
-              </button>
-            ))}
-          </div>
         </div>
 
         <Modal
@@ -312,7 +241,6 @@ const AllMenuList = () => {
               />
             </div>
 
-            {/* Conditionally render Varieties input fields if varieties array has more than 0 */}
             {editingItem?.varieties?.length > 0 && (
               <div>
                 <label htmlFor="varieties">Varieties</label>
@@ -325,7 +253,7 @@ const AllMenuList = () => {
                         value={variety.name}
                         onChange={(e) =>
                           handleVarietyChange(index, "name", e.target.value)
-                        } // Use handleVarietyChange here
+                        }
                         className="w-full p-2 border rounded bg-white"
                       />
                       <input
@@ -334,7 +262,7 @@ const AllMenuList = () => {
                         value={variety.price}
                         onChange={(e) =>
                           handleVarietyChange(index, "price", e.target.value)
-                        } // Use handleVarietyChange here
+                        }
                         className="w-full p-2 border rounded bg-white"
                       />
                     </div>
@@ -350,56 +278,6 @@ const AllMenuList = () => {
               </div>
             )}
 
-            {/* hey gpt please check why i am not getting the newly added or edited   varities and spices data i am not  */}
-            {/* Conditionally render Spicy Levels input fields if spicyLevels array has more than 0 */}
-            {editingItem?.spicyLevels?.length > 0 && (
-              <div>
-                <label htmlFor="spicyLevels">Spicy Levels</label>
-                <div className="space-y-2">
-                  {editingItem.spicyLevels.map((level, index) => (
-                    <div key={index} className="flex space-x-2">
-                      <input
-                        type="text"
-                        placeholder="Spicy Level Name"
-                        value={level.name}
-                        onChange={(e) =>
-                          handleSpicyLevelChange(index, "name", e.target.value)
-                        } // Use handleSpicyLevelChange here
-                        className="w-full p-2 border rounded bg-white"
-                      />
-                      <input
-                        type="number"
-                        placeholder="Price"
-                        value={level.price}
-                        onChange={(e) =>
-                          handleSpicyLevelChange(index, "price", e.target.value)
-                        } // Use handleSpicyLevelChange here
-                        className="w-full p-2 border rounded bg-white"
-                      />
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={addSpicyLevel}
-                    className="text-blue-500"
-                  >
-                    Add Spicy Level
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {editingItem?.itemsIncluded?.length > 0 && (
-              <div>
-                <label htmlFor="itemsIncluded">Items Included</label>
-                <input
-                  type="text"
-                  id="itemsIncluded"
-                  {...register("itemsIncluded")}
-                  className="w-full p-2 border rounded bg-white"
-                />
-              </div>
-            )}
             <div className="flex justify-between">
               <button
                 type="button"
