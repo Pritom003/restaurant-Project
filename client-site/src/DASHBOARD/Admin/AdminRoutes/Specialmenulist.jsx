@@ -7,7 +7,6 @@ const Specialmenulist = () => {
     const [specialmenulist, setSpecialmenulist] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // Fetch the menu list
     useEffect(() => {
         const fetchMenu = async () => {
             try {
@@ -22,12 +21,10 @@ const Specialmenulist = () => {
         fetchMenu();
     }, []);
 
-    // Handle delete functionality with SweetAlert2 confirmation
-    const deleteItem = async (categoryName, subcategoryName, dishName) => {
+    const deleteItem = async (id, subcategoryName, dishName) => {
         const itemType = dishName ? 'Dish' : subcategoryName ? 'Subcategory' : 'Category';
-        const itemName = dishName || subcategoryName || categoryName;
-    
-        // SweetAlert2 confirmation prompt
+        const itemName = dishName || subcategoryName || id;
+
         const result = await Swal.fire({
             title: `Are you sure you want to delete this ${itemType}?`,
             text: `This will delete the ${itemName} permanently.`,
@@ -38,50 +35,38 @@ const Specialmenulist = () => {
             confirmButtonText: 'Yes, delete it!',
             cancelButtonText: 'No, cancel',
         });
-    
+
         if (result.isConfirmed) {
             try {
-                // let deleteUrl = '';
-    
                 if (dishName) {
-                    // Deleting a single dish from a subcategory
-                    await axios.delete (`http://localhost:3000/api/special-menu/${encodeURIComponent(categoryName)}/subcategory/${encodeURIComponent(subcategoryName)}/dish/${encodeURIComponent(dishName)}`);
+                    await axios.delete(`http://localhost:3000/api/special-menu/${id}/subcategory/${encodeURIComponent(subcategoryName)}/dish/${encodeURIComponent(dishName)}`);
                 } else if (subcategoryName) {
-                    // Deleting a subcategory from a category
-                    await axios.delete(`http://localhost:3000/api/special-menu/${encodeURIComponent(categoryName)}/subcategory/${encodeURIComponent(subcategoryName)}`);
+                    await axios.delete(`http://localhost:3000/api/special-menu/${id}/subcategory/${encodeURIComponent(subcategoryName)}`);
                 } else {
-                    // Deleting a category
-                    await axios.delete( `http://localhost:3000/api/special-menu/${encodeURIComponent(categoryName)}`);
+                    await axios.delete(`http://localhost:3000/api/special-menu/${id}`);
                 }
-    
-             
-    
-                // Refresh the menu list after deletion
-                const response = await axios.get('http://localhost:3000/api/special-menu');
-                setSpecialmenulist(response.data);
-    
-                // Success confirmation
+
+                setSpecialmenulist(specialmenulist.filter((item) => item._id !== id));
                 Swal.fire('Deleted!', `${itemType} has been deleted.`, 'success');
             } catch (error) {
                 console.error('Error deleting item:', error.message);
-                Swal.fire('Error!', `There was an issue deleting the item., ${error.message}`);
+                Swal.fire('Error!', `There was an issue deleting the item.`, 'error');
             }
         } else {
             Swal.fire('Cancelled', 'The item was not deleted.', 'info');
         }
     };
-    
     return (
         <div>
             {loading ? (
                 <p>Loading...</p>
             ) : (
-                <div className="flex gap-4 flex-wrap max-w-1/2">
+                <div className="flex gap-4 text-black flex-wrap max-w-1/2">
                     {specialmenulist.map((category, id) => (
                         <div key={id}>
                            <span className=" flex justify-center align-middle items-center gap-2 ">
-                           <h3 className=" text-2xl font-bold  underline  pt-10 pb-5">{category.category} {category.set} </h3>
-                            <button onClick={() => deleteItem(category.category)} 
+                           <h3 className=" text-2xl font-bold  underline  pt-10 pb-5">{category.category}{category._id} {category.set} </h3>
+                            <button onClick={() => deleteItem(category._id)} 
                             
                             className="text-red-500 text-lg pt-5">
                                 <FaTrash />
@@ -89,7 +74,7 @@ const Specialmenulist = () => {
                            </span>
                             {category.subcategories.map((subcategory) => (
                                 <div key={subcategory.name}>
-                                     <span className=" flex justify-center align-middle items-center gap-2 ">
+                                     <span className=" flex justify-start py-6 align-start items-start gap-2 ">
                            <h3 className=" text-xl font-semibold underline  pt-2 ">{subcategory.name} - ${subcategory.price}</h3>
                             <button onClick={() => deleteItem(category.category, subcategory.name)}
                             

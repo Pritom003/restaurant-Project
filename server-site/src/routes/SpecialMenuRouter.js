@@ -100,10 +100,10 @@ router.get('/api/special-menu', async (req, res) => {
     }
 });
 // DELETE /api/special-menu/:category
-router.delete('/api/special-menu/:category', async (req, res) => {
+router.delete('/api/special-menu/:id', async (req, res) => {
     try {
-        const categoryName = req.params.category;
-        const result = await SpecialMenu.findOneAndDelete({ category: categoryName });
+        const {id}= req.params
+        const result = await SpecialMenu.findOneAndDelete({ _id: id });
         if (result) {
             res.status(200).json({ message: 'Category deleted successfully' });
         } else {

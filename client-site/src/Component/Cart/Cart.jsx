@@ -137,29 +137,19 @@ const Cart = () => {
                 className="flex justify-between items-center border-gray-600border-b  py-2 border-2"
               >
                 <span className="flex-grow">
-                  {/* <button
-  onClick={() =>
-    dispatch({
-      type: 'DECREMENT_QUANTITY',
-      payload: { key: item.key }, // Pass key, not id
-    })
-  }
-  className="text-gray-600 text-xs border-2 border-gray-400 p rounded-full px-2"
->
-  -
-</button> */}
                   <button
                     onClick={() =>
                       dispatch({
-                        type: "DECREMENT_QUANTITY",
-                        payload: { key: item.key }, // Pass unique key
+                        type: "INCREMENT_QUANTITY",
+                        payload: { key: item.key }, // Pass key, not id
                       })
                     }
-                    className="text-gray-600 text-lg bg-red-200 hover:text-red-800 px-3 py-1 border rounded"
+                    className="text-gray-600 text-xs border-2 border-gray-400 p rounded-full px-2"
                   >
-                    -
+                    +
                   </button>
                   {item.name} {item.variant && `(${item.variant})`}{" "}
+                  {item.spicelevel && `(${item.spicelevel})`}
                   {item.quantity > 1 && `(${item.quantity}x)`}
                   {/* Display special menu platter items under the category name */}
                   {item.category === "Special Platter" && (
@@ -185,8 +175,13 @@ const Cart = () => {
                 </span>
 
                 <span className="flex-shrink-0">
-                  £{(item.variantPrice || item.price) * item.quantity}
+                  £
+                  {(item.spicelevel
+                    ? item.variantPrice + item.spiceprice ||
+                      item.price + item.spiceprice
+                    : item.variantPrice || item.price) * item.quantity}
                 </span>
+
                 {item.quantity > 1 ? (
                   <button
                     onClick={() =>

@@ -63,7 +63,19 @@ router.put('api/menu/item', async (req, res) => {
     res.status(500).json({ message: 'Error updating item.', error });
   }
 });
-
+router.delete('/api/menu/category/:id', async (req, res) => {
+    try {
+        const {id}= req.params
+        const result = await MenuItem.findOneAndDelete({ _id: id });
+        if (result) {
+            res.status(200).json({ message: 'Category deleted successfully' });
+        } else {
+            res.status(404).json({ message: 'Category not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to delete category', error });
+    }
+});
 // DELETE route to delete menu item
 router.delete('/api/menu/:category/item/:name', async (req, res) => {
   const { category, name } = req.params;
