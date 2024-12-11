@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 const AcceptOrder = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedTime, setSelectedTime] = useState('30');
+  const [selectedTime, setSelectedTime] = useState("30");
   const [selectedReason, setSelectedReason] = useState("Out of Stock");
 
   // Fetch pending orders on component mount
@@ -134,6 +134,7 @@ const AcceptOrder = () => {
               <h4 className="text-xl font-semibold mb-2">
                 Order #{order.orderNumber}
               </h4>
+
               <p>
                 <strong>User Email:</strong> {order.userEmail}
               </p>
@@ -144,22 +145,22 @@ const AcceptOrder = () => {
                 <strong>Status:</strong> {order.status}
               </p>
               <p>
-                <strong>reason:</strong> {order.reason? order.reason :''}
+                <strong>reason:</strong> {order.reason ? order.reason : ""}
               </p>
               <h5 className="font-medium mt-3">Items:</h5>
-
               {order.items.map((item, index) => (
-  <span className="flex text-xs flex-wrap gap-1" key={index}>
- {item.subItems.length > 0 && item.subItems?.map(subItem => subItem.name).join(', ')} 
-   {item.name}   {item.subItems.map((subItem, idx) => (
-      <span className=" text-xs" key={idx}>
-        {subItem.name} 
-      </span>
-    ))} 
-    (x{item.quantity}) 
-  </span>
-))}
-     
+                <span className="flex text-xs flex-wrap gap-1" key={index}>
+                  {item.subItems.length > 0 &&
+                    item.subItems?.map((subItem) => subItem.name).join(", ")}
+                  {item.name}{" "}
+                  {item.subItems.map((subItem, idx) => (
+                    <span className=" text-xs" key={idx}>
+                      {subItem.name}
+                    </span>
+                  ))}
+                  (x{item.quantity})
+                </span>
+              ))}
               <div className="flex justify-between">
                 {/* Accept Section */}
                 <div className="w-1/2 border-r border-gray-300 pr-4">
@@ -191,21 +192,25 @@ const AcceptOrder = () => {
                 <div className="w-1/2 pl-4">
                   <h2 className="text-lg font-semibold mb-2">Reject</h2>
                   <div className="flex flex-col gap-2 h-20 overflow-y-auto">
-                    {["Too Busy", "Too Far", "Out of Stock", "Closed Today", "Please Call"].map(
-                      (reason) => (
-                        <button
-                          key={reason}
-                          className={`py-2 px-4 rounded-lg text-center ${
-                            selectedReason === reason
-                              ? "bg-red-500 text-white"
-                              : "bg-gray-100 hover:bg-red-200"
-                          }`}
-                          onClick={() => setSelectedReason(reason)}
-                        >
-                          {reason}
-                        </button>
-                      )
-                    )}
+                    {[
+                      "Too Busy",
+                      "Too Far",
+                      "Out of Stock",
+                      "Closed Today",
+                      "Please Call",
+                    ].map((reason) => (
+                      <button
+                        key={reason}
+                        className={`py-2 px-4 rounded-lg text-center ${
+                          selectedReason === reason
+                            ? "bg-red-500 text-white"
+                            : "bg-gray-100 hover:bg-red-200"
+                        }`}
+                        onClick={() => setSelectedReason(reason)}
+                      >
+                        {reason}
+                      </button>
+                    ))}
                   </div>
                   <button
                     onClick={() => handleReject(order._id)}

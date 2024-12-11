@@ -1,4 +1,4 @@
-  // eslint-disable-next-line no-unused-vars
+// eslint-disable-next-line no-unused-vars
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { PiTrashSimpleThin } from "react-icons/pi";
@@ -17,14 +17,14 @@ const Cart = () => {
   const dispatch = useDispatch();
   const { user } = useAuth();
   const { items, totalPrice } = useSelector((state) => state);
-  const [orderType, setOrderType] = useState(""); 
+  const [orderType, setOrderType] = useState("");
   const [spiceLevel, setSpiceLevel] = useState("");
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
-  const { isRestaurantOpen} = useRestaurantStatus();
+  const { isRestaurantOpen } = useRestaurantStatus();
   console.log(items);
   const removeFromCart = (item) =>
-    dispatch({ type: "REMOVE_FROM_CART", payload: { key: item.key} });
+    dispatch({ type: "REMOVE_FROM_CART", payload: { key: item.key } });
 
   const isInRange = true;
 
@@ -34,9 +34,8 @@ const Cart = () => {
     quantity: item.quantity,
     variant: item.variant || null,
     category: item.category,
-    subItems: item.items || [], 
+    subItems: item.items || [],
   }));
-
 
   // eslint-disable-next-line no-unused-vars
   const handleOrderCompletion = async (method, status) => {
@@ -67,7 +66,6 @@ const Cart = () => {
       );
       dispatch({ type: "CLEAR_CART" });
     } catch (error) {
-  
       Swal.fire(
         "Error",
         `There was an issue placing your order. Please try again ${error}.`,
@@ -77,6 +75,14 @@ const Cart = () => {
   };
 
   const handlePlaceOrder = () => {
+    if (!user) {
+      Swal.fire(
+        "Error",
+        "You need to log in to add items to your cart or place an order.",
+        "error"
+      ); // Show login error modal
+      return;
+    }
     if (!isRestaurantOpen) {
       // If restaurant is closed, show an alert
       Swal.fire({
@@ -85,18 +91,19 @@ const Cart = () => {
         text: "The restaurant is currently closed. Please try again later.",
         confirmButtonText: "Okay",
         confirmButtonColor: "#f44336",
-      })
-    }else if (isRestaurantOpen){
-    if (orderType) {
-      navigate("/pickup-order", {
-        state: {
-          items: formattedItems,
-          totalPrice: getTotalPrice(),
-          spiceLevel,
-          orderType,
-        },
       });
-    }}
+    } else if (isRestaurantOpen) {
+      if (orderType) {
+        navigate("/pickup-order", {
+          state: {
+            items: formattedItems,
+            totalPrice: getTotalPrice(),
+            spiceLevel,
+            orderType,
+          },
+        });
+      }
+    }
   };
   // console.log(items)
 
@@ -129,58 +136,72 @@ const Cart = () => {
                 key={item.key}
                 className="flex justify-between items-center border-gray-600border-b  py-2 border-2"
               >
-              
                 <span className="flex-grow">
-               
                   <button
-  onClick={() =>
-    dispatch({
-      type: 'INCREMENT_QUANTITY',
-      payload: { key: item.key }, // Pass key, not id
-    })
-  }
-  className="text-gray-600 text-xs border-2 border-gray-400 p rounded-full px-2"
->
-  +
-</button>
-                  {item.name} {item.variant && `(${item.variant})`}{" "}{item.spicelevel && `(${item.spicelevel})`}
+                    onClick={() =>
+                      dispatch({
+                        type: "INCREMENT_QUANTITY",
+                        payload: { key: item.key }, // Pass key, not id
+                      })
+                    }
+                    className="text-gray-600 text-xs border-2 border-gray-400 p rounded-full px-2"
+                  >
+                    +
+                  </button>
+                  {item.name} {item.variant && `(${item.variant})`}{" "}
+                  {item.spicelevel && `(${item.spicelevel})`}
                   {item.quantity > 1 && `(${item.quantity}x)`}
                   {/* Display special menu platter items under the category name */}
-                  {item.category === "Special Platter" &&  (
+                  {item.category === "Special Platter" && (
                     <span className="text-sm text-gray-600">
                       {" "}
-                      {item.name=''}
-                      {item.category}
-                      ({item.items.map((subItem) => subItem.name).join(", ")})
+                      {(item.name = "")}
+                      {item.category}(
+                      {item.items.map((subItem) => subItem.name).join(", ")})
                     </span>
                   )}
-      
+                  <span className="text-base">{item.quantity}</span>
+                  <button
+                    onClick={() =>
+                      dispatch({
+                        type: "INCREMENT_QUANTITY",
+                        payload: { key: item.key }, // Pass unique key
+                      })
+                    }
+                    className="text-gray-600 text-lg bg-red-200 hover:text-red-800 px-3 py-1 border rounded"
+                  >
+                    +
+                  </button>
                 </span>
 
                 <span className="flex-shrink-0">
-  £{(item.spicelevel ? (item.variantPrice + item.spiceprice || item.price + item.spiceprice) : (item.variantPrice || item.price)) * item.quantity}
-</span>
+                  £
+                  {(item.spicelevel
+                    ? item.variantPrice + item.spiceprice ||
+                      item.price + item.spiceprice
+                    : item.variantPrice || item.price) * item.quantity}
+                </span>
 
-                {
-                  item.quantity >1?  <button
-                  onClick={() =>
-                    dispatch({
-                      type: 'DECREMENT_QUANTITY',
-                      payload: { key: item.key }, // Pass key, not id
-                    })
-                  }
-                  className="text-gray-600 text-xs border-2 border-gray-400 p rounded-full px-2"
-                >
-                  -
-                </button>  :<button
-                  onClick={() => removeFromCart(item)}
-                  className="pl-2 hover:text-red-800"
-                >
-                  <PiTrashSimpleThin />
-                </button>
-                }
- 
-                
+                {item.quantity > 1 ? (
+                  <button
+                    onClick={() =>
+                      dispatch({
+                        type: "DECREMENT_QUANTITY",
+                        payload: { key: item.key }, // Pass key, not id
+                      })
+                    }
+                    className="text-gray-600 text-xs border-2 border-gray-400 p rounded-full px-2"
+                  >
+                    -
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => removeFromCart(item)}
+                    className="pl-2 hover:text-red-800"
+                  >
+                    <PiTrashSimpleThin />
+                  </button>
+                )}
               </li>
             ))
           ) : (
@@ -251,16 +272,40 @@ const Cart = () => {
             </div>
 
             <button
-  onClick={handlePlaceOrder}
-  className="text-lg text-gray-600 hover:text-red-950 hover:underline mt-2 disabled:no-underline disabled:text-gray-700"
-  disabled={getTotalPrice().toFixed(2) === '0.00'}
->
-  Place Order
-</button>
-
+              onClick={handlePlaceOrder}
+              className="text-lg text-gray-600 hover:text-red-950 hover:underline mt-2 disabled:no-underline disabled:text-gray-700"
+              disabled={getTotalPrice().toFixed(2) === "0.00"}
+            >
+              Place Order
+            </button>
           </div>
         )}
       </div>
+
+      {/* Payment Form for Stripe */}
+      {/* {showPaymentForm && paymentMethod === "stripe" && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg max-w-md w-full">
+            <h2 className="text-xl font-semibold mb-4">
+              Complete Your Payment
+            </h2>
+            <Elements stripe={stripePromise}>
+              <PaymentForm
+                totalPrice={getTotalPrice()}
+                handleOrderCompletion={handleOrderCompletion}
+              />
+            </Elements>
+            <button
+              onClick={() => setShowPaymentForm(false)}
+              className="mt-4 text-gray-500 underline"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )} */}
+
+      {/* Login Error Modal */}
 
       {/* Out of Range Modal */}
       {showModal && <OutOfRangeModal onClose={closeModal} />}

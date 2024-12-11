@@ -23,13 +23,13 @@ const AddMenuItem = () => {
         ? setMenuItems.map((item) => ({
             name: item.name,
             price: item.price,
-         
+
             itemsIncluded: item.itemsIncluded,
           }))
         : [
             {
               name: data.itemName,
-              descrpition:data.descrpition,
+              descrpition: data.descrpition,
               price: data.price,
               varieties: varieties.filter(
                 (variety) => variety.name && variety.price
@@ -78,7 +78,7 @@ const AddMenuItem = () => {
     setIsSetMenu(selectedCategory === "Set Meals"); // Determine if it's a set menu
     if (selectedCategory !== "Set Meals") {
       setSetMenuItems([
-        { name: "", price: "",itemsIncluded: [{ name: "", quantity: "" }] },
+        { name: "", price: "", itemsIncluded: [{ name: "", quantity: "" }] },
       ]); // Reset set menu items
     }
   };
@@ -279,14 +279,15 @@ const AddMenuItem = () => {
               />
             </div>
             <div className="mb-4">
-  <label className="block text-gray-700 font-medium">Description</label>
-  <input
-    type="text"
-    {...register("descrpition", { required: true })}
-    className="border rounded p-2 w-full bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-  />
-</div>
-
+              <label className="block text-gray-700 font-medium">
+                Description
+              </label>
+              <input
+                type="text"
+                {...register("descrpition")}
+                className="border rounded p-2 w-full bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
           </>
         )}
 
