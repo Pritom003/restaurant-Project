@@ -136,7 +136,7 @@ router.post("/api/orders", async (req, res) => {
     req.io.emit("new-order", savedOrder);
 
     // Send the welcome email
-    await sendWelcomeEmail(email, orderNumber, items);
+    // await sendWelcomeEmail(email, orderNumber, items);
 
     // Respond with success
     res.status(201).json({
@@ -296,7 +296,7 @@ router.patch("/api/orders/:id", async (req, res) => {
     const updatedOrder = await order.save();
 
     // Send emails based on the conditions
-    if (time && !reason) {
+    if (time !== 1 && !reason) {
       // Send a welcome email if time is available and reason is null
       await sendWelcomeEmail(order.email, order.orderNumber, order.items);
     }
