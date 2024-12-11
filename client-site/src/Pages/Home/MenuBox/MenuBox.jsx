@@ -89,12 +89,20 @@ const MenuBox = ({ addToCart }) => {
     setIsStillCantDecideOpen(true);
   };
 
+<<<<<<< HEAD
   const calculateTotalPrice = (item) => {
     console.log(item);
     let totalPrice = item.price || 0;
     if (item.variantPrice) totalPrice += SpecePriceName.price; // Add variant price
     if (item.variantPrice)
       totalPrice = item.variantPrice + SpecePriceName.price; // Add spicy level price if selected
+=======
+  const calculateTotalPrice = (item ) => {
+    console.log(item,'hello price ');
+    let totalPrice = item.price ||0;
+    if (SpecePriceName) totalPrice += SpecePriceName.price; // Add variant price
+    if (item.variantPrice) totalPrice = item.variantPrice +SpecePriceName.price; // Add spicy level price if selected
+>>>>>>> 6c8e9ceb3afa027b56ee10e29774f7ae5bd3b27d
     console.log(totalPrice);
     return totalPrice;
   };
@@ -166,10 +174,10 @@ const MenuBox = ({ addToCart }) => {
 
         {/* Special Menu Category */}
         <div
-          className="flex justify-between items-center cursor-pointer  bg-gray-300  hover:bg-orange-400"
+          className="flex justify-between items-center cursor-pointer my-2  bg-gray-300  hover:bg-gray-400"
           onClick={toggleSpecialMenu}
         >
-          <span className="text-xl font-semibold text-black">
+          <span className="text-xl font-semibold text-black px-2">
             Mid Week Special Platters
           </span>
           <span className="text-xl text-white flex gap-2">
@@ -415,11 +423,15 @@ const MenuBox = ({ addToCart }) => {
                                   onClick={() => {
                                     const totalPrice =
                                       calculateTotalPrice(item);
+<<<<<<< HEAD
                                     addToCart({
                                       ...item,
                                       spice: SpecePriceName.name || null,
                                       totalPrice,
                                     });
+=======
+                                    addToCart({ ...item,  spice:SpecePriceName?.name||null, totalPrice });
+>>>>>>> 6c8e9ceb3afa027b56ee10e29774f7ae5bd3b27d
                                   }}
                                 >
                                   + £{calculateTotalPrice(item)}

@@ -30,6 +30,10 @@ const AddSpecialmenu = () => {
       alert("Please fill in a valid price greater than 0.");
       return;
     }
+  // If custom set name is provided, override the 'set' field with the custom set value
+  if (data.setCustom) {
+    data.set = data.setCustom;
+  }
 
     const formattedData = {
       ...data,
@@ -89,8 +93,8 @@ const AddSpecialmenu = () => {
           </select>
         </div>
 
-        {/* Set selection */}
-        <div className="form-control">
+      {/* Set selection */}
+      <div className="form-control">
           <label className="label">
             <span className="label-text">Set</span>
           </label>
