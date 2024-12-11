@@ -1,37 +1,37 @@
 const mongoose = require('mongoose');
 
-// Schema for included items (Set Menu items)
 const IncludedItemSchema = new mongoose.Schema({
   name: { type: String, required: true },
   quantity: { type: String, required: true }
 }, { _id: false });;
 
-// Schema for varieties (Variants of items with name and price)
+
 const VarietySchema = new mongoose.Schema({
   name: { type: String, required: true },
   price: { type: Number, }
 }, { _id: false });
 
 const SpicyLevelSchema = new mongoose.Schema({
-  name: { type: String, required: true }, // e.g., "Mild", "Medium", "Hot"
-  price: { type: Number, } // e.g., "Low", "Medium", "High"
+  name: { type: String, required: true }, 
+  price: { type: Number, } 
 }, { _id: false });
 
 
-// Schema for each menu item
+
 const ItemSchema = new mongoose.Schema({
   name: { type: String, required: true },
   price: { type: Number, required: true },
-  varieties: [VarietySchema], // Array to hold item varieties
+  descrpition:{ type: String, required: true },// hey  can you please send the description from the frontend 
+  varieties: [VarietySchema], 
   itemsIncluded: [IncludedItemSchema],
   spicyLevels: [SpicyLevelSchema]
-  // Supports Set Menu nested items
+ 
 });
 
-// Schema for menu category
+
 const MenuSchema = new mongoose.Schema({
   category: { type: String, required: true, unique: true },
-  items: [ItemSchema] // Array to hold menu items
+  items: [ItemSchema] 
 });
 
 module.exports = mongoose.model('MenuItem', MenuSchema);
