@@ -75,8 +75,8 @@ const AddMenuItem = () => {
   const handleCategoryChange = (event) => {
     const selectedCategory = event.target.value;
     setIsOtherCategory(selectedCategory === "Others"); // Set state based on selection
-    setIsSetMenu(selectedCategory === "Set Menu"); // Determine if it's a set menu
-    if (selectedCategory !== "Set Menu") {
+    setIsSetMenu(selectedCategory === "Set Meals"); // Determine if it's a set menu
+    if (selectedCategory !== "Set Meals") {
       setSetMenuItems([
         { name: "", price: "",itemsIncluded: [{ name: "", quantity: "" }] },
       ]); // Reset set menu items
@@ -189,7 +189,7 @@ const AddMenuItem = () => {
               key={index}
               className="mb-4 p-4 border rounded bg-gray-50 shadow-sm"
             >
-              <h3 className="text-lg font-semibold mb-2">Set Menu Item</h3>
+              <h3 className="text-lg font-semibold mb-2">Set Meals Item</h3>
               <input
                 type="text"
                 placeholder="Item Name"

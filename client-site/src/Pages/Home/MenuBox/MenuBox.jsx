@@ -310,7 +310,7 @@ const MenuBox = ({ addToCart }) => {
                 <div className="pl-4 pt-2">
                   {menu.items.map((item, index) => (
                     <div key={index} className="mb-2">
-                      {menu.category === "Set Menu" ? (
+                      {menu.category === "Set Meals" ? (
                         <div className="border-b-2 border-dotted border-red-900 pb-2">
                           <div className="flex w-full text-xl justify-between">
                             <span>{item.name} 
@@ -324,17 +324,15 @@ const MenuBox = ({ addToCart }) => {
                             </button>
                           </div>
                           <div className="text-xs text-gray-600 mt-1">
-                            <span className="font-semibold">
-                              Included Items:
-                            </span>
+                          
                             {item.itemsIncluded.length > 0 &&
-                              item.itemsIncluded.map((includedItem, idx) => (
-                                <span key={includedItem.name}>
-                                  {includedItem.name} ({includedItem.quantity})
-                                  {idx < item.itemsIncluded.length - 1
+                              item.itemsIncluded.map((includedItem) => (
+                                <ul  className="list-disc text-xs text-gray-800 ml-4 mt-2" key={includedItem.name}>
+                                <li>  {includedItem.name} ({includedItem.quantity})</li>
+                                  {/* {idx < item.itemsIncluded.length - 1
                                     ? ", "
-                                    : ""}
-                                </span>
+                                    : ""} */}
+                                </ul>
                               ))}
                           </div>
                         </div>
