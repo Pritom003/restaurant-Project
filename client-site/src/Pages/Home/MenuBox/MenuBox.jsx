@@ -308,7 +308,8 @@ const MenuBox = ({ addToCart }) => {
                       {menu.category === "Set Menu" ? (
                         <div className="border-b-2 border-dotted border-red-900 pb-2">
                           <div className="flex w-full text-xl justify-between">
-                            <span>{item.name}</span>
+                            <span>{item.name} 
+                         </span>
 
                             <button
                               className="hover:underline"
@@ -337,6 +338,7 @@ const MenuBox = ({ addToCart }) => {
                           <ul className="text-red-900 font-semibold">
                             <div className="flex w-full justify-between">
                               {item.name}
+                              
                               {item.spicyLevels.length > 0 && (
                                 <div className="text-xs grid justify-end gap-1 text-gray-600 mt-1">
                                   <select
@@ -425,6 +427,8 @@ const MenuBox = ({ addToCart }) => {
                               )}
                             </div>
                           </ul>
+                          <span className=" text-xs text-gray-600"> {item.descrpition? item.descrpition:''}</span>
+                        
                         </div>
                       )}
                     </div>
