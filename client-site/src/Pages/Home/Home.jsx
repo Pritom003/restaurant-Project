@@ -32,11 +32,11 @@ const Home = () => {
   return (
     <div className="h-full font-sans w-full grid lg:grid-cols-4 px-4 md:px-8 lg:px-10 py-10 lg:py-20 text-2xl md:text-4xl lg:text-5xl gap-4 items-start">
       <div className="lg:col-span-3 lg:min-w-[50vw] min-w-[40vw] overflow-y-auto">
-        <div className="max-w-full lg:max-w-[900px] mx-auto p-4 text-black bg-[#e8e7e5]">
+        <div className="max-w-full lg:max-w-[60vw] mx-auto p-4 text-black bg-[#e8e7e5]">
           <MenuBox addToCart={addToCart} />
         </div>
       </div>
-      <div className="grid gap-4 lg:col-span-1 mx-auto sticky top-4">
+      <div className="grid gap-4 lg:col-span-1 mx-auto sticky top-20">
         {/* Cart */}
         <div className="bg-[#e8e7e5] min-w-[90vw] lg:min-w-[20vw] px-4 pb-4 pt-4 w-full min-h-56 overflow-y-auto">
           <Cart />

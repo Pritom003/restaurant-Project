@@ -18,7 +18,7 @@ const Cart = () => {
   const { user } = useAuth();
   const { items, totalPrice } = useSelector((state) => state);
   const [orderType, setOrderType] = useState("");
-  const [spiceLevel, setSpiceLevel] = useState("");
+  // const [spiceLevel, setSpiceLevel] = useState("");
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
   const { isRestaurantOpen } = useRestaurantStatus();
@@ -47,7 +47,7 @@ const Cart = () => {
       paymentStatus: status,
       paymentMethod: method,
       orderType,
-      spiceLevel,
+      // spiceLevel,
     };
     // console.log("Order data", orderData);
     try {
@@ -98,7 +98,7 @@ const Cart = () => {
           state: {
             items: formattedItems,
             totalPrice: getTotalPrice(),
-            spiceLevel,
+            // spiceLevel,
             orderType,
           },
         });
@@ -108,11 +108,23 @@ const Cart = () => {
   // console.log(items)
 
   const handleOrderTypeChange = (type) => {
-    if (type === "online" && !isInRange) {
-      setShowModal(true);
-    } else {
-      setOrderType(type);
+    if(totalPrice.toFixed(2)<=13.09 && type === "online"){
+      Swal.fire({
+        icon: "warning",
+        title: "Sorry",
+        text:`Your total is under £13.09. Please add £ ${13.09 - totalPrice.toFixed(2)} more to place an online order.`,
+        confirmButtonText: "Okay",
+        confirmButtonColor: "#f44336",
+      });
+      setShowModal(false);
+    }else{
+      if (type === "online" && !isInRange) {
+        setShowModal(true);
+      } else {
+        setOrderType(type);
+      }
     }
+  
   };
 
   const closeModal = () => {
@@ -165,10 +177,13 @@ const Cart = () => {
 
                 <span className="flex-shrink-0">
                   £
-                  {(item.spicelevel
-                    ? item.variantPrice + item.spiceprice ||
-                      item.price + item.spiceprice
-                    : item.variantPrice || item.price) * item.quantity}
+                
+                     {(
+    ((item.spicelevel  && item.variantPrice)
+      ? (item.variantPrice + item.spiceprice) : (item.spicelevel  && !item.variantPrice)? item.spiceprice +item.price
+      : (!item.spicelevel  && item.variantPrice) ? item.variantPrice :item.price
+    ) * (item.quantity ?? 1)
+  ).toFixed(2)}
                 </span>
 
                 {item.quantity > 1 ? (
@@ -201,31 +216,22 @@ const Cart = () => {
         </ul>
 
         {items.length > 0 && (
-          <div className="text-end">
-            <div className="mt-2 text-lg">
+          <div >
+           <div className="text-end"> <div className="mt-2 text-lg">
               Subtotal: £{totalPrice.toFixed(2)}
             </div>
 
             <div className="mt-2 text-lg">
               Total: £{getTotalPrice().toFixed(2)}
-            </div>
+            </div></div>
 
-            <div className="mt-4">
-              <label className="block text-sm">
-                Add a Note (e.g., Spice Level)
-              </label>
-              <input
-                type="text"
-                value={spiceLevel}
-                onChange={(e) => setSpiceLevel(e.target.value)}
-                className="border rounded p-1 w-full text-sm"
-                placeholder="Add a note (e.g., Hot, More Spicy)"
-              />
-            </div>
 
             {/* Order Type Selection */}
-            <div className="mt-4 flex gap-4">
-              <label className="text-lg flex items-center text-black">
+            <span className="text-lg text-amber-950 mb-2 text-start ">Please choose your order  </span>
+            <div className=" flex gap-4">
+         
+              <label className="text-lg flex items-center text-black"> 
+       
                 <input
                   type="radio"
                   name="orderType"
@@ -248,6 +254,7 @@ const Cart = () => {
                   name="orderType"
                   value="pickup"
                   checked={orderType === "pickup"}
+               
                   onChange={() => handleOrderTypeChange("pickup")}
                   className="hidden"
                 />

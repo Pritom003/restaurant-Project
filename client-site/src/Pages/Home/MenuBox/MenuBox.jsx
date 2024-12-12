@@ -209,7 +209,7 @@ const MenuBox = ({ addToCart }) => {
                   <ul className="list-disc text-xs text-gray-800 ml-4 mt-2">
                    
                   {
-       item.subcategories.map ((item,idx)=>  <li key={idx}> {item.name}</li>)
+       item.subcategories.map ((item,idx)=>  <li key={idx}>{item.subquantity        ? <span> {item.subquantity  }-</span>       :''}  {item.name}</li>)
       }
    
                   </ul>
