@@ -8,7 +8,7 @@ const AddSpecialmenu = () => {
     defaultValues: {
       category: "Mid Week Special Platter",
       Price: 0, 
-      set: "Set 1", 
+      set: "", 
       subcategories: [], 
     },
   });
@@ -27,7 +27,7 @@ const AddSpecialmenu = () => {
     fetchSetOptions();
   }, []);
   const handleAddSubcategory = () => {
-    setSubcategories([...subcategories, { name: "", price: 0, dishes: [] }]);
+    setSubcategories([...subcategories, { name: "", price: 0, subquantity:0,dishes: [] }]);
   };
 
   const handleAddItem = (index) => {
@@ -46,17 +46,19 @@ const AddSpecialmenu = () => {
     data.set = data.setCustom;
   }
 
-    const formattedData = {
+    const formattedData= {
       ...data,
       subcategories: subcategories
         .map((subcategory) => {
-          if (!subcategory.name || !subcategory.price || subcategory.price <= 0) {
+          if (!subcategory.name ||!subcategory.subquantity|| !subcategory.price || subcategory.price <= 0) {
             alert("Please fill in valid subcategory details.");
             return null;
           }
           return {
             name: subcategory.name,
             price: parseFloat(subcategory.price),
+            subquantity: subcategory.subquantity,
+            
             dishes: subcategory.dishes
               .map((dish) => {
                 if (!dish.name) {
@@ -153,7 +155,7 @@ const AddSpecialmenu = () => {
           <h3 className="font-bold">Subcategories</h3>
           {subcategories.map((subcategory, index) => (
             <div key={index} className="mt-4">
-              <div className="flex items-center gap-4">
+              <div className="grid grid-cols-1 items-center gap-4">
                 <input
                   type="text"
                   placeholder="Subcategory Name"
@@ -163,31 +165,36 @@ const AddSpecialmenu = () => {
                     updatedSubcategories[index].name = e.target.value;
                     setSubcategories(updatedSubcategories);
                   }}
-                  className="input input-bordered w-full"
+                  className="input input-bordered w-full bg-white"
                 />
-                <input
-                  type="number"
-                  placeholder="Price"
-                  value={subcategory.price}
-                  onChange={(e) => {
-                    const updatedSubcategories = [...subcategories];
-                    updatedSubcategories[index].price = e.target.value;
-                    setSubcategories(updatedSubcategories);
-                  }}
-                  className="input input-bordered w-full"
-                />
+                      <div className="flex gap-4">
+        <input
+          type="number"
+          placeholder="Price"
+          value={subcategory.price}
+          onChange={(e) => {
+            const updatedSubcategories = [...subcategories];
+            updatedSubcategories[index] = { ...updatedSubcategories[index],
+               price: Number(e.target.value) };
+            setSubcategories(updatedSubcategories);
+          }}
+          className="input input-bordered w-full bg-white"
+        />
+        <input
+          type="number"
+          placeholder="Subquantity"
+          value={subcategory.subquantity !== undefined ? subcategory.subquantity : 1}
+          onChange={(e) => {
+            const updatedSubcategories = [...subcategories];
+            updatedSubcategories[index] = { ...updatedSubcategories[index], subquantity: Number(e.target.value) };
+            setSubcategories(updatedSubcategories);
+          }}
+          className="input input-bordered w-full bg-white"
+        />
+      </div>
               </div>
 
               <div className="mt-2">
-                <button
-                  type="button"
-                  onClick={() => handleAddItem(index)}
-                  className="btn btn-sm mt-2"
-                >
-                  Add Dish
-                </button>
-
-                <div className="mt-2">
                   {subcategory.dishes.map((dish, dishIndex) => (
                     <div key={dishIndex} className="mt-2">
                       <input
@@ -199,11 +206,22 @@ const AddSpecialmenu = () => {
                           updatedSubcategories[index].dishes[dishIndex].name = e.target.value;
                           setSubcategories(updatedSubcategories);
                         }}
-                        className="input input-bordered w-full"
+                        className="input input-bordered w-full bg-white"
                       />
                     </div>
                   ))}
                 </div>
+
+              <div className="mt-2">
+                <button
+                  type="button"
+                  onClick={() => handleAddItem(index)}
+                  className="btn btn-sm mt-2 bg-white"
+                >
+                  Add Dish
+                </button>
+
+               
               </div>
             </div>
           ))}
@@ -211,7 +229,7 @@ const AddSpecialmenu = () => {
           <button
             type="button"
             onClick={handleAddSubcategory}
-            className="btn btn-sm mt-4"
+            className="btn btn-sm mt-4 bg-white"
           >
             Add Subcategory
           </button>
