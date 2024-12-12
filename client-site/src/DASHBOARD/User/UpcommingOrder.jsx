@@ -110,16 +110,25 @@ const UpcomingOrders = () => {
                   <p>{order.status}</p>
                 </div>
                 <p><strong>User Email:</strong> {order.userEmail}</p>
-                <p><strong>Total Price:</strong> £{(order.totalPrice)?.toFixed(2)}</p>
+                
                 <p><strong>Preparation Time:</strong> {order.time} minutes</p>
                 <h5 className="font-medium mt-3">Items:</h5>
                 <ul>
-                  {order.items.map((item, index) => (
-                    <li key={index}>
-                      {item.name} (x{item.quantity}) - ${item.price}
-                    </li>
-                  ))}
-                </ul>
+                {/* <h5 className="font-medium mt-3">Items: {order?.item?.name}</h5> */}
+              
+              {order.items.map((item, index) => (
+                <ul key={index}>
+<li> {item?.name} </li>
+  <li className="text-xs font-bold" >
+<span className='text-lg'>    special Platter</span>
+    {item.subItems.length > 0 &&
+      item.subItems?.map((subItem) => subItem.name).join(", ")}
+    {item.items?.map((name) => name.name).join(", ")}
+    (x{item.quantity}) - £{item.price ? Number(item.price).toFixed(2) : 0}
+  </li></ul>
+))} <p className='text-xl text-end'><strong>Total Price:</strong> £{(order.totalPrice)?.toFixed(2)}</p></ul>
+
+                
 
                 {order.status !== 'Canceled' && canCancel && (
                   <button
