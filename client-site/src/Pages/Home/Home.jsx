@@ -7,6 +7,8 @@ import { Link } from "react-router-dom";
 import useAuth from "../../Hooks/useAuth";
 import useRole from "../../Hooks/useRole";
 
+import cardImage from "../../assets/Card_5Star-768x168.jpg";
+
 import Notifications from "../../DASHBOARD/Admin/Notification/Notifications";
 const Home = () => {
   const dispatch = useDispatch();
@@ -49,7 +51,7 @@ const Home = () => {
         )}
         {/* card image */}
         <div className="bg-[#e8e7e5] px-4 pb-4 pt-4 w-full">
-          <img src="https://i.ibb.co.com/WKL1WMk/Card-5-Star-768x168.jpg"></img>
+          <img src={cardImage}></img>
         </div>
         {/* Conditional Login/Profile */}
         <div className="bg-[#e8e7e5] px-4 pb-4 pt-4 w-full">
