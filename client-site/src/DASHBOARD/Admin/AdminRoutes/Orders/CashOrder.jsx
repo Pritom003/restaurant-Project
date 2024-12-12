@@ -317,7 +317,7 @@ const CashOrder = () => {
               <p style={{ fontSize: "12px", marginTop: "10px" }}>
                 Transaction Type: {selectedOrder.paymentMethod} <br />
                 Authorization: {selectedOrder.paymentStatus} <br />
-                Customer Note: {selectedOrder.spiceLevel} <br />
+                {/* Payment Code: {selectedOrder.payment.paymentCode} <br /> */}
                 Payment ID: {selectedOrder._id} <br />
               </p>
               <hr />

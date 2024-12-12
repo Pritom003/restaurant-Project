@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import useAuth from '../../Hooks/useAuth';
+import { useState, useEffect } from "react";
+import useAuth from "../../Hooks/useAuth";
 
 const UpcomingOrders = () => {
   const { user } = useAuth(); // Assuming user data is stored in context
@@ -8,10 +8,12 @@ const UpcomingOrders = () => {
 
   useEffect(() => {
     if (!user?.email) return; // Ensure user email is available
-    
+
     const fetchUserOrders = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/orders/user?email=${user.email}`);
+        const response = await fetch(
+          `http://localhost:3000/api/orders/user?email=${user.email}`
+        );
         const data = await response.json();
         setOrders(data);
         setLoading(false);
@@ -25,7 +27,7 @@ const UpcomingOrders = () => {
   }, [user?.email]);
 
   // Filter orders with 'prepare' status
-  const filteredOrders = orders.filter(order => order.status === 'Preparing');
+  const filteredOrders = orders.filter((order) => order.status === "Preparing");
 
   // Calculate remaining time in mm:ss format
   const calculateRemainingTime = (updatedAt, preparationTime) => {
@@ -41,25 +43,31 @@ const UpcomingOrders = () => {
 
     const minutes = Math.floor(remainingSeconds / 60);
     const seconds = remainingSeconds % 60;
-    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
+      2,
+      "0"
+    )}`;
   };
 
   // Handle canceling the order
   const handleCancelOrder = async (orderId) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/orders/${orderId}/cancel`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: 'Canceled' }),
-      });
+      const response = await fetch(
+        `http://localhost:3000/api/orders/${orderId}/cancel`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status: "Canceled" }),
+        }
+      );
 
       if (response.ok) {
         await response.json();
         setOrders((prevOrders) =>
           prevOrders.map((order) =>
-            order._id === orderId ? { ...order, status: 'Canceled' } : order
+            order._id === orderId ? { ...order, status: "Canceled" } : order
           )
         );
       }
@@ -93,8 +101,11 @@ const UpcomingOrders = () => {
       {filteredOrders.length > 0 ? (
         <div className="grid grid-cols-1 justify-center align-middle items-center sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredOrders.map((order) => {
-            const remainingTime = calculateRemainingTime(order.updatedAt, order.time);
-            const remainingMinutes = parseInt(remainingTime.split(':')[0]);
+            const remainingTime = calculateRemainingTime(
+              order.updatedAt,
+              order.time
+            );
+            const remainingMinutes = parseInt(remainingTime.split(":")[0]);
             const canCancel = remainingMinutes > 0;
 
             return (
@@ -109,28 +120,29 @@ const UpcomingOrders = () => {
                   </h5>
                   <p>{order.status}</p>
                 </div>
-                <p><strong>User Email:</strong> {order.userEmail}</p>
-                
-                <p><strong>Preparation Time:</strong> {order.time} minutes</p>
+                <p>
+                  <strong>User Email:</strong> {order.userEmail}
+                </p>
+
+                <p>
+                  <strong>Preparation Time:</strong> {order.time} minutes
+                </p>
                 <h5 className="font-medium mt-3">Items:</h5>
-                <ul>
-                {/* <h5 className="font-medium mt-3">Items: {order?.item?.name}</h5> */}
-              
-              {order.items.map((item, index) => (
-                <ul key={index}>
-<li> {item?.name} </li>
-  <li className="text-xs font-bold" >
-<span className='text-lg'>    special Platter</span>
-    {item.subItems.length > 0 &&
-      item.subItems?.map((subItem) => subItem.name).join(", ")}
-    {item.items?.map((name) => name.name).join(", ")}
-    (x{item.quantity}) - £{item.price ? Number(item.price).toFixed(2) : 0}
-  </li></ul>
-))} <p className='text-xl text-end'><strong>Total Price:</strong> £{(order.totalPrice)?.toFixed(2)}</p></ul>
+                {order.items.map((item, index) => (
+                  <span className="flex text-xs flex-wrap gap-1" key={index}>
+                    {item.subItems.length > 0 &&
+                      item.subItems?.map((subItem) => subItem.name).join(", ")}
+                    {item.name}{" "}
+                    {item.subItems.map((subItem, idx) => (
+                      <span className=" text-xs" key={idx}>
+                        {subItem.name}
+                      </span>
+                    ))}
+                    (x{item.quantity})
+                  </span>
+                ))}
 
-                
-
-                {order.status !== 'Canceled' && canCancel && (
+                {order.status !== "Canceled" && canCancel && (
                   <button
                     className="mt-4 p-2 bg-red-500 text-white rounded"
                     onClick={() => handleCancelOrder(order._id)}
@@ -138,7 +150,7 @@ const UpcomingOrders = () => {
                     Cancel Order
                   </button>
                 )}
-                {order.status === 'Canceled' && (
+                {order.status === "Canceled" && (
                   <p className="mt-2 text-red-500">Order Canceled</p>
                 )}
               </div>
