@@ -10,6 +10,9 @@ const OrderSchema = new mongoose.Schema(
         name: String,
         price: String,
         quantity: Number,
+        variant: String,
+        spiceName: { type: String },
+        spicePrice: { type: Number },
         subItems: [
           {
             name: String,
@@ -24,9 +27,13 @@ const OrderSchema = new mongoose.Schema(
     orderType: { type: String, required: true },
     totalPrice: { type: Number, required: true },
     // createdAt: { type: Date, default: Date.now },
-    spiceLevel: { type: String, },
+
+
+
+
+
     status: { type: String, },
-    reason: { type: String ,required: true },
+    reason: { type: String, required: true },
     time: { type: Number, },
     email: { type: String, },
     address: { type: String, },

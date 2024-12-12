@@ -11,7 +11,7 @@ import useAuth from "../../Hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import useRestaurantStatus from "../../Hooks/useRestaurantStatus";
 
-const DELIVERY_CHARGE = 0.0;
+const DELIVERY_CHARGE = 2.95;
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -28,6 +28,8 @@ const Cart = () => {
 
   const isInRange = true;
 
+  // console.log(items);
+
   const formattedItems = items.map((item) => ({
     name: item.name,
     price: item.variantPrice || item.price,
@@ -35,6 +37,9 @@ const Cart = () => {
     variant: item.variant || null,
     category: item.category,
     subItems: item.items || [],
+
+    spiceName: item.spicelevel,
+    spicePrice: item.spiceprice,
   }));
 
   // eslint-disable-next-line no-unused-vars
@@ -47,6 +52,7 @@ const Cart = () => {
       paymentStatus: status,
       paymentMethod: method,
       orderType,
+      // spiceprice,
       // spiceLevel,
     };
     // console.log("Order data", orderData);
@@ -83,7 +89,7 @@ const Cart = () => {
       ); // Show login error modal
       return;
     }
-    if (!isRestaurantOpen) {
+    if (isRestaurantOpen) {
       // If restaurant is closed, show an alert
       Swal.fire({
         icon: "warning",
@@ -92,7 +98,7 @@ const Cart = () => {
         confirmButtonText: "Okay",
         confirmButtonColor: "#f44336",
       });
-    } else if (isRestaurantOpen) {
+    } else if (!isRestaurantOpen) {
       if (orderType) {
         navigate("/pickup-order", {
           state: {
@@ -108,23 +114,24 @@ const Cart = () => {
   // console.log(items)
 
   const handleOrderTypeChange = (type) => {
-    if(totalPrice.toFixed(2)<=13.09 && type === "online"){
+    if (totalPrice.toFixed(2) <= 13.09 && type === "online") {
       Swal.fire({
         icon: "warning",
         title: "Sorry",
-        text:`Your total is under £13.09. Please add £ ${13.09 - totalPrice.toFixed(2)} more to place an online order.`,
+        text: `Your total is under £13.09. Please add £ ${
+          13.09 - totalPrice.toFixed(2)
+        } more to place an online order.`,
         confirmButtonText: "Okay",
         confirmButtonColor: "#f44336",
       });
       setShowModal(false);
-    }else{
+    } else {
       if (type === "online" && !isInRange) {
         setShowModal(true);
       } else {
         setOrderType(type);
       }
     }
-  
   };
 
   const closeModal = () => {
@@ -172,18 +179,19 @@ const Cart = () => {
                       {item.items.map((subItem) => subItem.name).join(", ")})
                     </span>
                   )}
-                
                 </span>
 
                 <span className="flex-shrink-0">
                   £
-                
-                     {(
-    ((item.spicelevel  && item.variantPrice)
-      ? (item.variantPrice + item.spiceprice) : (item.spicelevel  && !item.variantPrice)? item.spiceprice +item.price
-      : (!item.spicelevel  && item.variantPrice) ? item.variantPrice :item.price
-    ) * (item.quantity ?? 1)
-  ).toFixed(2)}
+                  {(
+                    (item.spicelevel && item.variantPrice
+                      ? item.variantPrice + item.spiceprice
+                      : item.spicelevel && !item.variantPrice
+                      ? item.spiceprice + item.price
+                      : !item.spicelevel && item.variantPrice
+                      ? item.variantPrice
+                      : item.price) * (item.quantity ?? 1)
+                  ).toFixed(2)}
                 </span>
 
                 {item.quantity > 1 ? (
@@ -216,22 +224,36 @@ const Cart = () => {
         </ul>
 
         {items.length > 0 && (
-          <div >
-           <div className="text-end"> <div className="mt-2 text-lg">
-              Subtotal: £{totalPrice.toFixed(2)}
+          <div>
+            <div className="text-end">
+              {" "}
+              <div className="mt-2 text-lg">
+                Subtotal: £{totalPrice.toFixed(2)}
+              </div>
+              {orderType === "online" && (
+                <div className="mt-2 text-lg">
+                  Delivery Charge: £{DELIVERY_CHARGE.toFixed(2)}
+                </div>
+              )}
+              <div className="mt-2 text-lg">
+                Total: £{getTotalPrice().toFixed(2)}
+              </div>
+              {getTotalPrice() <= 13.09 ? (
+                <p className="text-xs">
+                  Your total is under £13.09. Please add more to place an online
+                  order.
+                </p>
+              ) : (
+                ""
+              )}
             </div>
 
-            <div className="mt-2 text-lg">
-              Total: £{getTotalPrice().toFixed(2)}
-            </div></div>
-
-
             {/* Order Type Selection */}
-            <span className="text-lg text-amber-950 mb-2 text-start ">Please choose your order  </span>
+            <span className="text-lg text-amber-950 mb-2 text-start ">
+              Please choose your order{" "}
+            </span>
             <div className=" flex gap-4">
-         
-              <label className="text-lg flex items-center text-black"> 
-       
+              <label className="text-lg flex items-center text-black">
                 <input
                   type="radio"
                   name="orderType"
@@ -254,7 +276,6 @@ const Cart = () => {
                   name="orderType"
                   value="pickup"
                   checked={orderType === "pickup"}
-               
                   onChange={() => handleOrderTypeChange("pickup")}
                   className="hidden"
                 />
@@ -277,8 +298,6 @@ const Cart = () => {
           </div>
         )}
       </div>
-
-  
 
       {/* Login Error Modal */}
 
