@@ -108,11 +108,23 @@ const Cart = () => {
   // console.log(items)
 
   const handleOrderTypeChange = (type) => {
-    if (type === "online" && !isInRange) {
-      setShowModal(true);
-    } else {
-      setOrderType(type);
+    if(totalPrice.toFixed(2)<=13.09 && type === "online"){
+      Swal.fire({
+        icon: "warning",
+        title: "Sorry",
+        text:`Your total is under £13.09. Please add £ ${13.09 - totalPrice.toFixed(2)} more to place an online order.`,
+        confirmButtonText: "Okay",
+        confirmButtonColor: "#f44336",
+      });
+      setShowModal(false);
+    }else{
+      if (type === "online" && !isInRange) {
+        setShowModal(true);
+      } else {
+        setOrderType(type);
+      }
     }
+  
   };
 
   const closeModal = () => {
@@ -213,18 +225,6 @@ const Cart = () => {
               Total: £{getTotalPrice().toFixed(2)}
             </div></div>
 
-            {/* <div className="mt-4">
-              <label className="block text-sm">
-                Add a Note (e.g., Spice Level)
-              </label>
-              <input
-                type="text"
-                value={spiceLevel}
-                onChange={(e) => setSpiceLevel(e.target.value)}
-                className="border rounded p-1 w-full text-sm"
-                placeholder="Add a note (e.g., Hot, More Spicy)"
-              />
-            </div> */}
 
             {/* Order Type Selection */}
             <span className="text-lg text-amber-950 mb-2 text-start ">Please choose your order  </span>
@@ -254,6 +254,7 @@ const Cart = () => {
                   name="orderType"
                   value="pickup"
                   checked={orderType === "pickup"}
+               
                   onChange={() => handleOrderTypeChange("pickup")}
                   className="hidden"
                 />
