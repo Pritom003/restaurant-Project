@@ -94,155 +94,153 @@ const AddSpecialmenu = () => {
   };
 
   return (
-    <div className="p-8 max-w-4xl mx-auto w-3/4 mt-20 shadow-lg bg-green-50">
-      <h2 className="text-2xl font-bold mb-6">Add Special Menu</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        {/* Category selection */}
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Category</span>
-          </label>
-          <select
-            {...register("category", { required: "Category is required" })}
-            className="select bg-white text-black select-bordered w-full max-w-md"
-          >
-            <option value="Mid Week Special Platter">Mid Week Special Platter</option>
-            <option value="Chef Choice">Chef Choice</option>
-          </select>
-        </div>
+    <div className="p-10 max-w-3xl mx-auto w-full bg-gradient-to-r from-green-50 to-green-100 shadow-xl rounded-lg max-h-[800px] overflow-auto">
+    <h2 className="text-3xl font-extrabold text-center text-gray-800 mb-8">Add Special Menu</h2>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      
+      {/* Category selection */}
+      <div className="form-control">
+        <label className="label text-lg font-medium text-gray-700">
+          <span className="label-text">Category</span>
+        </label>
+        <select
+          {...register("category", { required: "Category is required" })}
+          className="select select-bordered bg-white text-gray-700 w-full rounded-md focus:ring-2 focus:ring-green-400"
+        >
+          <option value="Mid Week Special Platter">Mid Week Special Platter</option>
+          <option value="Chef Choice">Chef Choice</option>
+        </select>
+      </div>
+      
       {/* Set selection */}
       <div className="form-control">
-          <label className="label">
-            <span className="label-text">Set</span>
-          </label>
-          <select
-            {...register("set", { required: "Set is required" })}
-            className="select bg-white text-black select-bordered w-full max-w-md"
-            onChange={(e) => setCustomSet(e.target.value === "Set custom set")}
-          >
-            {setOptions.map((set, index) => (
-              <option key={index} value={set}>{set}</option>
-            ))}
-            <option value="Set custom set">Set custom set</option>
-          </select>
-          {customSet && (
-            <input
-              type="text"
-              placeholder="Enter custom set name"
-              className="input input-bordered w-full mt-2"
-              {...register("setCustom", { required: "Custom set name is required" })}
-            />
-          )}
-        </div>
-
-        {/* Price field */}
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Price</span>
-          </label>
+        <label className="label text-lg font-medium text-gray-700">
+          <span className="label-text">Set</span>
+        </label>
+        <select
+          {...register("set", { required: "Set is required" })}
+          className="select select-bordered bg-white text-gray-700 w-full rounded-md focus:ring-2 focus:ring-green-400"
+          onChange={(e) => setCustomSet(e.target.value === "Set custom set")}
+        >
+          {setOptions.map((set, index) => (
+            <option key={index} value={set}>{set}</option>
+          ))}
+          <option value="Set custom set">Set custom set</option>
+        </select>
+        {customSet && (
           <input
-            type="number"
-            {...register("Price", { required: "Price is required", min: 0 })}
-            className="input input-bordered bg-white text-black w-full max-w-md"
-            step="0.01"
-            min="0"
+            type="text"
+            placeholder="Enter custom set name"
+            className="input input-bordered w-full bg-white mt-2 rounded-md focus:ring-2 focus:ring-green-400"
+            {...register("setCustom", { required: "Custom set name is required" })}
           />
-          {errors.Price && <span className="text-red-500">{errors.Price.message}</span>}
-        </div>
-
-        {/* Add dynamic subcategories */}
-        <div className="mt-4">
-          <h3 className="font-bold">Subcategories</h3>
-          {subcategories.map((subcategory, index) => (
-            <div key={index} className="mt-4">
-              <div className="grid grid-cols-1 items-center gap-4">
+        )}
+      </div>
+      
+      {/* Price field */}
+      <div className="form-control">
+        <label className="label text-lg font-medium text-gray-700">
+          <span className="label-text">Price</span>
+        </label>
+        <input
+          type="number"
+          {...register("Price", { required: "Price is required", min: 0 })}
+          className="input input-bordered bg-white text-gray-700 w-full rounded-md focus:ring-2 focus:ring-green-400"
+          step="0.01"
+          min="0"
+        />
+        {errors.Price && <span className="text-red-500 text-sm">{errors.Price.message}</span>}
+      </div>
+      
+      {/* Add dynamic subcategories */}
+      <div className="mt-6">
+      {
+          subcategories.length>0 &&  <h3 className="text-xl font-bold text-gray-800">Subcategories</h3>}
+        {subcategories.map((subcategory, index) => (
+          <div key={index} className="mt-4 bg-white p-4 rounded-lg shadow-sm">
+            <div className="grid grid-cols-1 gap-4">
+              <input
+                type="text"
+                placeholder="Subcategory Name"
+                value={subcategory.name}
+                onChange={(e) => {
+                  const updatedSubcategories = [...subcategories];
+                  updatedSubcategories[index].name = e.target.value;
+                  setSubcategories(updatedSubcategories);
+                }}
+                className="input input-bordered w-full bg-white rounded-md focus:ring-2 focus:ring-green-400"
+              />
+              <div className="flex gap-4">
                 <input
-                  type="text"
-                  placeholder="Subcategory Name"
-                  value={subcategory.name}
+                  type="number"
+                  placeholder="Price"
+                  value={subcategory.price}
                   onChange={(e) => {
                     const updatedSubcategories = [...subcategories];
-                    updatedSubcategories[index].name = e.target.value;
+                    updatedSubcategories[index] = { ...updatedSubcategories[index], price: Number(e.target.value) };
                     setSubcategories(updatedSubcategories);
                   }}
-                  className="input input-bordered w-full bg-white"
+                  className="input input-bordered w-full bg-white rounded-md focus:ring-2 focus:ring-green-400"
                 />
-                      <div className="flex gap-4">
-        <input
-          type="number"
-          placeholder="Price"
-          value={subcategory.price}
-          onChange={(e) => {
-            const updatedSubcategories = [...subcategories];
-            updatedSubcategories[index] = { ...updatedSubcategories[index],
-               price: Number(e.target.value) };
-            setSubcategories(updatedSubcategories);
-          }}
-          className="input input-bordered w-full bg-white"
-        />
-        <input
-          type="number"
-          placeholder="Subquantity"
-          value={subcategory.subquantity !== undefined ? subcategory.subquantity : 1}
-          onChange={(e) => {
-            const updatedSubcategories = [...subcategories];
-            updatedSubcategories[index] = { ...updatedSubcategories[index], subquantity: Number(e.target.value) };
-            setSubcategories(updatedSubcategories);
-          }}
-          className="input input-bordered w-full bg-white"
-        />
-      </div>
-              </div>
-
-              <div className="mt-2">
-                  {subcategory.dishes.map((dish, dishIndex) => (
-                    <div key={dishIndex} className="mt-2">
-                      <input
-                        type="text"
-                        placeholder="Dish Name"
-                        value={dish.name}
-                        onChange={(e) => {
-                          const updatedSubcategories = [...subcategories];
-                          updatedSubcategories[index].dishes[dishIndex].name = e.target.value;
-                          setSubcategories(updatedSubcategories);
-                        }}
-                        className="input input-bordered w-full bg-white"
-                      />
-                    </div>
-                  ))}
-                </div>
-
-              <div className="mt-2">
-                <button
-                  type="button"
-                  onClick={() => handleAddItem(index)}
-                  className="btn btn-sm mt-2 bg-white"
-                >
-                  Add Dish
-                </button>
-
-               
+                <input
+                  type="number"
+                  placeholder="Subquantity"
+                  value={subcategory.subquantity !== undefined ? subcategory.subquantity : 1}
+                  onChange={(e) => {
+                    const updatedSubcategories = [...subcategories];
+                    updatedSubcategories[index] = { ...updatedSubcategories[index], subquantity: Number(e.target.value) };
+                    setSubcategories(updatedSubcategories);
+                  }}
+                  className="input input-bordered w-full bg-white rounded-md focus:ring-2 focus:ring-green-400"
+                />
               </div>
             </div>
-          ))}
-
-          <button
-            type="button"
-            onClick={handleAddSubcategory}
-            className="btn btn-sm mt-4 bg-white"
-          >
-            Add Subcategory
-          </button>
-        </div>
-
-        {/* Submit button */}
-        <div className="mt-8">
-          <button type="submit" className="btn btn-primary w-full max-w-md">
-            Submit
-          </button>
-        </div>
-      </form>
-    </div>
+            <div className="mt-4">
+              {subcategory.dishes.map((dish, dishIndex) => (
+                <div key={dishIndex} className="mt-2">
+                  <input
+                    type="text"
+                    placeholder="Dish Name"
+                    value={dish.name}
+                    onChange={(e) => {
+                      const updatedSubcategories = [...subcategories];
+                      updatedSubcategories[index].dishes[dishIndex].name = e.target.value;
+                      setSubcategories(updatedSubcategories);
+                    }}
+                    className="input input-bordered w-full bg-white rounded-md focus:ring-2 focus:ring-green-400"
+                  />
+                </div>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => handleAddItem(index)}
+              className=" border-2 font-bold border-b-orange-950 mt-2"
+            >
+              Add Dish
+            </button>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={handleAddSubcategory}
+         className=" border-2 font-bold border-b-orange-950 mt-2"
+        >
+          Add Subcategory
+        </button>
+        
+       
+      </div>
+      
+      {/* Submit button */}
+      <div className="mt-8">
+        <button type="submit" className="btn btn-primary w-full rounded-md bg-green-500 hover:bg-green-600 text-white text-lg font-medium py-3">
+          Submit
+        </button>
+      </div>
+    </form>
+  </div>
+  
   );
 };
 

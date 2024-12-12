@@ -120,8 +120,8 @@ const AddLocation = () => {
   }, []);
 
   return (
-    <div className="bg-slate-100 p-5">
-      <h2 className="text-center text-xl font-medium mb-4">Add Location</h2>
+    <div className="bg-slate-100 text-black lg:flex  gap-10 justify-center align-middle items-center grid">
+    <div className="">  <h2 className="text-center text-xl font-medium mb-4">Add Location</h2>
       <form
         onSubmit={handleAddLocation}
         className="max-w-lg mx-auto p-4 bg-white shadow-lg rounded-lg mb-6"
@@ -135,7 +135,7 @@ const AddLocation = () => {
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             placeholder="Enter location name"
-            className="border rounded p-2 bg-white w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border rounded p-2 bg-white w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
           />
         </div>
         <div className="mb-4">
@@ -145,24 +145,24 @@ const AddLocation = () => {
             value={price}
             onChange={(e) => setPrice(e.target.value)}
             placeholder="Enter price"
-            className="border rounded p-2 bg-white w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border rounded p-2 bg-white w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
           />
         </div>
         <button
           type="submit"
           disabled={isSubmitting}
           className={`w-full py-2 text-white rounded ${
-            isSubmitting ? "bg-gray-400" : "bg-blue-500"
+            isSubmitting ? "bg-gray-400" : "bg-orange-500"
           } cursor-pointer`}
         >
           {isSubmitting ? "Adding..." : "Add Location"}
         </button>
       </form>
-
-      <h2 className="text-center text-xl font-medium mb-4">All Locations</h2>
+</div>
+    <div>  <h2 className="text-center text-xl font-medium mb-4">All Locations</h2>
       <table className="table-auto w-full bg-white shadow-lg rounded-lg">
         <thead>
-          <tr className="bg-blue-500 text-white">
+          <tr className="bg-orange-500 text-white">
             <th className="py-2 px-4">Location</th>
             <th className="py-2 px-4">Price</th>
             <th className="py-2 px-4">Actions</th>
@@ -176,21 +176,21 @@ const AddLocation = () => {
               <td className="py-2 px-4 space-x-2">
                 <button
                   onClick={() => handleUpdateLocation(loc._id)}
-                  className="bg-green-500 text-white px-3 py-1 rounded"
+                  className="border-2 border-green-800 px-2 text-black text-xs py-1 rounded"
                 >
                   Update
                 </button>
                 <button
                   onClick={() => handleDeleteLocation(loc._id)}
-                  className="bg-red-500 text-white px-3 py-1 rounded"
+                  className="border-2 border-red-800 px-2 text-red text-xs py-1 rounded "
                 >
-                  Delete
+                  delete
                 </button>
               </td>
             </tr>
           ))}
         </tbody>
-      </table>
+      </table></div>
     </div>
   );
 };

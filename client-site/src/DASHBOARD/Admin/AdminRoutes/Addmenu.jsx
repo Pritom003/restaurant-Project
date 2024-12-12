@@ -138,24 +138,26 @@ const AddMenuItem = () => {
   console.log("From Front End", spicyLevels);
 
   return (
-    <div>
+    <div className="lg:flex  text-black  grid gap-2 justify-center align-middle items-center  ">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="max-w-lg mx-auto p-4 bg-white shadow-lg rounded-lg"
+        className="min-w-[40vw] mx-auto p-4 max-h-[800px]
+         bg-orange-100 shadow-lg rounded-lg"
       >
         <h2 className="text-2xl font-bold mb-4 text-center">Add Menu Item</h2>
 
         {/* Category Selection */}
-        <div className="mb-4">
-          <label className="block text-gray-700 font-medium">
+        <div className="mb-4 ">
+          <label className="block  text-gray-700 font-medium">
             Select Category
           </label>
-          <select
-            {...register("category", { required: true })}
-            onChange={handleCategoryChange}
-            className="border rounded p-2 w-full bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          <select 
+                    {...register("category", { required: true })}
+            onChange={handleCategoryChange} 
+            className="border rounded 
+           bg-white  focus:outline-none focus:ring-2 focus:ring-orange-500"
           >
-            <option value="">Select a category</option>
+            <option className=""  value="">Select a category</option>
             {categories.map((category) => (
               <option key={category} value={category}>
                 {category}
@@ -178,7 +180,7 @@ const AddMenuItem = () => {
               type="text"
               id="customCategory"
               {...register("customCategory", { required: true })}
-              className="border rounded p-2 bg-white w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border rounded p-2 bg-white w-full focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
           </div>
         )}
@@ -198,7 +200,7 @@ const AddMenuItem = () => {
                 onChange={(e) =>
                   handleSetMenuItemChange(index, "name", e.target.value)
                 }
-                className="border rounded bg-white p-2 w-full mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border rounded bg-white p-2 w-full mb-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
                 required
               />
               <input
@@ -210,7 +212,7 @@ const AddMenuItem = () => {
                 }
                 step="0.01"
                 min="0"
-                className="border rounded bg-white p-2 w-full mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border rounded bg-white p-2 w-full mb-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
               <h4 className="text-md font-medium mb-2">Included Items</h4>
               {item.itemsIncluded.map((includedItem, includedIndex) => (
@@ -227,7 +229,7 @@ const AddMenuItem = () => {
                         e.target.value
                       )
                     }
-                    className="border p-2 rounded flex-1"
+                    className="border p-2 rounded flex-1 bg-white"
                     required
                   />
                   <input
@@ -242,7 +244,7 @@ const AddMenuItem = () => {
                         e.target.value
                       )
                     }
-                    className="border p-2 rounded w-24"
+                    className="border p-2 rounded w-24 bg-white"
                     required
                   />
                 </div>
@@ -265,7 +267,7 @@ const AddMenuItem = () => {
               <input
                 type="text"
                 {...register("itemName", { required: true })}
-                className="border rounded p-2 w-full bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border rounded p-2 w-full bg-white focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
             </div>
             <div className="mb-4">
@@ -275,7 +277,7 @@ const AddMenuItem = () => {
                 {...register("price", { required: true })}
                 step="0.01"
                 min="0"
-                className="border rounded p-2 w-full bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border rounded p-2 w-full bg-white focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
             </div>
             <div className="mb-4">
@@ -285,7 +287,7 @@ const AddMenuItem = () => {
               <input
                 type="text"
                 {...register("descrpition")}
-                className="border rounded p-2 w-full bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border rounded p-2 w-full bg-white focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
             </div>
           </>
@@ -303,7 +305,7 @@ const AddMenuItem = () => {
                 onChange={(e) =>
                   handleVarietyChange(index, "name", e.target.value)
                 }
-                className="border rounded p-2 w-full mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border rounded p-2 w-full mb-2 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
               <input
                 type="number"
@@ -314,14 +316,14 @@ const AddMenuItem = () => {
                 }
                 step="0.01"
                 min="0"
-                className="border rounded p-2 w-24 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border rounded p-2 w-24 mb-2 focus:outline-none bg-white focus:ring-2 focus:ring-orange-500"
               />
             </div>
           ))}
           <button
             type="button"
             onClick={handleAddVariety}
-            className="underline mt-2"
+            className=" border-2 font-bold border-b-orange-950 mt-2"
           >
             Add Variety +
           </button>
@@ -341,7 +343,7 @@ const AddMenuItem = () => {
                 onChange={(e) =>
                   handleSpicyLevelChange(index, "name", e.target.value)
                 }
-                className="border rounded p-2 w-full mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border rounded bg-white p-2 w-full mb-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
               <input
                 type="number"
@@ -352,14 +354,14 @@ const AddMenuItem = () => {
                 }
                 step="0.01"
                 min="0"
-                className="border rounded p-2 w-24 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border rounded bg-white p-2 w-24 mb-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
             </div>
           ))}
           <button
             type="button"
             onClick={handleAddSpicyLevel}
-            className="underline mt-2"
+             className=" border-2 font-bold border-b-orange-950 mt-2"
           >
             Add Spicy Level +
           </button>
@@ -368,7 +370,7 @@ const AddMenuItem = () => {
         {/* Submit Button */}
         <button
           type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded mt-4 w-full hover:bg-blue-600"
+          className="bg-orange-500 text-white px-4 py-2 rounded mt-4 w-full hover:bg-orange-600"
         >
           Submit
         </button>

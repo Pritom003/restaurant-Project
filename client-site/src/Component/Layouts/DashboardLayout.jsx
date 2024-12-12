@@ -11,6 +11,7 @@ import {
   FaClock,
   FaUsers,
 } from "react-icons/fa";
+import { CiLocationOn } from "react-icons/ci";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { GrMoney } from "react-icons/gr";
 import { RiMenuSearchFill } from "react-icons/ri";
@@ -89,7 +90,7 @@ const DashboardLayout = () => {
               <MenuItem to="add-menu" icon={<FaPlus />} label="Add Menu" />
               <MenuItem
                 to="add-location"
-                icon={<FaPlus />}
+                icon={<CiLocationOn  />}
                 label="Add Location"
               />
               <MenuItem
