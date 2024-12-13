@@ -89,7 +89,7 @@ const Cart = () => {
       ); // Show login error modal
       return;
     }
-    if (isRestaurantOpen) {
+    if (!isRestaurantOpen) {
       // If restaurant is closed, show an alert
       Swal.fire({
         icon: "warning",
@@ -98,7 +98,7 @@ const Cart = () => {
         confirmButtonText: "Okay",
         confirmButtonColor: "#f44336",
       });
-    } else if (!isRestaurantOpen) {
+    } else if (isRestaurantOpen) {
       if (orderType) {
         navigate("/pickup-order", {
           state: {
