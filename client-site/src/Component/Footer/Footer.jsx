@@ -4,7 +4,7 @@ const Footer = () => {
       <aside>
         <p>
           Copyright © {new Date().getFullYear()} - All rights reserved by Deedar
-          uk. developed by charliecoder48@gmail.com
+          uk.
         </p>
       </aside>
     </footer>
