@@ -167,17 +167,20 @@ const PreparingOrders = () => {
                 </p>
                 <h5 className="font-medium mt-3">Items:</h5>
                 {order.items.map((item, index) => (
-                  <span className="flex text-xs flex-wrap gap-1" key={index}>
+                  <div className="flex text-xs flex-wrap gap-1" key={index}>
                     {item.subItems.length > 0 &&
                       item.subItems?.map((subItem) => subItem.name).join(", ")}
                     {item.name}{" "}
                     {item.subItems.map((subItem, idx) => (
-                      <span className=" text-xs" key={idx}>
-                        {subItem.name}
-                      </span>
+                      <div key={idx}>
+                        <span className="text-xs">
+                          {subItem.name}
+                          {/* <span>{subItem?.name}</span> */}
+                        </span>
+                      </div>
                     ))}
                     (x{item.quantity})
-                  </span>
+                  </div>
                 ))}
                 <div className="mt-3">
                   <h5 className="font-medium text-red-500">
@@ -299,7 +302,9 @@ const PreparingOrders = () => {
                   {selectedOrder.items.map((item, index) => (
                     <tr key={index}>
                       <td style={{ padding: "5px" }}>{item.quantity}</td>
-                      <td style={{ padding: "5px" }}>{item.name}</td>
+                      <td style={{ padding: "5px" }}>
+                        {item.name} -{item?.spiceName}
+                      </td>
                       <td style={{ padding: "5px" }}>
                         {item.subItems && typeof item.subItems === "object" && (
                           <ul style={{ paddingLeft: "15px", fontSize: "11px" }}>
@@ -315,7 +320,8 @@ const PreparingOrders = () => {
                         £{" "}
                         {isNaN(parseFloat(item.price))
                           ? "N/A"
-                          : parseFloat(item.price).toFixed(2)}
+                          : parseFloat(item.price).toFixed(2)}{" "}
+                        {item?.spicePrice}
                       </td>
                     </tr>
                   ))}
@@ -344,6 +350,23 @@ const PreparingOrders = () => {
                         : parseFloat(selectedOrder.extraCharge).toFixed(2)}
                     </td>
                   </tr>
+
+                  <tr>
+                    <td>Spicy Charge:</td>
+                    {selectedOrder.items.map((item, index) => (
+                      <td key={index}>
+                        {item.spicePrice && (
+                          <span style={{ textAlign: "left" }}>
+                            £{" "}
+                            {isNaN(parseFloat(item.spicePrice))
+                              ? "N/A"
+                              : parseFloat(item.spicePrice).toFixed(2)}
+                          </span>
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+
                   <tr>
                     <td>Subtotal:</td>
                     <td style={{ textAlign: "right" }}>

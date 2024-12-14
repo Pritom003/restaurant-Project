@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'; 
+import { useState, useEffect } from "react";
 
 // Custom hook to check if the restaurant is open based on time and isOpen status
 const useRestaurantStatus = () => {
@@ -10,7 +10,9 @@ const useRestaurantStatus = () => {
   useEffect(() => {
     const fetchRestaurantStatus = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/restaurant/status');
+        const response = await fetch(
+          "http://localhost:3000/api/restaurant/status"
+        );
         const data = await response.json();
         const { NewopeningTime, NewclosingTime, isOpen } = data;
 
@@ -19,8 +21,10 @@ const useRestaurantStatus = () => {
         setClosingTime(NewclosingTime);
 
         // Convert times to total minutes since midnight
-        const [openingHours, openingMinutes] = NewopeningTime.split(":").map(Number);
-        const [closingHours, closingMinutes] = NewclosingTime.split(":").map(Number);
+        const [openingHours, openingMinutes] =
+          NewopeningTime.split(":").map(Number);
+        const [closingHours, closingMinutes] =
+          NewclosingTime.split(":").map(Number);
 
         const openingTotalMinutes = openingHours * 60 + openingMinutes;
         const closingTotalMinutes = closingHours * 60 + closingMinutes;
@@ -32,14 +36,16 @@ const useRestaurantStatus = () => {
         const currentTotalMinutes = currentHours * 60 + currentMinutes;
 
         // Check if the current time is within the opening and closing times
-        const isWithinTimeRange = currentTotalMinutes >= openingTotalMinutes && currentTotalMinutes <= closingTotalMinutes;
+        const isWithinTimeRange =
+          currentTotalMinutes >= openingTotalMinutes &&
+          currentTotalMinutes <= closingTotalMinutes;
 
         // If isOpen is true and the current time is within open hours, the restaurant is open
         setIsRestaurantOpen(isOpen && isWithinTimeRange);
-        
+
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching restaurant status:', error);
+        console.error("Error fetching restaurant status:", error);
         setLoading(false);
       }
     };
@@ -47,11 +53,11 @@ const useRestaurantStatus = () => {
     fetchRestaurantStatus();
   }, []);
 
-  return { 
-    isRestaurantOpen, 
+  return {
+    isRestaurantOpen,
     loading,
     openingTime,
-    closingTime
+    closingTime,
   };
 };
 

@@ -16,9 +16,9 @@ const subcategorySchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-    subquantity:{
+    subquantity: {
         type: Number,
-        required: true,
+        // required: true,
     },
     dishes: [dishSchema],
 });
