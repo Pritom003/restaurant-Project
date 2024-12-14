@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 // import useAuth from "../../hooks/useAuth";
 import useRole from "../../Hooks/useRole";
+import TimePicker from 'react-time-picker';
 import {
   getAuth,
   updatePassword,
@@ -11,6 +12,7 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import useAuth from "../../Hooks/useAuth";
 import useRestaurantStatus from "../../Hooks/useRestaurantStatus";
+import 'react-time-picker/dist/TimePicker.css';  
 
 const Profile = () => {
   const { user } = useAuth();
@@ -24,13 +26,14 @@ const Profile = () => {
  console.log(openingTime , closingTime);
 // Set initial value of isOpen to isRestaurantOpen from the hook
 const [isOpen, setIsOpen] = useState(isRestaurantOpen);
-useEffect(() => {
-  setIsOpen(isRestaurantOpen);
-}, [isRestaurantOpen]);
- const [NewopeningTime, setOpeningTime] = useState( "");
+  // State for restaurant open/close status and time settings
+  // const [isOpen, setIsOpen] = useState(isRestaurantOpen);
+  const [NewopeningTime, setOpeningTime] = useState(openingTime || "0:0"); // Default value
+  const [NewclosingTime, setClosingTime] = useState(closingTime || "00:00")// Default value
 
-// /can i be the default value 08:00 22:00
- const [NewclosingTime, setClosingTime] = useState("");
+  useEffect(() => {
+    setIsOpen(isRestaurantOpen);
+  }, [isRestaurantOpen]);
   const handlePasswordChange = async () => {
     try {
       const auth = getAuth();
@@ -73,7 +76,6 @@ useEffect(() => {
       NewopeningTime,
       NewclosingTime,
     });
-
     if (response.status === 200) {
       Swal.fire({
         title: "Restaurant status updated successfully!",
@@ -178,44 +180,43 @@ useEffect(() => {
       )}
        {role === "Admin" && (
         <div className="mt-6 p-4 bg-gray-100 rounded-lg shadow-md w-full text-black" >
-          <h3 className="text-lg font-semibold">Restaurant Hours {openingTime} to {closingTime}</h3>
+          <h3 className="text-lg font-semibold">Restaurant Hours {NewopeningTime}</h3>
           <div className="flex items-center justify-between">
             <div>
               <label className="block text-sm"> Update Opening Time</label>
-              <input
-                type="time"
+              <TimePicker
+                format="HH:mm" 
                 value={NewopeningTime}
-                onChange={(e) => setOpeningTime(e.target.value)}
-                className="border rounded p-2 mt-1 bg-white text-black"
+                onChange={(e) => setOpeningTime(e)}
+                className="bg-white text-black border rounded-lg"
               />
             </div>
             <div>
-              <label className="block text-sm">  Update Closing Time</label>
-              <input
-                type="time"
+              <label className="block text-sm"> Update Closing Time</label>
+              <TimePicker
                 value={NewclosingTime}
-                onChange={(e) => setClosingTime(e.target.value)}
-                className="border rounded p-2 mt-1 bg-white text-black"
+                format="HH:mm" 
+                onChange={(e) => setClosingTime(e)}
+                className="bg-white text-black border rounded-lg"
               />
             </div>
           </div>
 
           <div className="mt-4 flex items-center">
-    <label className="mr-4">
-      {isOpen ? (
-          <span className="text-xl font-bold text-green-700">Open</span>
-
-      ) : (
-        <span className="text-xl font-bold text-red-700">Close</span>
-      )}
-    </label>
-    <input
-      type="checkbox"
-      checked={isOpen}
-      onChange={() => setIsOpen(!isOpen)} // Correct toggle logic
-      className="h-6 w-6 bg-white text-black"
-    />
-  </div>
+            <label className="mr-4">
+              {isOpen ? (
+                  <span className="text-xl font-bold text-green-700">Open</span>
+              ) : (
+                <span className="text-xl font-bold text-red-700">Close</span>
+              )}
+            </label>
+            <input
+              type="checkbox"
+              checked={isOpen}
+              onChange={() => setIsOpen(!isOpen)}
+              className="h-6 w-6 bg-white text-black"
+            />
+          </div>
 
           <button
             onClick={handleRestaurantStatusChange}

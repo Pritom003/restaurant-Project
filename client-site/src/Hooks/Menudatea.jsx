@@ -1,38 +1,34 @@
-import { useState, useEffect } from "react";
-import useAxiosSecure from "./useAxiosSecure"; // Adjust path if needed
+import { useQuery } from "@tanstack/react-query";
+// import useAxiosSecure from "./useAxiosSecure"; // Adjust path if needed
+import axios from "axios";
 
 const useMenuData = () => {
-  const axiosSecure = useAxiosSecure();
-  const [menuData, setMenuData] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // const axiosSecure = useAxiosSecure();
 
-  const fetchMenuData = async () => {
-    try {
-      setLoading(true);
-      const response = await axiosSecure.get("/menu");
-      const fetchedData = response.data;
-
-      setMenuData(fetchedData);
-      // console.log(fetchedData);
-
-      // Ensure we only list unique categories
-      const uniqueCategories = fetchedData.map((menu) => menu.category);
-      setCategories(uniqueCategories);
-      // console.log(uniqueCategories);
-    } catch (err) {
-      setError(err.response?.data?.message || "Failed to fetch menu data");
-    } finally {
-      setLoading(false);
+  // Updated useQuery hook for TanStack Query v5
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ['menuData'],
+    queryFn: async () => {
+      const response = await axios.get("http://localhost:3000/api/menu");
+      return response.data;
+    },
+    onSettled: (data) => {
+      console.log("Data refetched:", data); // Log data when refetch is settled
     }
+
+  });
+
+  // Generate unique categories from the fetched menu data
+  const categories = data ? [...new Set(data.map((menu) => menu.category))] : [];
+  // console.log( { data, categories, isLoading,  error },'from menudata');
+  // Return the data in the same format as before
+  return {
+    menuData: data || [], // If no data, return an empty array
+    categories,           // Extracted categories
+    isLoading, error,  // Loading state from TanStack Query
+    // error: error?.response?.data?.message error?.response?.data?.message || "Failed to fetch menu data", // Error handling
+    refetch,              // refetch function for manual trigger
   };
-
-  useEffect(() => {
-    fetchMenuData();
-  }, []);
-
-  return { menuData, categories, loading, error };
 };
 
 export default useMenuData;

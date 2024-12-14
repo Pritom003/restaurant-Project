@@ -14,31 +14,37 @@ const useRestaurantStatus = () => {
           "http://localhost:3000/api/restaurant/status"
         );
         const data = await response.json();
-        const { NewopeningTime, NewclosingTime, isOpen } = data;
+        const { NewopeningTime, NewclosingTime, isOpen, today } = data;
 
         // Set opening and closing times to state
         setOpeningTime(NewopeningTime);
         setClosingTime(NewclosingTime);
 
         // Convert times to total minutes since midnight
-        const [openingHours, openingMinutes] =
-          NewopeningTime.split(":").map(Number);
-        const [closingHours, closingMinutes] =
-          NewclosingTime.split(":").map(Number);
+        const [openingHours, openingMinutes] = NewopeningTime.split(":").map(Number);
+        const [closingHours, closingMinutes] = NewclosingTime.split(":").map(Number);
 
         const openingTotalMinutes = openingHours * 60 + openingMinutes;
         const closingTotalMinutes = closingHours * 60 + closingMinutes;
 
         // Get the current time as total minutes since midnight
-        const currentTime = new Date();
+        const currentTime = new Date(today);
         const currentHours = currentTime.getHours();
         const currentMinutes = currentTime.getMinutes();
         const currentTotalMinutes = currentHours * 60 + currentMinutes;
 
         // Check if the current time is within the opening and closing times
-        const isWithinTimeRange =
-          currentTotalMinutes >= openingTotalMinutes &&
-          currentTotalMinutes <= closingTotalMinutes;
+        let isWithinTimeRange = false;
+
+        if (closingTotalMinutes < openingTotalMinutes) {
+          // The restaurant closes after midnight
+          isWithinTimeRange =
+            currentTotalMinutes >= openingTotalMinutes || currentTotalMinutes < closingTotalMinutes;
+        } else {
+          // Normal case, opening and closing are on the same day
+          isWithinTimeRange =
+            currentTotalMinutes >= openingTotalMinutes && currentTotalMinutes < closingTotalMinutes;
+        }
 
         // If isOpen is true and the current time is within open hours, the restaurant is open
         setIsRestaurantOpen(isOpen && isWithinTimeRange);

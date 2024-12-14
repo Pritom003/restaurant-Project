@@ -191,17 +191,7 @@ router.patch('/api/orders/:id/payment-status', async (req, res) => {
       return res.status(404).json({ message: 'Order not found' });
     }
 
-    // Notify Zapier of the status update
-    // const zapierWebhookUrl = 'https://hooks.zapier.com/hooks/catch/20636785/25h17fq/';
-    // const zapierPayload = {
-    //   userEmail: updatedOrder.userEmail,
-    //   chefEmail: updatedOrder.chefEmail,
-    //   items: updatedOrder.items,
-    //   totalPrice: updatedOrder.totalPrice,
-    //   paymentStatus: updatedOrder.paymentStatus,
-    //   createdAt: updatedOrder.createdAt,
-    // };
-    // await axios.post(zapierWebhookUrl, zapierPayload);
+
 
     res.status(200).json({
       message: 'Payment status updated successfully',

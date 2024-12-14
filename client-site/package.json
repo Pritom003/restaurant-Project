@@ -12,7 +12,7 @@
   "dependencies": {
     "@stripe/react-stripe-js": "^2.8.1",
     "@stripe/stripe-js": "^4.9.0",
-    "@tanstack/react-query": "^5.59.20",
+    "@tanstack/react-query": "^5.62.7",
     "axios": "^1.7.7",
     "chart.js": "^4.4.6",
     "dotenv": "^16.4.5",
@@ -36,6 +36,7 @@
     "react-phone-input-2": "^2.15.1",
     "react-redux": "^9.1.2",
     "react-router-dom": "^6.28.0",
+    "react-time-picker": "^7.0.0",
     "react-to-print": "^2.14.1",
     "recharts": "^2.13.3",
     "redux": "^5.0.1",

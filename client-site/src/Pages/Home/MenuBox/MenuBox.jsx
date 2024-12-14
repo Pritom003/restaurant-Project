@@ -11,7 +11,7 @@ import Swal from "sweetalert2";
 import useRestaurantStatus from "../../../Hooks/useRestaurantStatus";
 import { MdSignalWifiConnectedNoInternet1 } from "react-icons/md";
 const MenuBox = ({ addToCart }) => {
-  const { menuData, loading, error } = MenuData();
+  const { menuData, isLoading, error,  refetch, } = MenuData();
   const [expandedCategories, setExpandedCategories] = useState([]);
   const [isAllergiesExpanded, setIsAllergiesExpanded] = useState(false);
   const [specialMenuData, setSpecialMenuData] = useState([]);
@@ -26,7 +26,7 @@ const MenuBox = ({ addToCart }) => {
     name: "",
     price: 0,
   });
-
+console.log(SpecePriceName,'ccheck here ');
   // Toggle function for special menu
   const toggleSpecialMenu = () => {
     setIsSpecialMenuExpanded((prev) => !prev);
@@ -90,15 +90,16 @@ const MenuBox = ({ addToCart }) => {
   };
 
   const calculateTotalPrice = (item) => {
-    console.log(item, "hello price ");
+    // console.log(item, "hello price ");
     let totalPrice = item.price || 0;
     if (SpecePriceName) totalPrice += SpecePriceName.price; // Add variant price
     if (item.variantPrice)
       totalPrice = item.variantPrice + SpecePriceName.price; // Add spicy level price if selected
-    console.log(totalPrice);
+    // console.log(totalPrice);
     return totalPrice.toFixed(2);
   };
 
+  
   return (
     <div>
       <div>
@@ -157,25 +158,39 @@ const MenuBox = ({ addToCart }) => {
           </div>
         </div>
 
-        {loading && (
+        {isLoading&& (
           <div className="flex justify-center align-middle items-center">
             <Loader />
           </div>
         )}
-        {error && <p>      <span className="text-2xl grid justify-center align-middle items-center text-red-700  "> <MdSignalWifiConnectedNoInternet1 />internet issue! Please Check you Connection</span>  <Loader /> </p>}
+        {error && (
+          <p>
+            {" "}
+            <span className="text-2xl grid justify-center align-middle items-center text-red-700  ">
+              {" "}
+              <MdSignalWifiConnectedNoInternet1 />
+              internet issue! Please Check you Connection
+            </span>{" "}
+            <Loader />{" "}
+          </p>
+        )}
 
         {/* Special Menu Category */}
-        {error ?'':  <div
-          className="flex justify-between items-center cursor-pointer my-2  bg-gray-300  hover:bg-gray-400"
-          onClick={toggleSpecialMenu}
-        >
-          <span className="text-xl font-semibold text-black px-2">
-            Mid Week Special Platters
-          </span>
-          <span className="text-xl text-white flex gap-2">
-            <FaChevronDown />
-          </span>
-        </div>}
+        {error ? (
+          ""
+        ) : (
+          <div
+            className="flex justify-between items-center cursor-pointer my-2  bg-gray-300  hover:bg-gray-400"
+            onClick={toggleSpecialMenu}
+          >
+            <span className="text-xl font-semibold text-black px-2">
+              Mid Week Special Platters
+            </span>
+            <span className="text-xl text-white flex gap-2">
+              <FaChevronDown />
+            </span>
+          </div>
+        )}
 
         {isSpecialMenuExpanded &&
           (currentDay >= 1 && currentDay <= 4 ? (
@@ -189,31 +204,41 @@ const MenuBox = ({ addToCart }) => {
                 {specialMenuData.map(
                   (item, idx) =>
                     item.category === "Mid Week Special Platter" && (
-                      <li
-                        key={idx}
-                       
-                      >
-                   <div  className=" flex justify-between align-middle items-center 
-                   pb-2 text-xl cursor-pointer ">
-                   <span  className=" hover:boder-b-2 hover:border-b hover:border-b-red-950 cursor-pointer " onClick={() => handleSpecialMenuClick(item, idx)}>
-                          {item.set ? item.set : "new set"}{" "}
-                          <span className="text-xs text-gray-600">
-                            (Tuesday, Wednesday & Thursday ONLY)
+                      <li key={idx}>
+                        <div
+                          className=" flex justify-between align-middle items-center 
+                   pb-2 text-xl cursor-pointer "
+                        >
+                          <span
+                            className=" hover:boder-b-2 hover:border-b hover:border-b-red-950 cursor-pointer "
+                            onClick={() => handleSpecialMenuClick(item, idx)}
+                          >
+                            {item.set ? item.set : "new set"}{" "}
+                            <span className="text-xs text-gray-600">
+                              (Tuesday, Wednesday & Thursday ONLY)
+                            </span>
                           </span>
-                        </span>
-                        <span  className=" hover:boder-b-2 hover:border-b hover:border-b-red-950 cursor-pointer " onClick={() => handleSpecialMenuClick(item, idx)}>
-                          £{item.Price}
-                        </span>
-                   </div>
+                          <span
+                            className=" hover:boder-b-2 hover:border-b hover:border-b-red-950 cursor-pointer "
+                            onClick={() => handleSpecialMenuClick(item, idx)}
+                          >
+                            £{item.Price}
+                          </span>
+                        </div>
                         <li className="border-b-2 border-dotted flex flex-col items-start pb-2 text-xl">
-                  <ul className="list-disc text-xs text-gray-800 ml-4 mt-2">
-                   
-                  {
-       item.subcategories.map ((item,idx)=>  <li key={idx}>{item.subquantity        ? <span> {item.subquantity  }-</span>       :''}  {item.name}</li>)
-      }
-   
-                  </ul>
-                </li>
+                          <ul className="list-disc text-xs text-gray-800 ml-4 mt-2">
+                            {item.subcategories.map((item, idx) => (
+                              <li key={idx}>
+                                {item.subquantity ? (
+                                  <span> {item.subquantity}-</span>
+                                ) : (
+                                  ""
+                                )}{" "}
+                                {item.name}
+                              </li>
+                            ))}
+                          </ul>
+                        </li>
                       </li>
                     )
                 )}
@@ -221,7 +246,7 @@ const MenuBox = ({ addToCart }) => {
             </div>
           ) : (
             <>
-              {/* Apply white opacity overlay with warning text */}
+             
 
               <ul className="border-b-2 pt-2 border-dotted border-red-900 z-20">
                 {specialMenuData.map((item, idx) =>
@@ -235,38 +260,30 @@ const MenuBox = ({ addToCart }) => {
                         <p
                           className="bg-red-400 text-white text-xs w-full h-8
            text-center transform rotate-[-10deg] absolute top-0 left-0 
-           right-0 bottom-0">
-            Available only from Monday to Thursday!
-          </p>
-        </div> 
-      <div className="flex justify-between items-center pb-2 text-xl cursor-pointer hover:underline-offset-2 hover:underline"> 
-      <span onClick={() => handleSpecialMenuClick(item, idx)}>
-          {item.set ? item.set : "new set"}
-        </span>
-        <span onClick={() => handleSpecialMenuClick(item, idx)}>
-          £{item.Price}
-        </span>
-      </div>
-          <li className="border-b-2 border-dotted flex flex-col items-start pb-2 text-xl relative">
-   
-    <ul className="list-disc text-xs text-gray-800 ml-4 mt-2">
-    {
-       item.subcategories.map ((item,idx)=>  <li key={idx}> {item.name}</li>)
-      }
-   
-   
-    
-    </ul>
-  </li>
-
-      </li>
-      
-    ) : null
-  )}
-</ul>
-
-
-
+           right-0 bottom-0"
+                        >
+                          Available only from Monday to Thursday!
+                        </p>
+                      </div>
+                      <div className="flex justify-between items-center pb-2 text-xl cursor-pointer hover:underline-offset-2 hover:underline">
+                        <span onClick={() => handleSpecialMenuClick(item, idx)}>
+                          {item.set ? item.set : "new set"}
+                        </span>
+                        <span onClick={() => handleSpecialMenuClick(item, idx)}>
+                          £{item.Price}
+                        </span>
+                      </div>
+                      <li className="border-b-2 border-dotted flex flex-col items-start pb-2 text-xl relative">
+                        <ul className="list-disc text-xs text-gray-800 ml-4 mt-2">
+                          {item.subcategories.map((item, idx) => (
+                            <li key={idx}> {item.name}</li>
+                          ))}
+                        </ul>
+                      </li>
+                    </li>
+                  ) : null
+                )}
+              </ul>
             </>
           ))}
 
@@ -283,7 +300,7 @@ const MenuBox = ({ addToCart }) => {
           />
         )}
 
-        {!loading &&
+        {!isLoading&&
           !error &&
           menuData.map((menu) => (
             <div key={menu.category} className="mb-4">
@@ -312,8 +329,12 @@ const MenuBox = ({ addToCart }) => {
                       {menu.category === "Set Meals" ? (
                         <div className="border-b-2 border-dotted border-red-900 pb-2">
                           <div className="flex w-full text-xl justify-between">
-                            <span  className=" hover:boder-b-2 hover:border-b hover:border-b-red-950 cursor-pointer " onClick={() => addToCart(item)}>{item.name} 
-                         </span>
+                            <span
+                              className=" hover:boder-b-2 hover:border-b hover:border-b-red-950 cursor-pointer "
+                              onClick={() => addToCart(item)}
+                            >
+                              {item.name}
+                            </span>
 
                             <button
                               className=" hover:boder-b-2 hover:border-b  hover:border-b-red-950 cursor-pointer "
@@ -325,9 +346,15 @@ const MenuBox = ({ addToCart }) => {
                           <div className="text-xs text-gray-600 mt-1">
                             {item.itemsIncluded.length > 0 &&
                               item.itemsIncluded.map((includedItem) => (
-                                <ul  className="list-disc text-xs text-gray-800 ml-4 mt-2" key={includedItem.name}>
-                                <li>  {includedItem.name} ({includedItem.quantity})</li>
-                             
+                                <ul
+                                  className="list-disc text-xs text-gray-800 ml-4 mt-2"
+                                  key={includedItem.name}
+                                >
+                                  <li>
+                                    {" "}
+                                    {includedItem.name} ({includedItem.quantity}
+                                    )
+                                  </li>
                                 </ul>
                               ))}
                           </div>
@@ -336,41 +363,49 @@ const MenuBox = ({ addToCart }) => {
                         <div className="mb-1 text-xl border-b-2 border-dotted py-4 border-red-900">
                           <ul className="text-red-900 font-semibold">
                             <div className="flex w-full justify-between">
-                           <span  onClick={() => {
-                                    const totalPrice =
-                                      calculateTotalPrice(item);
-                                    addToCart({ ...item,  spice:SpecePriceName?.name||null, totalPrice });
-                                  }} className=" hover:boder-b-2 hover:border-b hover:border-b-red-950 cursor-pointer ">  {item.name}</span>  
-                              
-                              {item.spicyLevels.length > 0 && (
-                                <div className="text-xs grid justify-end gap-1 text-gray-600 mt-1">
-                                  <select
-                                    className="bg-white text-black w-44"
-                                    onChange={(e) => {
-                                      const spice = item.spicyLevels.find(
-                                        (level) => level.name === e.target.value
-                                      );
+                              <span
+                                onClick={() => {
+                                  const totalPrice = calculateTotalPrice(item);
+                                  addToCart({
+                                    ...item,
+                                    spice: SpecePriceName?.name || null,
+                                    totalPrice,
+                                  });refetch()
+                                  setSpicenameandprice({ name: "", price: 0 }); }}
+                                className=" hover:boder-b-2 hover:border-b hover:border-b-red-950 cursor-pointer "
+                              >
+                                {" "}
+                                {item.name}
+                              </span>
 
-                                      if (spice) {
-                                        // Assuming `setSpicenameandprice` updates the spice name and price in the state
-                                        setSpicenameandprice({
-                                          name: spice.name,
-                                          price: spice.price,
-                                        });
-                                      }
-                                    }}
-                                  >
-                                    <option value="">
-                                      Select a spicy level
-                                    </option>
-                                    {item.spicyLevels.map((spicy, idx) => (
-                                      <option key={idx} value={spicy.name}>
-                                        {spicy.name} - £{spicy.price.toFixed(2)}
-                                      </option>
-                                    ))}
-                                  </select>
-                                </div>
-                              )}
+                              {item.spicyLevels.length > 0 && (
+  <div className="text-xs grid justify-end gap-1 text-gray-600 mt-1">
+    <select
+      value={SpecePriceName.name || ""} // Ensuring the controlled value is properly set
+      className="bg-white text-black w-44"
+      onChange={(e) => {
+        const spice = item.spicyLevels.find(
+          (level) => level.name === e.target.value
+        );
+
+        if (spice) {
+          setSpicenameandprice({
+            name: spice.name,
+            price: spice.price,
+          });
+        } 
+      }}
+    >
+      <option value="">Normal Spice</option>
+      {item.spicyLevels.map((spicy, idx) => (
+        <option key={idx} value={spicy.name}>
+          {spicy.name} - £{spicy.price.toFixed(2)}
+        </option>
+      ))}
+    </select>
+  </div>
+)}
+
 
                               {item.varieties.length > 0 ? (
                                 <div className="text-xs grid justify-end gap-1 text-gray-600 mt-1">
@@ -400,7 +435,8 @@ const MenuBox = ({ addToCart }) => {
                                       dispatch({
                                         type: "ADD_TO_CART",
                                         payload: updatedItem,
-                                      });
+                                      }); setSpicenameandprice({ name: "", price: 0 });
+                                     refetch()
                                     }}
                                   >
                                     <option value="">Select a variety</option>
@@ -423,16 +459,19 @@ const MenuBox = ({ addToCart }) => {
                                       spice: SpecePriceName?.name || null,
                                       totalPrice,
                                     });
-                                  }}
+                                    refetch()
+                                    setSpicenameandprice({ name: "", price: 0 }); }}
                                 >
                                   + £{calculateTotalPrice(item)}
                                 </button>
                               )}
                             </div>
                           </ul>
-                          <span className=" text-lga text-gray-600"> {item.descrpition? item.descrpition:''}</span>
-                        
+                          <span className=" text-lga text-gray-600">
+                            {item.descrpition ? item.descrpition : ""}
+                          </span>
                         </div>
+                     
                       )}
                     </div>
                   ))}
@@ -442,17 +481,21 @@ const MenuBox = ({ addToCart }) => {
           ))}
 
         <div></div>
-        {error ?'':   <div
-          className="flex justify-between items-center cursor-pointer p-2 bg-red-300 hover:bg-red-400"
-          onClick={handleStillCantDecideClick}
-        >
-          <span className="text-xl font-semibold text-white">
-            still cant decide ?
-          </span>
-          <span className="text-xl text-white flex gap-2">
-            £{SpecialMenuprice} <FaChevronDown />
-          </span>
-        </div>}
+        {error ? (
+          ""
+        ) : (
+          <div
+            className="flex justify-between items-center cursor-pointer p-2 bg-red-300 hover:bg-red-400"
+            onClick={handleStillCantDecideClick}
+          >
+            <span className="text-xl font-semibold text-white">
+              still cant decide ?
+            </span>
+            <span className="text-xl text-white flex gap-2">
+              £{SpecialMenuprice} <FaChevronDown />
+            </span>
+          </div>
+        )}
         {/* still cant decide  */}
 
         {isStillCantDecideOpen && (

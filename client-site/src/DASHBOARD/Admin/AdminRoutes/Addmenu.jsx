@@ -6,7 +6,7 @@ import axios from "axios";
 import AddSpecialmenu from "./AddSpecialmenu";
 
 const AddMenuItem = () => {
-  const { categories } = useMenuData(); // Use the hook to get categories
+  const { categories,refetch } = useMenuData(); // Use the hook to get categories
   const [isOtherCategory, setIsOtherCategory] = useState(false);
   const { register, handleSubmit } = useForm();
   const [isSetMenu, setIsSetMenu] = useState(false);
@@ -52,7 +52,7 @@ const AddMenuItem = () => {
         icon: "success",
         confirmButtonText: "Okay",
       });
-
+refetch()
       // Reset form and state after submission
       setVarieties([{ name: "", price: "" }]);
       setSpicyLevels([{ name: "", price: "" }]);

@@ -6,31 +6,30 @@ const MyOrders = () => {
   const { user } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!user?.email) return; // Ensure user email is available
 
-    fetch(`http://localhost:3000/api/orders/${user.email}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setOrders(data); // Set orders if data is an array
-        } else {
-          setOrders([]); // Fallback to empty array if not an array
-        }
+    const fetchUserOrders = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/api/orders/user?email=${user.email}`
+        );
+        const data = await response.json();
+        setOrders(data);
         setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching orders:", err);
-        setOrders([]);
+      } catch (error) {
+        console.error("Error fetching user orders:", error);
         setLoading(false);
-        setError("Failed to load orders. Please try again later.");
-      });
+      }
+    };
+
+    fetchUserOrders();
   }, [user?.email]);
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p className="text-red-600">{error}</p>;
+  // if (error) return <p className="text-red-600">{error}</p>;
 
   return (
     <div className="container mx-auto w-full px-4 sm:px-8">

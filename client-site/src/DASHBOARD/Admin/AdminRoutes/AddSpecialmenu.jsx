@@ -1,7 +1,8 @@
 import { useForm } from "react-hook-form";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import Swal from "sweetalert2";
+import { useQuery } from "@tanstack/react-query";
 
 const AddSpecialmenu = () => {
   const { register, handleSubmit, reset, formState: { errors } } = useForm({
@@ -12,20 +13,16 @@ const AddSpecialmenu = () => {
       subcategories: [], 
     },
   });
-  const [setOptions, setSetOptions] = useState([]); 
+  // const [setOptions, setSetOptions] = useState([]); 
   const [subcategories, setSubcategories] = useState([]);
   const [customSet, setCustomSet] = useState(false); // Track if the custom set is selected
-  useEffect(() => {
-    const fetchSetOptions = async () => {
-      try {
-        const response = await axios.get('http://localhost:3000/api/special-menu/sets');
-        setSetOptions(response.data.sets);
-      } catch (error) {
-        console.error('Error fetching set options:', error);
-      }
-    };
-    fetchSetOptions();
-  }, []);
+  const { data: setOptions, refetch } = useQuery({
+    queryKey: ['setOptions'], // Use "queryKey" instead of an array argument
+    queryFn: async () => {
+      const response = await axios.get('http://localhost:3000/api/special-menu/sets');
+      return response.data.sets || []; // Return only the required data
+    }
+  });
   const handleAddSubcategory = () => {
     setSubcategories([...subcategories, { name: "", price: 0, subquantity:0,dishes: [] }]);
   };
@@ -84,7 +81,7 @@ const AddSpecialmenu = () => {
         text: "Menu item added successfully!",
         icon: "success",
         confirmButtonText: "Okay",
-      });
+      });refetch()
       reset();
       setSubcategories([]); 
     } catch (error) {
@@ -122,7 +119,7 @@ const AddSpecialmenu = () => {
           className="select select-bordered bg-white text-gray-700 w-full rounded-md focus:ring-2 focus:ring-green-400"
           onChange={(e) => setCustomSet(e.target.value === "Set custom set")}
         >
-          {setOptions.map((set, index) => (
+          {setOptions?.map((set, index) => (
             <option key={index} value={set}>{set}</option>
           ))}
           <option value="Set custom set">Set custom set</option>

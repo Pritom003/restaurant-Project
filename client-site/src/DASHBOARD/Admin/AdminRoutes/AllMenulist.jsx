@@ -6,31 +6,32 @@ import { FaPen, FaTrash } from 'react-icons/fa';
 import { useForm } from 'react-hook-form'; // Import React Hook Form
 import Modal from 'react-modal';
 import Specialmenulist from "./Specialmenulist";
+import useMenuData from '../../../Hooks/Menudatea';
 Modal.setAppElement('#root'); // Accessibility fix
 const AllMenuList = () => {
-  const [menu, setMenu] = useState([]);
+  // const [menu, setMenu] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [categoriesPerPage, setCategoriesPerPage] = useState(2); 
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const [editingItem, setEditingItem] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const { menuData :menu, categories,refetch,isLoading:loading } = useMenuData();
   // React Hook Form setup
   const { register, handleSubmit, setValue, reset } = useForm();
-
+console.log(menu);
   // Fetch menu data
-  useEffect(() => {
-    const fetchMenu = async () => {
-      try {
-        const response = await axios.get('http://localhost:3000/api/menu');
-        setMenu(response.data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching menu:', error);
-      }
-    };
-    fetchMenu();
-  }, []);
+  // useEffect(() => {
+  //   const fetchMenu = async () => {
+  //     try {
+  //       const response = await axios.get('http://localhost:3000/api/menu');
+  //       setMenu(response.data);
+  //       setLoading(false);
+  //     } catch (error) {
+  //       console.error('Error fetching menu:', error);
+  //     }
+  //   };
+  //   fetchMenu();
+  // }, []); 
 
   // Handle item deletion with confirmation
   const handleDelete = async (category, name) => {
@@ -47,14 +48,18 @@ const AllMenuList = () => {
     if (result.isConfirmed) {
       try {
         await axios.delete(`http://localhost:3000/api/menu/${category}/item/${name}`);
-        setMenu(prevMenu =>
-          prevMenu.map(cat =>
+        if (Array.isArray(menu)) {
+          const updatedMenu = menu.map(cat =>
             cat.category === category
               ? { ...cat, items: cat.items.filter(item => item.name !== name) }
               : cat
-          )
-        );
+          );
+        } else {
+          console.error('Menu is not an array:', menu);
+        }
+        
         Swal.fire('Deleted!', `${name} has been deleted.`, 'success');
+        refetch()
       } catch (error) {
         console.error('Error deleting item:', error);
         Swal.fire('Error!', 'There was an issue deleting the item.', 'error');
@@ -136,20 +141,20 @@ const handleUpdate = async (data) => {
       updatedItem
     );
     if (response.status === 200) {
-      setMenu(prevMenu =>
-        prevMenu.map(cat =>
-          cat.category === editingItem.category
-            ? {
-                ...cat,
-                items: cat.items.map(i =>
-                  i.name === editingItem.name ? { ...i, ...updatedItem } : i
-                ),
-              }
-            : cat
-        )
+      const updatedMenu = menu.map(cat =>
+        cat.category === editingItem.category
+          ? {
+              ...cat,
+              items: cat.items.map(i =>
+                i.name === editingItem.name ? { ...i, ...updatedItem } : i
+              ),
+            }
+          : cat
       );
+      
       setIsModalOpen(false);
       Swal.fire('Updated!', `${data.name} has been updated.`, 'success');
+      refetch()
     }
   } catch (error) {
     console.error('Error updating item:', error);
@@ -193,8 +198,10 @@ const handleUpdate = async (data) => {
     if (result.isConfirmed) {
       try {
         await axios.delete(`http://localhost:3000/api/menu/category/${id}`);
-        setMenu(prevMenu => prevMenu.filter(cat => cat.category !== category));
+        const updatedMenu = menu.filter(cat => cat.category !== category);
+
         Swal.fire('Deleted!', `The category "${category}" has been deleted.`, 'success');
+        refetch()
       } catch (error) {
         console.error('Error deleting category:', error);
         Swal.fire('Error!', 'There was an issue deleting the category.', 'error');
