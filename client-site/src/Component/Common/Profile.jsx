@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // import useAuth from "../../hooks/useAuth";
 import useRole from "../../Hooks/useRole";
 import {
@@ -22,7 +22,11 @@ const Profile = () => {
   const [message, setMessage] = useState("");
  // For restaurant open/close status and time settings
  console.log(openingTime , closingTime);
- const [isOpen, setIsOpen] = useState();
+// Set initial value of isOpen to isRestaurantOpen from the hook
+const [isOpen, setIsOpen] = useState(isRestaurantOpen);
+useEffect(() => {
+  setIsOpen(isRestaurantOpen);
+}, [isRestaurantOpen]);
  const [NewopeningTime, setOpeningTime] = useState( "");
 
 // /can i be the default value 08:00 22:00
@@ -197,20 +201,21 @@ const Profile = () => {
           </div>
 
           <div className="mt-4 flex items-center">
-            <label className="mr-4">
-              {isRestaurantOpen === true ? (
-                <span className="text-xl font-bold text-red-700">Close</span>
-              ) : (
-                <span className="text-xl font-bold text-green-700">Open</span>
-              )}
-            </label>
-            <input
-              type="checkbox"
-              checked={isOpen}
-              onChange={() => setIsOpen(!isOpen)}
-              className="h-6 w-6 bg-white text-black"
-            />
-          </div>
+    <label className="mr-4">
+      {isOpen ? (
+          <span className="text-xl font-bold text-green-700">Open</span>
+
+      ) : (
+        <span className="text-xl font-bold text-red-700">Close</span>
+      )}
+    </label>
+    <input
+      type="checkbox"
+      checked={isOpen}
+      onChange={() => setIsOpen(!isOpen)} // Correct toggle logic
+      className="h-6 w-6 bg-white text-black"
+    />
+  </div>
 
           <button
             onClick={handleRestaurantStatusChange}

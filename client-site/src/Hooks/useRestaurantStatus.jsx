@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 
-// Custom hook to check if the restaurant is open
+// Custom hook to check if the restaurant is open based on time and isOpen status
 const useRestaurantStatus = () => {
   const [isRestaurantOpen, setIsRestaurantOpen] = useState(null); // Start with null while loading
-  const [restaurantData, setRestaurantData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [openingTime, setOpeningTime] = useState(null);
+  const [closingTime, setClosingTime] = useState(null);
 
   useEffect(() => {
     const fetchRestaurantStatus = async () => {
@@ -13,7 +14,35 @@ const useRestaurantStatus = () => {
           "http://localhost:3000/api/restaurant/status"
         );
         const data = await response.json();
-        setRestaurantData(data);
+        const { NewopeningTime, NewclosingTime, isOpen } = data;
+
+        // Set opening and closing times to state
+        setOpeningTime(NewopeningTime);
+        setClosingTime(NewclosingTime);
+
+        // Convert times to total minutes since midnight
+        const [openingHours, openingMinutes] =
+          NewopeningTime.split(":").map(Number);
+        const [closingHours, closingMinutes] =
+          NewclosingTime.split(":").map(Number);
+
+        const openingTotalMinutes = openingHours * 60 + openingMinutes;
+        const closingTotalMinutes = closingHours * 60 + closingMinutes;
+
+        // Get the current time as total minutes since midnight
+        const currentTime = new Date();
+        const currentHours = currentTime.getHours();
+        const currentMinutes = currentTime.getMinutes();
+        const currentTotalMinutes = currentHours * 60 + currentMinutes;
+
+        // Check if the current time is within the opening and closing times
+        const isWithinTimeRange =
+          currentTotalMinutes >= openingTotalMinutes &&
+          currentTotalMinutes <= closingTotalMinutes;
+
+        // If isOpen is true and the current time is within open hours, the restaurant is open
+        setIsRestaurantOpen(isOpen && isWithinTimeRange);
+
         setLoading(false);
       } catch (error) {
         console.error("Error fetching restaurant status:", error);
@@ -23,47 +52,12 @@ const useRestaurantStatus = () => {
 
     fetchRestaurantStatus();
   }, []);
-  useEffect(() => {
-    if (restaurantData) {
-      const { NewopeningTime, NewclosingTime, isOpen } = restaurantData;
-
-      // Get the current time in Bangladesh (Dhaka timezone)
-      const bdTime = new Date().toLocaleString("en-GB", {
-        timeZone: "Asia/Dhaka",
-      });
-      const currentTime = new Date(bdTime);
-
-      // Extract hours and minutes from opening and closing time strings
-      const [openingHours, openingMinutes] =
-        NewopeningTime.split(":").map(Number);
-      const [closingHours, closingMinutes] =
-        NewclosingTime.split(":").map(Number);
-
-      // Create Date objects for opening and closing times on the current date
-      const openingDate = new Date(currentTime);
-      openingDate.setHours(openingHours, openingMinutes, 0, 0); // Set opening time with current date
-
-      const closingDate = new Date(currentTime);
-      closingDate.setHours(closingHours, closingMinutes, 0, 0); // Set closing time with current date
-
-      // Check if the current time is within the opening and closing times
-      const isWithinTimeRange =
-        currentTime >= openingDate && currentTime <= closingDate;
-
-      // If isOpen is true and the current time is within open hours, the restaurant is open
-      if (isOpen && isWithinTimeRange) {
-        setIsRestaurantOpen(true);
-      } else {
-        setIsRestaurantOpen(false);
-      }
-    }
-  }, [restaurantData]);
 
   return {
     isRestaurantOpen,
-    loadings: loading,
-    openingTime: restaurantData ? restaurantData.NewopeningTime : null,
-    closingTime: restaurantData ? restaurantData.NewclosingTime : null,
+    loading,
+    openingTime,
+    closingTime,
   };
 };
 
