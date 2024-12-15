@@ -23,7 +23,7 @@ ChartJS.register(
   Tooltip,
   Legend
 );
-import { FaDollarSign, FaChartLine, FaCalendarAlt } from "react-icons/fa";
+import {  FaChartLine, FaCalendarAlt } from "react-icons/fa";
 import Piecharts from "./Piechart";
 
 const AdminProfile = () => {
@@ -112,7 +112,7 @@ const AdminProfile = () => {
     labels,
     label,
     chartType = "line",
-    borderColor = "#26630b"
+    borderColor = "#fa962f"
   ) => ({
     labels: labels,
     datasets: [
@@ -120,9 +120,9 @@ const AdminProfile = () => {
         label: label,
         data: data,
         borderColor: borderColor, // Use the passed borderColor
-        backgroundColor: chartType === "line" ? "#3e1c00" : "#7c3f00", // Brown for bar chart
+        backgroundColor: chartType === "line" ? "#fa962f" : "#7c3f00", // Brown for bar chart
         fill: chartType === "line" ? true : false,
-        borderWidth: chartType === "line" ? 6 : 3,
+        borderWidth: chartType === "line" ? 5 : 3,
       },
     ],
   });
@@ -179,35 +179,36 @@ const AdminProfile = () => {
     setYearOffset((prevOffset) => prevOffset - 1);
   const handleNextYear = () => setYearOffset((prevOffset) => prevOffset + 1);
   return (
-    <div className="container mx-auto p-4 text-black grid justify-center items-center">
+    <div className="container mx-auto p-4 text-[#ded2bb]  grid justify-center items-center">
       {/* Revenue Cards */}
       <div className="flex flex-col lg:flex-row justify-around gap-4">
         {/* Daily Revenue */}
-        <div className="p-4 bg-blue-100 rounded shadow  text-center grid items-center justify-center">
+        <div className="p-4 bg-[#7f6f51] text-[#ded2bb] rounded shadow  
+        text-center grid items-center justify-center">
           <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
-            <FaDollarSign className="mr-2 font-semibold text-black" /> Daily
+          £ Daily
             Revenue
           </h2>
           <div className="flex lg:flex-col items-center lg:justify-start justify-between gap-2">
-            <p className="text-5xl lg:text-4xl text-black font-bold">
+            <p className="text-5xl lg:text-4xl text-[#ded2bb] font-bold">
               £
               {dailyRevenue
                 ?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0)
                 .toFixed(2)}
             </p>
           </div>
-          <p className="text-xl text-black">
+          <p className="text-xl text-[#ded2bb]">
             {new Date().toLocaleDateString()}
           </p>
         </div>
 
         {/* Weekly Revenue */}
-        <div className="p-4 bg-green-100 rounded shadow  text-center grid items-center justify-center">
+        <div className="p-4 bg-[#6c6351] text-[#ded2bb] rounded shadow  text-center grid items-center justify-center">
           <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
-            <FaChartLine className="mr-2 font-semibold text-black" /> Weekly
+            <FaChartLine className="mr-2 font-semibold text-[#ded2bb]" /> Weekly
             Revenue
           </h2>
-          <p className="text-5xl lg:text-4xl text-black font-bold">
+          <p className="text-5xl lg:text-4xl text-[#ded2bb] font-bold">
             £
             {weeklyRevenue
               ?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0)
@@ -230,18 +231,18 @@ const AdminProfile = () => {
               &gt;
             </button>
           </div>
-          <p className="text-green-950 text-xs">{`From ${
+          <p className="text-[#ded2bb]text-xs">{`From ${
             getWeekDateRange(weekOffset).start
           } to ${getWeekDateRange(weekOffset).end}`}</p>
         </div>
 
         {/* Monthly Revenue */}
-        <div className="p-4 bg-purple-100 rounded shadow  text-center">
+        <div className="p-4 bg-[#4b463d] text-[#ded2bb] rounded shadow  text-center">
           <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
-            <FaCalendarAlt className="mr-2 font-semibold text-black" /> Monthly
+            <FaCalendarAlt className="mr-2 font-semibold text-[#ded2bb] " /> Monthly
             Revenue
           </h2>
-          <p className="text-5xl lg:text-4xl text-black font-bold">
+          <p className="text-5xl lg:text-4xl text-[#ded2bb]  font-bold">
             £
             {monthlyRevenue
               ?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0)
@@ -264,19 +265,19 @@ const AdminProfile = () => {
               &gt;
             </button>
           </div>
-          <p className="text-purple-950 text-xl">{getMonthName(monthOffset)}</p>
+          <p className="text-[#ded2bb]  text-xl">{getMonthName(monthOffset)}</p>
         </div>
 
         {/* Yearly Revenue */}
         <div
-          className="p-4 bg-yellow-100 rounded shadow 
+          className="p-4 bg-[#3b3935] rounded shadow 
        text-center"
         >
           <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
-            <FaCalendarAlt className="mr-2 font-semibold text-black" /> Yearly
+            <FaCalendarAlt className="mr-2 font-semibold text-[#ded2bb] " /> Yearly
             Revenue
           </h2>
-          <p className="text-5xl lg:text-4xl text-black font-bold">
+          <p className="text-5xl lg:text-4xl text-[#ded2bb]  font-bold">
             £
             {yearlyRevenue
               ?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0)
@@ -296,10 +297,10 @@ const AdminProfile = () => {
               &gt;
             </button>
           </div>
-          <p className="text-yellow-950 text-xl">
+          <p className="text-[#ded2bb]  text-xl">
             {new Date().getFullYear() + yearOffset}
           </p>
-          {/* <p className="text-5xl lg:text-4xl text-black font-bold">£{yearlyRevenue?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0).toFixed(2)}</p> */}
+          {/* <p className="text-5xl lg:text-4xl text-[#ded2bb]  font-bold">£{yearlyRevenue?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0).toFixed(2)}</p> */}
         </div>
       </div>
 
@@ -309,7 +310,7 @@ const AdminProfile = () => {
      justify-center gap-4"
       >
         {/* Weekly Chart */}
-        <div className="w-full bg-green-50 p-5 ">
+        <div className="w-full bg-[#6c6351] p-5 ">
           <h3 className="text-lg font-bold mb-4">Weekly Revenue Graph</h3>
           <Line
             data={createChartData(
@@ -319,7 +320,44 @@ const AdminProfile = () => {
               "line",
               "#26630b"
             )}
-            options={{ responsive: true }}
+         
+            options={{
+              responsive: true,
+              plugins: {
+                legend: {
+                  position: "top",
+                  labels: {
+                    color:' #ded2bb', // Change legend text color
+                  },
+                },
+        
+              },
+              scales: {
+                x: {
+                  ticks: {
+                    color: ' #ded2bb', // Change color of X-axis labels
+                  },
+                  title: {
+                    display: true,
+                    text: 'Days of the week', // Optional: Add title to X-axis
+                    color: '#ff9900', // Change color of X-axis title
+                  },
+                },
+                y: {
+                  ticks: {
+                    color: ' #ded2bb', // Change color of Y-axis labels
+                  },
+                  title: {
+                    display: true,
+                    text: 'Revenue (£)', // Optional: Add title to Y-axis
+                    color: '#ff9900', // Change color of Y-axis title
+                  },
+                },
+              },
+              
+            }}
+
+
           />
         </div>
 
@@ -339,7 +377,7 @@ const AdminProfile = () => {
         </div>
 
         {/* Yearly Chart */}
-        <div className="w-full bg-yellow-50 p-5">
+        <div className="w-full bg-[#3b3935] p-5">
           <h3 className="text-lg font-bold mb-4">Yearly Revenue Graph</h3>
           <Line
             data={createChartData(
@@ -352,18 +390,45 @@ const AdminProfile = () => {
               plugins: {
                 legend: {
                   position: "top",
+                  labels: {
+                    color:' #ded2bb', // Change legend text color
+                  },
                 },
                 title: {
                   display: true,
                   text: "Yearly Revenue Overview",
+                  color:'#ded2bb'
                 },
               },
+              scales: {
+                x: {
+                  ticks: {
+                    color: ' #ded2bb', // Change color of X-axis labels
+                  },
+                  title: {
+                    display: true,
+                    text: 'Months of the  Year', // Optional: Add title to X-axis
+                    color: '#ff9900', // Change color of X-axis title
+                  },
+                },
+                y: {
+                  ticks: {
+                    color: ' #ded2bb', // Change color of Y-axis labels
+                  },
+                  title: {
+                    display: true,
+                    text: 'Revenue (£)', // Optional: Add title to Y-axis
+                    color: '#ff9900', // Change color of Y-axis title
+                  },
+                },
+              },
+              
             }}
           />
         </div>
 
         {/* Pie Chart */}
-        <div className="w-full bg-blue-50 p-4">
+        <div className="w-full border-2 border-orange-900 shadow-2xl p-4">
           <h3 className="text-lg font-bold mb-4">Payment Methods comparison</h3>
 
           <Piecharts />

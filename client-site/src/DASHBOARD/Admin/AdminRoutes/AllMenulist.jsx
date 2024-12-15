@@ -19,21 +19,7 @@ const AllMenuList = () => {
   // React Hook Form setup
   const { register, handleSubmit, setValue, reset } = useForm();
 console.log(menu);
-  // Fetch menu data
-  // useEffect(() => {
-  //   const fetchMenu = async () => {
-  //     try {
-  //       const response = await axios.get('http://localhost:3000/api/menu');
-  //       setMenu(response.data);
-  //       setLoading(false);
-  //     } catch (error) {
-  //       console.error('Error fetching menu:', error);
-  //     }
-  //   };
-  //   fetchMenu();
-  // }, []); 
 
-  // Handle item deletion with confirmation
   const handleDelete = async (category, name) => {
     const result = await Swal.fire({
       title: 'Are you sure?',
@@ -214,7 +200,7 @@ const handleUpdate = async (data) => {
 <div>
 <div className="flex flex-wrap gap-4 text-black">
       <div className="container mx-auto py-8 text-black">
-        <h2 className="text-center text-4xl font-chewy underline text-red-950 pt-10">Regular Menus</h2>
+        <h2 className="text-center text-4xl font-chewy underline text-orange-600 pt-10">Regular Menus</h2>
         {loading ? (
           <p>Loading...</p>
         ) : (
@@ -224,9 +210,9 @@ const handleUpdate = async (data) => {
                 <button onClick={() => handleDeleteCat(category._id,category.category)} className="text-red-500 text-xs ml-2">
                         <FaTrash />
                       </button></h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 " >
                 {category.items.map((item,id) => (
-                  <div key={id} className="card p-4 border shadow-md rounded-lg">
+                  <div key={id} className="card p-4 border shadow-md rounded-lg bg-slate-500 text-orange-100">
                     <h4 className="text-lg font-bold">{item.name}</h4>
                     <p className="text-sm">Price: {item.price ? item.price.toFixed(2) : 0.00}</p>
 
@@ -254,11 +240,11 @@ const handleUpdate = async (data) => {
                     </p>
 
                     <div className="flex justify-between mt-2">
-                      <button onClick={() => handleUpdateClick(item ,category.category,)} className="text-blue-500">
-                        <FaPen /> Update
+                      <button onClick={() => handleUpdateClick(item ,category.category,)} className="text-orange-500">
+                        <FaPen /> 
                       </button>
                       <button onClick={() => handleDelete(category.category, item.name)} className="text-red-500">
-                        <FaTrash /> Delete
+                        <FaTrash /> 
                       </button>
                     </div>
                   </div>

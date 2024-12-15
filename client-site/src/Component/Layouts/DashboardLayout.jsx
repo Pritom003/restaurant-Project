@@ -17,34 +17,60 @@ import { GrMoney } from "react-icons/gr";
 import { RiMenuSearchFill } from "react-icons/ri";
 import { ImStatsDots } from "react-icons/im";
 import Heading from "../../Pages/Home/MenuBox/Heading";
-import backgroundimg from "../../assets/vintage.jpg";
+// import backgroundimg from "../../assets/vintage.jpg";
 import { AuthContext } from "../../providers/AuthProviders";
 import useRole from "../../Hooks/useRole.js";
 import { FaBowlFood } from "react-icons/fa6";
 
 const MenuItem = ({ to, icon, label }) => (
-  <li className="flex items-center gap-2 text-xl text-white mr-2">
-    {icon}
-    <NavLink to={to} className="text-white mt-4">
-      {label}
+  <li className=" text-white mr-2 hover:underline hover:text-orange-200">
+   
+    <NavLink to={to} className={({ isActive }) => 
+    `mt-4 ${isActive ? 'text-orange-500 underline' : 'text-white'}  flex items-center gap-2 text-xl hover:underline hover:text-orange-200`
+  }>
+     <span>  {icon} </span> <span>   {label}</span>
     </NavLink>
+
+
   </li>
 );
-
 const OrderSubMenu = ({ isOpen }) =>
   isOpen && (
     <ul className="pl-6 mt-2 space-y-2">
-      <MenuItem
-        to="orderList/strip-order"
-        icon={<FaCashRegister />}
-        label="Online"
-      />
-      <MenuItem
-        to="orderList/cash-on-delivery"
-        icon={<GrMoney />}
-        label="Cash"
-      />
-      {/* <MenuItem to="orderList/pickup" icon={<RiTruckFill />} label="Pickup" /> */}
+      <li className="flex items-center gap-2 text-xl mr-2">
+        <FaCashRegister />
+        <NavLink 
+          to="orderList/strip-order" 
+          className={({ isActive }) => 
+            `mt-4 ${isActive ? 'text-orange-500' : 'text-white'} hover:underline hover:text-orange-500`
+          }
+        >
+          Online
+        </NavLink>
+      </li>
+      <li className="flex items-center gap-2 text-xl mr-2">
+        <GrMoney />
+        <NavLink 
+          to="orderList/cash-on-delivery" 
+          className={({ isActive }) => 
+            `mt-4 ${isActive ? 'text-orange-500' : 'text-white'} hover:underline hover:text-orange-500`
+          }
+        >
+          Cash
+        </NavLink>
+      </li>
+      {/* Uncomment and update as needed for additional submenus */}
+      {/* <li className="flex items-center gap-2 text-xl mr-2">
+        <RiTruckFill />
+        <NavLink 
+          to="orderList/pickup" 
+          className={({ isActive }) => 
+            `mt-4 ${isActive ? 'text-orange-500' : 'text-white'} hover:underline hover:text-orange-500`
+          }
+        >
+          Pickup
+        </NavLink>
+      </li> */}
     </ul>
   );
 
@@ -72,21 +98,23 @@ const DashboardLayout = () => {
     <div className="lg:flex lg:min-h-screen h-full bg-gray-100">
       {/* Sidebar for large devices */}
       <nav
-        style={{ backgroundImage: `url(${backgroundimg})` }}
-        className="lg:fixed lg:flex lg:flex-col lg:min-h-screen pl-4 hidden lg:w-48 h-full bg-cover bg-center relative"
+        // style={{ backgroundImage: `url(${backgroundimg})` }}
+        className="lg:fixed lg:flex lg:flex-col lg:min-h-screen 
+        justify-start  align-middle items-center pl-4 hidden 
+        lg:w-52 h-full bg-cover bg-center relative bg-[#191000]"
       >
         {/* Overlay */}
         <div className="absolute inset-0 bg-black opacity-60"></div>
         <div className="pt-10 z-10 relative hidden ">
           <Heading customStyle="h-12 text-white text-center" />
         </div>
-        <ul className="mt-4 z-10 relative space-y-4 overflow-y-auto mb-20">
+        <ul className="mt-4 z-10 relative space-y-4 overflow-y-auto ">
           <MenuItem to="/" icon={<FaHome />} label="Home" />
 
           {role === "Admin" && (
             <>
               <MenuItem to="profile" icon={<FaUser />} label="Profile" />
-              <MenuItem to="" icon={<ImStatsDots />} label="Stats" />
+              <MenuItem to="stats" icon={<ImStatsDots />} label="Stats" />
               <MenuItem to="add-menu" icon={<FaPlus />} label="Add Menu" />
               <MenuItem
                 to="add-location"
@@ -215,7 +243,7 @@ const DashboardLayout = () => {
       </nav>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto p-6 lg:ml-48">
+      <div className="flex-1 overflow-y-auto p-6 bg-[#2d2416] text-orange-400 lg:ml-48">
         <h2 className="text-2xl font-bold mb-4 text-center">
           {role === "Admin" ? "Admin Dashboard" : "User Dashboard"}
         </h2>

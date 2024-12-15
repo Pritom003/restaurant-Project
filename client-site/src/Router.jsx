@@ -118,7 +118,7 @@ const router = createBrowserRouter([
             element: <MyOrders />,
           },
           { path: "profile", element: <Profile /> },
-          { path: "", element: <AdminProfile /> },
+          { path: "stats", element: <AdminProfile /> },
           { path: "add-menu", element: <Addmenu /> },
           { path: "dishes", element: <AllMenuList /> },
           { path: "upocomming-order", element: <UpcomingOrders /> },

@@ -168,6 +168,9 @@ const AddSpecialmenu = () => {
                 className="input input-bordered w-full bg-white rounded-md focus:ring-2 focus:ring-green-400"
               />
               <div className="flex gap-4">
+             <div> <label className="label text-lg font-medium text-gray-700">
+          <span className="label-text"> Subcategory Price</span>
+        </label>
                 <input
                   type="number"
                   placeholder="Price"
@@ -178,7 +181,11 @@ const AddSpecialmenu = () => {
                     setSubcategories(updatedSubcategories);
                   }}
                   className="input input-bordered w-full bg-white rounded-md focus:ring-2 focus:ring-green-400"
-                />
+                /></div>
+                <div>
+                <label className="label text-lg font-medium text-gray-700">
+          <span className="label-text">Quantity</span>
+        </label>
                 <input
                   type="number"
                   placeholder="Subquantity"
@@ -190,6 +197,7 @@ const AddSpecialmenu = () => {
                   }}
                   className="input input-bordered w-full bg-white rounded-md focus:ring-2 focus:ring-green-400"
                 />
+                </div>
               </div>
             </div>
             <div className="mt-4">

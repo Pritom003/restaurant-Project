@@ -14,7 +14,7 @@ const PieCharts = () => {
   }, []);
 
   // Define the colors for the Pie chart
-  const COLORS = ["#0088FE", "#FFBB28"]; // Blue for online, yellow for pickup
+  const COLORS = ["#856d1e", "#85631e"]; // Blue for online, yellow for pickup
 
   return (
     <PieChart width={400} height={400}>
