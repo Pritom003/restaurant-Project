@@ -211,7 +211,7 @@ const PickupOrder = () => {
         </div>
 
         {/* Print Preview Section */}
-        {selectedOrder && (
+        {selectedOrder ? (
           <div>
             <div
               ref={orderDetailsRef}
@@ -342,7 +342,156 @@ const PickupOrder = () => {
               />
             </div>
           </div>
-        )}
+        ) :  <div>
+        <div
+         
+          style={{
+            fontFamily: "monospace",
+            width: "300px",
+            margin: "auto",
+            padding: "20px",
+            border: "1px solid black",
+            background: "#fff",
+          }}
+        >
+          {/* Header */}
+          <h2 style={{ textAlign: "center", margin: "0" }}>Deedar Uk</h2>
+          <p className="text-center">Address:-------</p>
+          <p className="text-center">Zip Code:-------</p>
+          <p className="text-center">Area-------</p>
+          <p className="text-center">Contact No:-------</p>
+          <p
+            style={{
+              textAlign: "center",
+              margin: "5px 0",
+              fontSize: "12px",
+            }}
+          ></p>
+          <hr />
+
+          {/* Order Details */}
+          <h3 style={{ textAlign: "center", margin: "5px 0" }}>
+            Order Number:-------
+          </h3>
+          <p style={{ fontSize: "12px", margin: "5px 0" }}>
+            CreatedAt:
+            -------
+          </p>
+          <hr />
+
+          {/* Items */}
+          <table>
+            <thead>
+              <tr>
+                <th>Quantity</th>
+                <th>Item Name</th>
+                <th>Sub Items</th>
+                <th style={{ textAlign: "right" }}>Price</th>
+              </tr>
+            </thead>
+            <tbody>
+         
+                <tr >
+                  {/* Quantity */}
+                  <td>-------</td>
+
+                  {/* Item Name */}
+                  <td>-------</td>
+
+                  {/* Sub Items */}
+                  <td>
+                   
+                      <ul>
+                
+                       
+                            <li >-------</li>
+                    
+                      </ul>
+                    
+                  </td>
+
+                  {/* Price */}
+                  <td style={{ textAlign: "right" }}>£-------</td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          <hr />
+
+          {/* Payment Details */}
+          <p style={{ fontSize: "12px" }}>
+          ------- 
+          </p>
+          <table style={{ width: "100%", fontSize: "12px" }}>
+            <tbody>
+              <tr>
+                <td>Delivery Charge:</td>
+                <td style={{ textAlign: "right" }}>
+                  £ -------
+                </td>
+              </tr>
+              <tr>
+                <td>Subtotal:</td>
+                <td style={{ textAlign: "right" }}>
+                  £ -------
+                </td>
+              </tr>
+              <tr>
+                <td>Total:</td>
+                <td style={{ textAlign: "right", fontWeight: "bold" }}>
+                  £-------
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p style={{ fontSize: "12px", marginTop: "10px" }}>
+            Transaction Type:------- <br />
+            Authorization: ------- <br />
+            {/* Payment Code: {selectedOrder.payment.paymentCode} <br /> */}
+            Payment ID: ------- <br />
+          </p>
+          <hr />
+
+          {/* Tip Section */}
+          <p style={{ fontSize: "12px", margin: "10px 0" }}>
+            + Tip: _____________
+          </p>
+          <p style={{ fontSize: "12px", marginBottom: "10px" }}>
+            = Total: _____________
+          </p>
+          <p style={{ textAlign: "center" }}>
+            X _______________________________
+          </p>
+          <hr />
+
+          {/* Footer */}
+          <p
+            style={{
+              textAlign: "center",
+              fontSize: "12px",
+              marginTop: "10px",
+            }}
+          >
+            Customer Copy <br />
+            Thanks for visiting <br />
+            -------
+          </p>
+        </div>
+        {/* <div style={{ textAlign: "center", marginTop: "20px" }}>
+          <ReactToPrint
+            trigger={() => (
+              <button
+                className="bg-red-500"
+                style={{ padding: "10px 20px" }}
+              >
+                Print
+              </button>
+            )}
+            content={() => orderDetailsRef.current}
+          />
+        </div> */}
+      </div>}
       </div>
     </div>
   );

@@ -217,13 +217,13 @@ const AdminProfile = () => {
           <div className="flex items-center justify-center gap-4">
             <button
               onClick={handlePreviousWeek}
-              className="bg-green-900 text-white px-2 py-1 rounded"
+              className="bg-[#493116] text-white px-2 py-1 rounded"
             >
               &lt;
             </button>
             <button
               onClick={handleNextWeek}
-              className={`bg-green-900 text-white px-2 py-1 rounded ${
+              className={`bg-[#493116] text-white px-2 py-1 rounded ${
                 weekOffset === 0 ? "cursor-not-allowed opacity-50" : ""
               }`}
               disabled={weekOffset === 0}
@@ -251,13 +251,13 @@ const AdminProfile = () => {
           <div className="flex items-center justify-center gap-4">
             <button
               onClick={handlePreviousMonth}
-              className="bg-purple-900 text-white px-2 py-1 rounded"
+              className="bg-[#181611] text-white px-2 py-1 rounded"
             >
               &lt;
             </button>
             <button
               onClick={handleNextMonth}
-              className={`bg-purple-900 text-white px-2 py-1 rounded ${
+              className={`bg-[#181611] text-white px-2 py-1 rounded ${
                 monthOffset === 0 ? "cursor-not-allowed opacity-50" : ""
               }`}
               disabled={monthOffset === 0}
