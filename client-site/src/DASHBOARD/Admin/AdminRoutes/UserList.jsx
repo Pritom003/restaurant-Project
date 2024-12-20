@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { FaUserShield,  FaTrashAlt } from "react-icons/fa";
+import { FaUserShield, FaTrashAlt } from "react-icons/fa";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import { PiChefHatThin } from "react-icons/pi";
@@ -57,7 +57,9 @@ const UserList = () => {
           .delete(`http://localhost:3000/users/${email}`)
           .then(() => {
             Swal.fire("Deleted!", "User has been deleted.", "success");
-            setUsers((prevUsers) => prevUsers.filter((user) => user.email !== email));
+            setUsers((prevUsers) =>
+              prevUsers.filter((user) => user.email !== email)
+            );
           })
           .catch((error) => console.error("Error deleting user:", error));
       }
@@ -98,7 +100,7 @@ const UserList = () => {
                   <PiChefHatThin size={20} />
                 </button>
                 <button
-                  className="text-red-500 "
+                  className="text-black "
                   onClick={() => deleteUser(user.email)}
                   title="Delete User"
                 >

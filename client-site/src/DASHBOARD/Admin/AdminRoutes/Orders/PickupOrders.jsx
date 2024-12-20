@@ -158,9 +158,7 @@ const PickupOrder = () => {
                     <td className="px-4 py-2">
                       {formatDate(order?.createdAt)}
                     </td>
-                    <td className="px-4 py-2">
-                      ${order?.totalPrice}
-                    </td>
+                    <td className="px-4 py-2">${order?.totalPrice}</td>
                     <td className="px-4 py-2">{order?.paymentStatus}</td>
                     <td className="px-4 py-2">{order?.spiceLevel}</td>
                     <td className="px-4 py-2 flex space-x-4">
@@ -169,7 +167,7 @@ const PickupOrder = () => {
                           e.stopPropagation();
                           handleDelete(order._id);
                         }}
-                        className="text-red-500 hover:text-red-600"
+                        className="text-black hover:text-red-600"
                         title="Delete Order"
                       >
                         <FaTrash size={18} />
@@ -342,143 +340,129 @@ const PickupOrder = () => {
               />
             </div>
           </div>
-        ) :  <div>
-        <div
-         
-          style={{
-            fontFamily: "monospace",
-            width: "300px",
-            margin: "auto",
-            padding: "20px",
-            border: "1px solid black",
-            background: "#fff",
-          }}
-        >
-          {/* Header */}
-          <h2 style={{ textAlign: "center", margin: "0" }}>Deedar Uk</h2>
-          <p className="text-center">Address:-------</p>
-          <p className="text-center">Zip Code:-------</p>
-          <p className="text-center">Area-------</p>
-          <p className="text-center">Contact No:-------</p>
-          <p
-            style={{
-              textAlign: "center",
-              margin: "5px 0",
-              fontSize: "12px",
-            }}
-          ></p>
-          <hr />
+        ) : (
+          <div>
+            <div
+              style={{
+                fontFamily: "monospace",
+                width: "300px",
+                margin: "auto",
+                padding: "20px",
+                border: "1px solid black",
+                background: "#fff",
+              }}
+            >
+              {/* Header */}
+              <h2 style={{ textAlign: "center", margin: "0" }}>Deedar Uk</h2>
+              <p className="text-center">Address:-------</p>
+              <p className="text-center">Zip Code:-------</p>
+              <p className="text-center">Area-------</p>
+              <p className="text-center">Contact No:-------</p>
+              <p
+                style={{
+                  textAlign: "center",
+                  margin: "5px 0",
+                  fontSize: "12px",
+                }}
+              ></p>
+              <hr />
 
-          {/* Order Details */}
-          <h3 style={{ textAlign: "center", margin: "5px 0" }}>
-            Order Number:-------
-          </h3>
-          <p style={{ fontSize: "12px", margin: "5px 0" }}>
-            CreatedAt:
-            -------
-          </p>
-          <hr />
+              {/* Order Details */}
+              <h3 style={{ textAlign: "center", margin: "5px 0" }}>
+                Order Number:-------
+              </h3>
+              <p style={{ fontSize: "12px", margin: "5px 0" }}>
+                CreatedAt: -------
+              </p>
+              <hr />
 
-          {/* Items */}
-          <table>
-            <thead>
-              <tr>
-                <th>Quantity</th>
-                <th>Item Name</th>
-                <th>Sub Items</th>
-                <th style={{ textAlign: "right" }}>Price</th>
-              </tr>
-            </thead>
-            <tbody>
-         
-                <tr >
-                  {/* Quantity */}
-                  <td>-------</td>
+              {/* Items */}
+              <table>
+                <thead>
+                  <tr>
+                    <th>Quantity</th>
+                    <th>Item Name</th>
+                    <th>Sub Items</th>
+                    <th style={{ textAlign: "right" }}>Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    {/* Quantity */}
+                    <td>-------</td>
 
-                  {/* Item Name */}
-                  <td>-------</td>
+                    {/* Item Name */}
+                    <td>-------</td>
 
-                  {/* Sub Items */}
-                  <td>
-                   
+                    {/* Sub Items */}
+                    <td>
                       <ul>
-                
-                       
-                            <li >-------</li>
-                    
+                        <li>-------</li>
                       </ul>
-                    
-                  </td>
+                    </td>
 
-                  {/* Price */}
-                  <td style={{ textAlign: "right" }}>£-------</td>
-                </tr>
-              
-            </tbody>
-          </table>
+                    {/* Price */}
+                    <td style={{ textAlign: "right" }}>£-------</td>
+                  </tr>
+                </tbody>
+              </table>
 
-          <hr />
+              <hr />
 
-          {/* Payment Details */}
-          <p style={{ fontSize: "12px" }}>
-          ------- 
-          </p>
-          <table style={{ width: "100%", fontSize: "12px" }}>
-            <tbody>
-              <tr>
-                <td>Delivery Charge:</td>
-                <td style={{ textAlign: "right" }}>
-                  £ -------
-                </td>
-              </tr>
-              <tr>
-                <td>Subtotal:</td>
-                <td style={{ textAlign: "right" }}>
-                  £ -------
-                </td>
-              </tr>
-              <tr>
-                <td>Total:</td>
-                <td style={{ textAlign: "right", fontWeight: "bold" }}>
-                  £-------
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <p style={{ fontSize: "12px", marginTop: "10px" }}>
-            Transaction Type:------- <br />
-            Authorization: ------- <br />
-            {/* Payment Code: {selectedOrder.payment.paymentCode} <br /> */}
-            Payment ID: ------- <br />
-          </p>
-          <hr />
+              {/* Payment Details */}
+              <p style={{ fontSize: "12px" }}>-------</p>
+              <table style={{ width: "100%", fontSize: "12px" }}>
+                <tbody>
+                  <tr>
+                    <td>Delivery Charge:</td>
+                    <td style={{ textAlign: "right" }}>£ -------</td>
+                  </tr>
+                  <tr>
+                    <td>Subtotal:</td>
+                    <td style={{ textAlign: "right" }}>£ -------</td>
+                  </tr>
+                  <tr>
+                    <td>Total:</td>
+                    <td style={{ textAlign: "right", fontWeight: "bold" }}>
+                      £-------
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <p style={{ fontSize: "12px", marginTop: "10px" }}>
+                Transaction Type:------- <br />
+                Authorization: ------- <br />
+                {/* Payment Code: {selectedOrder.payment.paymentCode} <br /> */}
+                Payment ID: ------- <br />
+              </p>
+              <hr />
 
-          {/* Tip Section */}
-          <p style={{ fontSize: "12px", margin: "10px 0" }}>
-            + Tip: _____________
-          </p>
-          <p style={{ fontSize: "12px", marginBottom: "10px" }}>
-            = Total: _____________
-          </p>
-          <p style={{ textAlign: "center" }}>
-            X _______________________________
-          </p>
-          <hr />
+              {/* Tip Section */}
+              <p style={{ fontSize: "12px", margin: "10px 0" }}>
+                + Tip: _____________
+              </p>
+              <p style={{ fontSize: "12px", marginBottom: "10px" }}>
+                = Total: _____________
+              </p>
+              <p style={{ textAlign: "center" }}>
+                X _______________________________
+              </p>
+              <hr />
 
-          {/* Footer */}
-          <p
-            style={{
-              textAlign: "center",
-              fontSize: "12px",
-              marginTop: "10px",
-            }}
-          >
-            Customer Copy <br />
-            Thanks for visiting <br />
-            -------
-          </p>
-        </div>
-        {/* <div style={{ textAlign: "center", marginTop: "20px" }}>
+              {/* Footer */}
+              <p
+                style={{
+                  textAlign: "center",
+                  fontSize: "12px",
+                  marginTop: "10px",
+                }}
+              >
+                Customer Copy <br />
+                Thanks for visiting <br />
+                -------
+              </p>
+            </div>
+            {/* <div style={{ textAlign: "center", marginTop: "20px" }}>
           <ReactToPrint
             trigger={() => (
               <button
@@ -491,7 +475,8 @@ const PickupOrder = () => {
             content={() => orderDetailsRef.current}
           />
         </div> */}
-      </div>}
+          </div>
+        )}
       </div>
     </div>
   );

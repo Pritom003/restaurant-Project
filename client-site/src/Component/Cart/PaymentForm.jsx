@@ -46,7 +46,7 @@ const PaymentForm = ({ totalPrice, handleOrderCompletion }) => {
         >
           Pay
         </button>
-        {error && <div className="text-red-500 mt-2 text-xs">{error}</div>}
+        {error && <div className="text-black mt-2 text-xs">{error}</div>}
       </div>
     </form>
   );

@@ -11,9 +11,10 @@ import Swal from "sweetalert2";
 import useRestaurantStatus from "../../../Hooks/useRestaurantStatus";
 import { MdSignalWifiConnectedNoInternet1 } from "react-icons/md";
 const MenuBox = ({ addToCart }) => {
-  const { menuData, isLoading, error,  refetch, } = MenuData();
+  const { menuData, isLoading, error, refetch } = MenuData();
   const [expandedCategories, setExpandedCategories] = useState([]);
   const [isAllergiesExpanded, setIsAllergiesExpanded] = useState(false);
+  const [isLocationExpanded, setIsLocationExpanded] = useState(false);
   const [specialMenuData, setSpecialMenuData] = useState([]);
   const [specialMenuCat, setSpecialcatMenuData] = useState([]);
   const [isSpecialMenuOpen, setIsSpecialMenuOpen] = useState(false);
@@ -22,11 +23,12 @@ const MenuBox = ({ addToCart }) => {
   const [isStillCantDecideOpen, setIsStillCantDecideOpen] = useState(false);
   const [isSpecialMenuExpanded, setIsSpecialMenuExpanded] = useState(false);
   const [SpecialMenuPriceId, setSpecialMenuPriceId] = useState();
+  const [locations, setLocations] = useState([]);
   const [SpecePriceName, setSpicenameandprice] = useState({
     name: "",
     price: 0,
   });
-console.log(SpecePriceName,'ccheck here ');
+  console.log(SpecePriceName, "ccheck here ");
   // Toggle function for special menu
   const toggleSpecialMenu = () => {
     setIsSpecialMenuExpanded((prev) => !prev);
@@ -82,6 +84,29 @@ console.log(SpecePriceName,'ccheck here ');
   const categories = specialMenuData.find(
     (item) => item.category === "Chef Choice"
   );
+
+  // Fetch all locations
+  const fetchLocations = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:3000/api/delivery-location"
+      );
+      const data = await response.json();
+      if (response.ok) {
+        setLocations(data.data);
+      } else {
+        alert("Failed to fetch locations");
+      }
+    } catch (error) {
+      console.error("Error fetching locations:", error);
+    }
+  };
+
+  // Load locations on mount
+  useEffect(() => {
+    fetchLocations();
+  }, []);
+
   // const cheCat=categories.category
   const handleStillCantDecideClick = () => {
     // console.log( ,'dehksjfeheuhehfrehfuhehe');
@@ -99,7 +124,6 @@ console.log(SpecePriceName,'ccheck here ');
     return totalPrice.toFixed(2);
   };
 
-  
   return (
     <div>
       <div>
@@ -157,8 +181,37 @@ console.log(SpecePriceName,'ccheck here ');
             )}
           </div>
         </div>
+        <div className="mb-4">
+          <div
+            className="flex justify-between items-center cursor-pointer p-2 bg-gray-200 hover:bg-gray-300"
+            onClick={() => setIsLocationExpanded(!isLocationExpanded)}
+          >
+            <span className="text-xl font-semibold text-red-900 hover:underline">
+              Deliveries
+            </span>
+            {isAllergiesExpanded ? (
+              <FaChevronUp className="text-xl" />
+            ) : (
+              <FaChevronDown className="text-xl" />
+            )}
+          </div>
+          <div
+            className={`transition-all duration-500 ease-in-out overflow-hidden`}
+            style={{ minHeight: isLocationExpanded ? "100px" : "0px" }}
+          >
+            {isLocationExpanded && (
+              <ul>
+                {locations.map((loc) => (
+                  <li key={loc._id} className="border-b text-base">
+                    {loc.locationName} ----- {loc.price}£
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
 
-        {isLoading&& (
+        {isLoading && (
           <div className="flex justify-center align-middle items-center">
             <Loader />
           </div>
@@ -246,8 +299,6 @@ console.log(SpecePriceName,'ccheck here ');
             </div>
           ) : (
             <>
-             
-
               <ul className="border-b-2 pt-2 border-dotted border-red-900 z-20">
                 {specialMenuData.map((item, idx) =>
                   item.category === "Mid Week Special Platter" ? (
@@ -300,7 +351,7 @@ console.log(SpecePriceName,'ccheck here ');
           />
         )}
 
-        {!isLoading&&
+        {!isLoading &&
           !error &&
           menuData.map((menu) => (
             <div key={menu.category} className="mb-4">
@@ -370,44 +421,16 @@ console.log(SpecePriceName,'ccheck here ');
                                     ...item,
                                     spice: SpecePriceName?.name || null,
                                     totalPrice,
-                                  });refetch()
-                                  setSpicenameandprice({ name: "", price: 0 }); }}
+                                  });
+                                  refetch();
+                                  setSpicenameandprice({ name: "", price: 0 });
+                                }}
                                 className=" hover:boder-b-2 hover:border-b hover:border-b-red-950 cursor-pointer "
                               >
                                 {" "}
                                 {item.name}
                               </span>
-
-                              {item.spicyLevels.length > 0 && (
-  <div className="text-xs grid justify-end gap-1 text-gray-600 mt-1">
-    <select
-      value={SpecePriceName.name || ""} // Ensuring the controlled value is properly set
-      className="bg-white text-black w-44"
-      onChange={(e) => {
-        const spice = item.spicyLevels.find(
-          (level) => level.name === e.target.value
-        );
-
-        if (spice) {
-          setSpicenameandprice({
-            name: spice.name,
-            price: spice.price,
-          });
-        } 
-      }}
-    >
-      <option value="">Normal Spice</option>
-      {item.spicyLevels.map((spicy, idx) => (
-        <option key={idx} value={spicy.name}>
-          {spicy.name} - £{spicy.price.toFixed(2)}
-        </option>
-      ))}
-    </select>
-  </div>
-)}
-
-
-                              {item.varieties.length > 0 ? (
+                              {item.varieties.length > 0 && (
                                 <div className="text-xs grid justify-end gap-1 text-gray-600 mt-1">
                                   <select
                                     className="bg-white text-black  w-44"
@@ -435,8 +458,12 @@ console.log(SpecePriceName,'ccheck here ');
                                       dispatch({
                                         type: "ADD_TO_CART",
                                         payload: updatedItem,
-                                      }); setSpicenameandprice({ name: "", price: 0 });
-                                     refetch()
+                                      });
+                                      setSpicenameandprice({
+                                        name: "",
+                                        price: 0,
+                                      });
+                                      refetch();
                                     }}
                                   >
                                     <option value="">Select a variety</option>
@@ -448,7 +475,36 @@ console.log(SpecePriceName,'ccheck here ');
                                     ))}
                                   </select>
                                 </div>
-                              ) : (
+                              )}
+                              {item.spicyLevels.length > 0 && (
+                                <div className="text-xs grid justify-end gap-1 text-gray-600 mt-1">
+                                  <select
+                                    value={SpecePriceName.name || ""} // Ensuring the controlled value is properly set
+                                    className="bg-white text-black w-44"
+                                    onChange={(e) => {
+                                      const spice = item.spicyLevels.find(
+                                        (level) => level.name === e.target.value
+                                      );
+
+                                      if (spice) {
+                                        setSpicenameandprice({
+                                          name: spice.name,
+                                          price: spice.price,
+                                        });
+                                      }
+                                    }}
+                                  >
+                                    <option value="">Normal Spice</option>
+                                    {item.spicyLevels.map((spicy, idx) => (
+                                      <option key={idx} value={spicy.name}>
+                                        {spicy.name} - £{spicy.price.toFixed(2)}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                              )}
+
+                              {item.varieties.length === 0 && (
                                 <button
                                   className="hover:underline"
                                   onClick={() => {
@@ -459,8 +515,12 @@ console.log(SpecePriceName,'ccheck here ');
                                       spice: SpecePriceName?.name || null,
                                       totalPrice,
                                     });
-                                    refetch()
-                                    setSpicenameandprice({ name: "", price: 0 }); }}
+                                    refetch();
+                                    setSpicenameandprice({
+                                      name: "",
+                                      price: 0,
+                                    });
+                                  }}
                                 >
                                   + £{calculateTotalPrice(item)}
                                 </button>
@@ -471,7 +531,6 @@ console.log(SpecePriceName,'ccheck here ');
                             {item.descrpition ? item.descrpition : ""}
                           </span>
                         </div>
-                     
                       )}
                     </div>
                   ))}

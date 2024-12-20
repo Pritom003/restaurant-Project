@@ -121,7 +121,7 @@ const Specialmenulist = () => {
                 </h3>
                 <button
                   onClick={() => deleteItem(category._id)}
-                  className="text-red-500 text-lg pt-5"
+                  className="text-black text-lg pt-5"
                 >
                   <FaTrash />
                 </button>
