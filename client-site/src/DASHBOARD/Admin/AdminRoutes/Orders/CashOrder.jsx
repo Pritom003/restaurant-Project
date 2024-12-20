@@ -58,6 +58,19 @@ const CashOrder = () => {
     sortOrders(orders, e.target.value);
   };
 
+  const handlePrint = () => {
+    axios
+      .post("http://localhost:5000/print", selectedOrder)
+      .then((response) => {
+        console.log(response.data.message);
+        alert("Printed successfully!");
+      })
+      .catch((error) => {
+        console.error("Error printing:", error);
+        alert("Failed to print!");
+      });
+  };
+
   const handleDelete = (id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -168,7 +181,7 @@ const CashOrder = () => {
                           e.stopPropagation();
                           handleDelete(order._id);
                         }}
-                        className="text-red-500 hover:text-red-600"
+                        className="text-black hover:text-red-600"
                         title="Delete Order"
                       >
                         <FaTrash size={18} />
@@ -209,8 +222,9 @@ const CashOrder = () => {
           </table>
         </div>
         {/* Print Preview Section */}
-        {selectedOrder ?(
+        {selectedOrder && (
           <div>
+            {/* Order Details */}
             <div
               ref={orderDetailsRef}
               style={{
@@ -222,301 +236,60 @@ const CashOrder = () => {
                 background: "#fff",
               }}
             >
-              {/* Header */}
               <h2 style={{ textAlign: "center", margin: "0" }}>Deedar Uk</h2>
-              <p className="text-center">Address:{selectedOrder?.address}</p>
-              <p className="text-center">Zip Code:{selectedOrder?.zipcode}</p>
-              <p className="text-center">Area:{selectedOrder?.area}</p>
-              <p className="text-center">Contact No:{selectedOrder?.mobile}</p>
-              <p
-                style={{
-                  textAlign: "center",
-                  margin: "5px 0",
-                  fontSize: "12px",
-                }}
-              ></p>
+              <p>Address: {selectedOrder.address}</p>
+              <p>Zip Code: {selectedOrder.zipcode}</p>
+              <p>Area: {selectedOrder.area}</p>
+              <p>Contact No: {selectedOrder.mobile}</p>
+              <h3>Order Number: {selectedOrder.orderNumber}</h3>
+              <p>CreatedAt: {selectedOrder.createdAt}</p>
               <hr />
-
-              {/* Order Details */}
-              <h3 style={{ textAlign: "center", margin: "5px 0" }}>
-                Order Number: {selectedOrder.orderNumber}
-              </h3>
-              <p style={{ fontSize: "12px", margin: "5px 0" }}>
-                CreatedAt:
-                {selectedOrder.createdAt} {selectedOrder.time}
-              </p>
-              <hr />
-
-              {/* Items */}
               <table>
                 <thead>
                   <tr>
-                    <th>Quantity</th>
-                    <th>Item Name</th>
-                    <th>Sub Items</th>
-                    <th style={{ textAlign: "right" }}>Price</th>
+                    <th>Qty</th>
+                    <th>Item</th>
+                    <th>Price</th>
                   </tr>
                 </thead>
                 <tbody>
                   {selectedOrder.items.map((item, index) => (
                     <tr key={index}>
-                      {/* Quantity */}
                       <td>{item.quantity}</td>
-
-                      {/* Item Name */}
                       <td>{item.name}</td>
-
-                      {/* Sub Items */}
-                      <td>
-                        {item.subItems && typeof item.subItems === "object" && (
-                          <ul>
-                            {Object.values(item.subItems).map(
-                              (subItem, subIndex) => (
-                                <li key={subIndex}>{subItem.name}</li>
-                              )
-                            )}
-                          </ul>
-                        )}
-                      </td>
-
-                      {/* Price */}
-                      <td style={{ textAlign: "right" }}>£ {item.price}</td>
+                      <td>£ {item.price}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-
-              <hr />
-
-              {/* Payment Details */}
-              <p style={{ fontSize: "12px" }}>
-                {selectedOrder.paymentMethod} {selectedOrder.paymentStatus}
-              </p>
-              <table style={{ width: "100%", fontSize: "12px" }}>
-                <tbody>
-                  <tr>
-                    <td>Delivery Charge:</td>
-                    <td style={{ textAlign: "right" }}>
-                      £ {selectedOrder.extraCharge}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Subtotal:</td>
-                    <td style={{ textAlign: "right" }}>
-                      £ {selectedOrder.totalPrice}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Total:</td>
-                    <td style={{ textAlign: "right", fontWeight: "bold" }}>
-                      £ {selectedOrder.totalPrice}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              <p style={{ fontSize: "12px", marginTop: "10px" }}>
-                Transaction Type: {selectedOrder.paymentMethod} <br />
-                Authorization: {selectedOrder.paymentStatus} <br />
-                {/* Payment Code: {selectedOrder.payment.paymentCode} <br /> */}
-                Payment ID: {selectedOrder._id} <br />
-              </p>
-              <hr />
-
-              {/* Tip Section */}
-              <p style={{ fontSize: "12px", margin: "10px 0" }}>
-                + Tip: _____________
-              </p>
-              <p style={{ fontSize: "12px", marginBottom: "10px" }}>
-                = Total: _____________
-              </p>
-              <p style={{ textAlign: "center" }}>
-                X _______________________________
-              </p>
-              <hr />
-
-              {/* Footer */}
-              <p
-                style={{
-                  textAlign: "center",
-                  fontSize: "12px",
-                  marginTop: "10px",
-                }}
-              >
-                Customer Copy <br />
-                Thanks for visiting <br />
-                {selectedOrder.restaurantName}
-              </p>
+              <p>Delivery Charge: £ {selectedOrder.extraCharge}</p>
+              <p>Total: £ {selectedOrder.totalPrice}</p>
+              <p>Payment Method: {selectedOrder.paymentMethod}</p>
+              <p>Payment Status: {selectedOrder.paymentStatus}</p>
             </div>
+
+            {/* Print Button */}
             <div style={{ textAlign: "center", marginTop: "20px" }}>
+              <button
+                className="bg-orange-300 py-2 px-2 rounded-lg"
+                onClick={handlePrint}
+              >
+                Print via POS
+              </button>
               <ReactToPrint
                 trigger={() => (
                   <button
-                    className="bg-red-500"
-                    style={{ padding: "10px 20px" }}
+                    className="bg-orange-300 py-2 px-2 rounded-lg"
+                    style={{ marginLeft: "10px" }}
                   >
-                    Print
+                    Print Customer Copy
                   </button>
                 )}
                 content={() => orderDetailsRef.current}
               />
             </div>
           </div>
-        ): 
-        
-        
-        
-        
-        
-        <div>
-        <div
-         
-          style={{
-            fontFamily: "monospace",
-            width: "300px",
-            margin: "auto",
-            padding: "20px",
-            border: "1px solid black",
-            background: "#fff",
-          }}
-        >
-          {/* Header */}
-          <h2 style={{ textAlign: "center", margin: "0" }}>Deedar Uk</h2>
-          <p className="text-center">Address:-------</p>
-          <p className="text-center">Zip Code:-------</p>
-          <p className="text-center">Area-------</p>
-          <p className="text-center">Contact No:-------</p>
-          <p
-            style={{
-              textAlign: "center",
-              margin: "5px 0",
-              fontSize: "12px",
-            }}
-          ></p>
-          <hr />
-
-          {/* Order Details */}
-          <h3 style={{ textAlign: "center", margin: "5px 0" }}>
-            Order Number:-------
-          </h3>
-          <p style={{ fontSize: "12px", margin: "5px 0" }}>
-            CreatedAt:
-            -------
-          </p>
-          <hr />
-
-          {/* Items */}
-          <table>
-            <thead>
-              <tr>
-                <th>Quantity</th>
-                <th>Item Name</th>
-                <th>Sub Items</th>
-                <th style={{ textAlign: "right" }}>Price</th>
-              </tr>
-            </thead>
-            <tbody>
-         
-                <tr >
-                  {/* Quantity */}
-                  <td>-------</td>
-
-                  {/* Item Name */}
-                  <td>-------</td>
-
-                  {/* Sub Items */}
-                  <td>
-                   
-                      <ul>
-                
-                       
-                            <li >-------</li>
-                    
-                      </ul>
-                    
-                  </td>
-
-                  {/* Price */}
-                  <td style={{ textAlign: "right" }}>£-------</td>
-                </tr>
-              
-            </tbody>
-          </table>
-
-          <hr />
-
-          {/* Payment Details */}
-          <p style={{ fontSize: "12px" }}>
-          ------- 
-          </p>
-          <table style={{ width: "100%", fontSize: "12px" }}>
-            <tbody>
-              <tr>
-                <td>Delivery Charge:</td>
-                <td style={{ textAlign: "right" }}>
-                  £ -------
-                </td>
-              </tr>
-              <tr>
-                <td>Subtotal:</td>
-                <td style={{ textAlign: "right" }}>
-                  £ -------
-                </td>
-              </tr>
-              <tr>
-                <td>Total:</td>
-                <td style={{ textAlign: "right", fontWeight: "bold" }}>
-                  £-------
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <p style={{ fontSize: "12px", marginTop: "10px" }}>
-            Transaction Type:------- <br />
-            Authorization: ------- <br />
-            {/* Payment Code: {selectedOrder.payment.paymentCode} <br /> */}
-            Payment ID: ------- <br />
-          </p>
-          <hr />
-
-          {/* Tip Section */}
-          <p style={{ fontSize: "12px", margin: "10px 0" }}>
-            + Tip: _____________
-          </p>
-          <p style={{ fontSize: "12px", marginBottom: "10px" }}>
-            = Total: _____________
-          </p>
-          <p style={{ textAlign: "center" }}>
-            X _______________________________
-          </p>
-          <hr />
-
-          {/* Footer */}
-          <p
-            style={{
-              textAlign: "center",
-              fontSize: "12px",
-              marginTop: "10px",
-            }}
-          >
-            Customer Copy <br />
-            Thanks for visiting <br />
-            -------
-          </p>
-        </div>
-        {/* <div style={{ textAlign: "center", marginTop: "20px" }}>
-          <ReactToPrint
-            trigger={() => (
-              <button
-                className="bg-red-500"
-                style={{ padding: "10px 20px" }}
-              >
-                Print
-              </button>
-            )}
-            content={() => orderDetailsRef.current}
-          />
-        </div> */}
-      </div>  }
+        )}
       </div>
     </div>
   );

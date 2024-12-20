@@ -97,7 +97,7 @@
 //                         e.stopPropagation();
 //                         handleDelete(order._id);
 //                       }}
-//                       className="text-red-500 hover:text-red-600"
+//                       className="text-black hover:text-red-600"
 //                       title="Delete Order"
 //                     >
 //                       <FaTrash size={18} />
@@ -163,10 +163,9 @@
 //                 </li>
 //               ))}
 //             </ul>
-         
-//           </div>
-//         )}  
 
+//           </div>
+//         )}
 
 // <ReactToPrint
 //         trigger={() => (
@@ -178,7 +177,7 @@
 //         documentTitle={`Order_${selectedOrder?._id}`}
 //       />
 //   </div>
-    
+
 //       </div>
 //     </div>
 //   );

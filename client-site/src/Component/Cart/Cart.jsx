@@ -11,7 +11,7 @@ import useAuth from "../../Hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import useRestaurantStatus from "../../Hooks/useRestaurantStatus";
 
-const DELIVERY_CHARGE = 2.95;
+const DELIVERY_CHARGE = 0.0;
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -232,7 +232,7 @@ const Cart = () => {
               </div>
               {orderType === "online" && (
                 <div className="mt-2 text-lg">
-                  Delivery Charge: £{DELIVERY_CHARGE.toFixed(2)}
+                  {/* Delivery Charge: £{DELIVERY_CHARGE.toFixed(2)} */}
                 </div>
               )}
               <div className="mt-2 text-lg">

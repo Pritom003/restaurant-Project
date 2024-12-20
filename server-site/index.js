@@ -4,6 +4,9 @@ const cors = require('cors');
 const http = require('http'); // Required for Socket.IO
 const { Server } = require('socket.io');
 const dotenv = require('dotenv');
+const escpos = require("escpos");
+escpos.USB = require("escpos-usb");
+const bodyParser = require("body-parser");
 const connectToMongoDB = require('./src/config/db');
 const menuRoutes = require('./src/routes/MenuRoutes');
 const orderRoutes = require('./src/routes/OrderRoutes');
@@ -24,7 +27,7 @@ const io = new Server(server, {
     credentials: true,
   },
 });
-
+app.use(bodyParser.json());
 const port = process.env.PORT || 3000;
 
 // Middleware
@@ -60,6 +63,69 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Something went wrong!' });
 });
+
+// Print route
+app.post("/print", (req, res) => {
+  const order = req.body;
+
+  try {
+    const device = new escpos.USB(); // Connect to the USB printer
+    const printer = new escpos.Printer(device);
+
+    device.open(() => {
+      printer
+        .font("a")
+        .align("ct")
+        .style("bu")
+        .size(1, 1)
+        .text("Deedar Uk")
+        .text(`Address: ${order.address}`)
+        .text(`Zip Code: ${order.zipcode}`)
+        .text(`Area: ${order.area}`)
+        .text(`Contact No: ${order.mobile}`)
+        .text("---------------")
+        .text(`Order Number: ${order.orderNumber}`)
+        .text(`CreatedAt: ${order.createdAt}`)
+        .text("---------------");
+
+      // Add items
+      printer.tableCustom([
+        { text: "Qty", align: "LEFT", width: 0.2 },
+        { text: "Item", align: "CENTER", width: 0.5 },
+        { text: "Price", align: "RIGHT", width: 0.3 },
+      ]);
+
+      order.items.forEach((item) => {
+        printer.tableCustom([
+          { text: item.quantity.toString(), align: "LEFT", width: 0.2 },
+          { text: item.name, align: "CENTER", width: 0.5 },
+          { text: `£ ${item.price}`, align: "RIGHT", width: 0.3 },
+        ]);
+      });
+
+      // Add totals and payment info
+      printer
+        .text("---------------")
+        .text(`Delivery Charge: £ ${order.extraCharge}`)
+        .text(`Subtotal: £ ${order.totalPrice}`)
+        .text(`Total: £ ${order.totalPrice}`)
+        .text("---------------")
+        .text(`Payment Method: ${order.paymentMethod}`)
+        .text(`Payment Status: ${order.paymentStatus}`)
+        .text("---------------")
+        .text("Customer Copy")
+        .text("Thanks for visiting")
+        .cut()
+        .close();
+
+      res.status(200).json({ message: "Print successful" });
+    });
+  } catch (error) {
+    console.error("Printing Error:", error);
+    res.status(500).json({ error: "Failed to print" });
+  }
+});
+
 
 // Start the server and connect to MongoDB
 server.listen(port, async () => {

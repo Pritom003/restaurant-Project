@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 // import useAuth from "../../hooks/useAuth";
 import useRole from "../../Hooks/useRole";
-import TimePicker from 'react-time-picker';
+import TimePicker from "react-time-picker";
 import {
   getAuth,
   updatePassword,
@@ -12,24 +12,24 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import useAuth from "../../Hooks/useAuth";
 import useRestaurantStatus from "../../Hooks/useRestaurantStatus";
-import 'react-time-picker/dist/TimePicker.css';  
+import "react-time-picker/dist/TimePicker.css";
 
 const Profile = () => {
   const { user } = useAuth();
   const [role] = useRole();
-  const { isRestaurantOpen,openingTime, closingTime} = useRestaurantStatus();
+  const { isRestaurantOpen, openingTime, closingTime } = useRestaurantStatus();
   const [showModal, setShowModal] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [message, setMessage] = useState("");
- // For restaurant open/close status and time settings
- console.log(openingTime , closingTime);
-// Set initial value of isOpen to isRestaurantOpen from the hook
-const [isOpen, setIsOpen] = useState(isRestaurantOpen);
+  // For restaurant open/close status and time settings
+  console.log(openingTime, closingTime);
+  // Set initial value of isOpen to isRestaurantOpen from the hook
+  const [isOpen, setIsOpen] = useState(isRestaurantOpen);
   // State for restaurant open/close status and time settings
   // const [isOpen, setIsOpen] = useState(isRestaurantOpen);
   const [NewopeningTime, setOpeningTime] = useState(openingTime || "0:0"); // Default value
-  const [NewclosingTime, setClosingTime] = useState(closingTime || "00:00")// Default value
+  const [NewclosingTime, setClosingTime] = useState(closingTime || "00:00"); // Default value
 
   useEffect(() => {
     setIsOpen(isRestaurantOpen);
@@ -68,28 +68,31 @@ const [isOpen, setIsOpen] = useState(isRestaurantOpen);
       }
     }
   };
- // Handle open/close toggle
- const handleRestaurantStatusChange = async () => {
-  try {
-    const response = await axios.post("http://localhost:3000/api/restaurant/status", {
-      isOpen,
-      NewopeningTime,
-      NewclosingTime,
-    });
-    if (response.status === 200) {
+  // Handle open/close toggle
+  const handleRestaurantStatusChange = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/restaurant/status",
+        {
+          isOpen,
+          NewopeningTime,
+          NewclosingTime,
+        }
+      );
+      if (response.status === 200) {
+        Swal.fire({
+          title: "Restaurant status updated successfully!",
+          icon: "success",
+        });
+      }
+    } catch (error) {
       Swal.fire({
-        title: "Restaurant status updated successfully!",
-        icon: "success",
+        title: "Error updating restaurant status.",
+        text: error.message,
+        icon: "error",
       });
     }
-  } catch (error) {
-    Swal.fire({
-      title: "Error updating restaurant status.",
-      text: error.message,
-      icon: "error",
-    });
-  }
-};
+  };
   return (
     <div className="flex flex-col justify-center items-center h-screen">
       <div className="bg-white shadow-lg rounded-2xl w-3/5">
@@ -125,7 +128,6 @@ const [isOpen, setIsOpen] = useState(isRestaurantOpen);
               </p>
 
               <div>
-           
                 <button
                   className="bg-[#F43F5E] px-7 py-1 rounded-lg text-white cursor-pointer hover:bg-[#af4053]"
                   onClick={() => setShowModal(true)}
@@ -137,7 +139,7 @@ const [isOpen, setIsOpen] = useState(isRestaurantOpen);
           </div>
         </div>
       </div>
-     
+
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-lg p-6 w-96 shadow-lg">
@@ -178,14 +180,16 @@ const [isOpen, setIsOpen] = useState(isRestaurantOpen);
           </div>
         </div>
       )}
-       {role === "Admin" && (
-        <div className="mt-6 p-4 bg-gray-100 rounded-lg shadow-md w-full text-black" >
-          <h3 className="text-lg font-semibold">Restaurant Hours {NewopeningTime}</h3>
+      {role === "Admin" && (
+        <div className="mt-6 p-4 bg-gray-100 rounded-lg shadow-md w-full text-black">
+          <h3 className="text-lg font-semibold">
+            Restaurant Hours {NewopeningTime}
+          </h3>
           <div className="flex items-center justify-between">
             <div>
               <label className="block text-sm"> Update Opening Time</label>
               <TimePicker
-                format="HH:mm" 
+                format="HH:mm"
                 value={NewopeningTime}
                 onChange={(e) => setOpeningTime(e)}
                 className="bg-white text-black border rounded-lg"
@@ -195,7 +199,7 @@ const [isOpen, setIsOpen] = useState(isRestaurantOpen);
               <label className="block text-sm"> Update Closing Time</label>
               <TimePicker
                 value={NewclosingTime}
-                format="HH:mm" 
+                format="HH:mm"
                 onChange={(e) => setClosingTime(e)}
                 className="bg-white text-black border rounded-lg"
               />
@@ -205,7 +209,7 @@ const [isOpen, setIsOpen] = useState(isRestaurantOpen);
           <div className="mt-4 flex items-center">
             <label className="mr-4">
               {isOpen ? (
-                  <span className="text-xl font-bold text-green-700">Open</span>
+                <span className="text-xl font-bold text-green-700">Open</span>
               ) : (
                 <span className="text-xl font-bold text-red-700">Close</span>
               )}
