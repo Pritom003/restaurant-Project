@@ -1,17 +1,19 @@
-import axios from "axios";
+// import axios from "axios";
 import { useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa"; // Import the trash icon
 import Swal from "sweetalert2"; // Import SweetAlert2
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 
 const Specialmenulist = () => {
   const [specialmenulist, setSpecialmenulist] = useState([]);
   const [loading, setLoading] = useState(true);
+  const axiosSecure = useAxiosSecure();
 
   useEffect(() => {
     const fetchMenu = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/api/special-menu"
+        const response = await axiosSecure.get(
+          "/api/special-menu"
         );
         setSpecialmenulist(response.data);
         setLoading(false);
@@ -45,8 +47,8 @@ const Specialmenulist = () => {
     if (result.isConfirmed) {
       try {
         if (dishName) {
-          await axios.delete(
-            `http://localhost:3000/api/special-menu/${id}/subcategory/${encodeURIComponent(
+          await axiosSecure.delete(
+            `/api/special-menu/${id}/subcategory/${encodeURIComponent(
               subcategoryName
             )}/dish/${encodeURIComponent(dishName)}`
           );
@@ -71,8 +73,8 @@ const Specialmenulist = () => {
             )
           );
         } else if (subcategoryName) {
-          await axios.delete(
-            `http://localhost:3000/api/special-menu/${id}/subcategory/${encodeURIComponent(
+          await axiosSecure.delete(
+            `/api/special-menu/${id}/subcategory/${encodeURIComponent(
               subcategoryName
             )}`
           );
@@ -90,7 +92,7 @@ const Specialmenulist = () => {
             )
           );
         } else {
-          await axios.delete(`http://localhost:3000/api/special-menu/${id}`);
+          await axiosSecure.delete(`/api/special-menu/${id}`);
           // Update state to remove the entire category
           setSpecialmenulist((prevList) =>
             prevList.filter((item) => item._id !== id)

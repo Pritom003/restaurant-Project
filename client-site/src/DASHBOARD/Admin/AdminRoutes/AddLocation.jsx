@@ -1,124 +1,89 @@
 import { useState, useEffect } from "react";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 
 const AddLocation = () => {
   const [location, setLocation] = useState("");
   const [price, setPrice] = useState("");
   const [locations, setLocations] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const axiosSecure = useAxiosSecure();
 
-  // Fetch all locations
+
   const fetchLocations = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:3000/api/delivery-location"
-      );
-      const data = await response.json();
-      if (response.ok) {
-        setLocations(data.data);
-      } else {
-        alert("Failed to fetch locations");
-      }
+      const response = await axiosSecure.get("/api/delivery-location");
+      setLocations(response.data.data);
     } catch (error) {
       console.error("Error fetching locations:", error);
+      alert("Failed to fetch locations");
     }
   };
 
   // Add location
-  const handleAddLocation = async (e) => {
-    e.preventDefault();
-
-    if (!location || !price) {
-      alert("Please fill in all fields.");
-      return;
-    }
-
-    const newLocation = {
-      locationName: location,
-      price: Number(price),
-    };
-
-    try {
-      setIsSubmitting(true);
-      const response = await fetch(
-        "http://localhost:3000/api/delivery-location",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newLocation),
-        }
-      );
-
-      if (response.ok) {
-        alert("Location added successfully!");
-        setLocation("");
-        setPrice("");
-        fetchLocations(); // Refresh locations
-      } else {
-        alert("Failed to add location");
-      }
-    } catch (error) {
-      console.error("Error adding location:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
+ 
   // Delete location
-  const handleDeleteLocation = async (id) => {
-    try {
-      const response = await fetch(
-        `http://localhost:3000/api/delivery-location/${id}`,
-        {
-          method: "DELETE",
-        }
-      );
+// Add location
+const handleAddLocation = async (e) => {
+  e.preventDefault();
 
-      if (response.ok) {
-        alert("Location deleted successfully!");
-        fetchLocations(); // Refresh locations
-      } else {
-        alert("Failed to delete location");
-      }
-    } catch (error) {
-      console.error("Error deleting location:", error);
-    }
+  if (!location || !price) {
+    alert("Please fill in all fields.");
+    return;
+  }
+
+  const newLocation = {
+    locationName: location,
+    price: Number(price),
   };
 
-  // Update location
-  const handleUpdateLocation = async (id) => {
-    const updatedPrice = prompt("Enter the new price:");
-    if (!updatedPrice) return;
+  try {
+    setIsSubmitting(true);
+    await axiosSecure.post("/api/delivery-location", newLocation);
+    alert("Location added successfully!");
+    setLocation("");
+    setPrice("");
+    fetchLocations(); // Refresh locations
+  } catch (error) {
+    console.error("Error adding location:", error);
+    alert("Failed to add location");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
-    try {
-      const response = await fetch(
-        `http://localhost:3000/api/delivery-location/${id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ price: Number(updatedPrice) }),
-        }
-      );
+// Delete location
+const handleDeleteLocation = async (id) => {
+  try {
+    await axiosSecure.delete(`/api/delivery-location/${id}`);
+    alert("Location deleted successfully!");
+    fetchLocations(); // Refresh locations
+  } catch (error) {
+    console.error("Error deleting location:", error);
+    alert("Failed to delete location");
+  }
+};
 
-      if (response.ok) {
-        alert("Location updated successfully!");
-        fetchLocations(); // Refresh locations
-      } else {
-        alert("Failed to update location");
-      }
-    } catch (error) {
-      console.error("Error updating location:", error);
-    }
-  };
+// Update location
+const handleUpdateLocation = async (id) => {
+  const updatedPrice = prompt("Enter the new price:");
+  if (!updatedPrice) return;
 
-  // Load locations on mount
-  useEffect(() => {
-    fetchLocations();
-  }, []);
+  try {
+    await axiosSecure.put(`/api/delivery-location/${id}`, {
+      price: Number(updatedPrice),
+    });
+    alert("Location updated successfully!");
+    fetchLocations(); // Refresh locations
+  } catch (error) {
+    console.error("Error updating location:", error);
+    alert("Failed to update location");
+  }
+};
 
+// Load locations on mount
+useEffect(() => {
+  fetchLocations();
+}, []);
   return (
     <div className="bg-slate-100 text-black lg:flex  gap-10 justify-center align-middle items-center grid">
     <div className="">  <h2 className="text-center text-xl font-medium mb-4">Add Location</h2>

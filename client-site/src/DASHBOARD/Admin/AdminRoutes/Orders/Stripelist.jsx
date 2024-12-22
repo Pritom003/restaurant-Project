@@ -1,19 +1,20 @@
 import { useEffect, useState, useRef } from "react";
-import axios from "axios";
+// import axios from "axios";
 import Swal from "sweetalert2";
 import ReactToPrint from "react-to-print";
 import { FaTrash, FaPrint, FaCheckCircle } from "react-icons/fa";
+import useAxiosSecure from "../../../../Hooks/useAxiosSecure";
 
 const Stripelist = () => {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const orderDetailsRef = useRef();
-
+  const axiosSecure = useAxiosSecure();
   // Fetch Stripe orders on component mount
   console.log(selectedOrder);
   useEffect(() => {
-    axios
-      .get("http://localhost:3000/api/orders/payment-methods?method=stripe")
+    axiosSecure
+      .get("/api/orders/payment-methods?method=stripe")
       .then((response) => {
         setOrders(response.data || []);
       })
@@ -38,8 +39,8 @@ const Stripelist = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios
-          .delete(`http://localhost:3000/api/orders/${id}`)
+        axiosSecure
+          .delete(`/api/orders/${id}`)
           .then(() => {
             setOrders((prevOrders) =>
               prevOrders.filter((order) => order._id !== id)

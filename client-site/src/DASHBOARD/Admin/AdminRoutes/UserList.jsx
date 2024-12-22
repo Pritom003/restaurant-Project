@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+// import axios from "axios";
 import { FaUserShield,  FaTrashAlt } from "react-icons/fa";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import { PiChefHatThin } from "react-icons/pi";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 const UserList = () => {
   const [users, setUsers] = useState([]);
+  const axiosSecure = useAxiosSecure();
 
   // Fetch all users
   useEffect(() => {
-    axios
-      .get("http://localhost:3000/users") // Adjust the URL if needed
+    axiosSecure
+      .get("/users") // Adjust the URL if needed
       .then((response) => setUsers(response.data))
       .catch((error) => console.error("Error fetching users:", error));
   }, []);
@@ -26,8 +28,8 @@ const UserList = () => {
       confirmButtonText: "Yes, update it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios
-          .put(`http://localhost:3000/users/update/${email}`, { role })
+        axiosSecure
+          .put(`/users/update/${email}`, { role })
           .then(() => {
             Swal.fire("Updated!", `User role updated to ${role}`, "success");
             setUsers((prevUsers) =>
@@ -53,8 +55,8 @@ const UserList = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios
-          .delete(`http://localhost:3000/users/${email}`)
+        axiosSecure
+          .delete(`/users/${email}`)
           .then(() => {
             Swal.fire("Deleted!", "User has been deleted.", "success");
             setUsers((prevUsers) => prevUsers.filter((user) => user.email !== email));

@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from "react";
-import axios from "axios";
+// import axios from "axios";
 import Swal from "sweetalert2";
 import ReactToPrint from "react-to-print";
 import { FaTrash, FaPrint, FaCheckCircle } from "react-icons/fa";
+import useAxiosSecure from "../../../../Hooks/useAxiosSecure";
 
 const PickupOrder = () => {
   const [orders, setOrders] = useState([]);
@@ -12,12 +13,13 @@ const PickupOrder = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [dataChanged, setDataChanged] = useState(false); // Track changes
   const orderDetailsRef = useRef();
+  const axiosSecure = useAxiosSecure();
 
   // Fetch and sort orders in descending order when the component mounts or data changes
   useEffect(() => {
     setIsLoading(true);
-    axios
-      .get("http://localhost:3000/api/orders/payment-methods?method=pickup")
+    axiosSecure
+      .get("/api/orders/payment-methods?method=pickup")
       .then((response) => {
         const data = response.data || [];
         // Sort all orders by creation date (descending)
@@ -67,8 +69,8 @@ const PickupOrder = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios
-          .delete(`http://localhost:3000/api/orders/${id}`)
+        axiosSecure
+          .delete(`/api/orders/${id}`)
           .then(() => {
             Swal.fire("Deleted!", "Order has been deleted.", "success");
             setDataChanged((prev) => !prev); // Toggle dataChanged to trigger refresh
@@ -82,8 +84,8 @@ const PickupOrder = () => {
   };
 
   const handleUpdatePaymentStatus = (id) => {
-    axios
-      .patch(`http://localhost:3000/api/orders/${id}/payment-status`, {
+    axiosSecure
+      .patch(`/api/orders/${id}/payment-status`, {
         paymentStatus: "success",
       })
       .then(() => {
@@ -105,6 +107,7 @@ const PickupOrder = () => {
 
   return (
     <div className="overflow-x-auto mt-8 text-black">
+      {isLoading && <p>Loading...</p>}
       <h2 className="text-2xl font-semibold mb-4">Pick Up Orders</h2>
 
       {/* Month Filter Dropdown */}

@@ -5,12 +5,14 @@ import MenuData from "../../../Hooks/Menudatea"; // Ensure this fetches correct 
 import Loader from "../../../Component/Shared/Loader/Loader";
 import Heading from "./Heading";
 import { useDispatch } from "react-redux";
-import axios from "axios";
+// import axios from "axios";
 import SpecialMenuModal from "./SpecialMenuModal";
 import Swal from "sweetalert2";
 import useRestaurantStatus from "../../../Hooks/useRestaurantStatus";
 import { MdSignalWifiConnectedNoInternet1 } from "react-icons/md";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 const MenuBox = ({ addToCart }) => {
+  const axiosSecure = useAxiosSecure();
   const { menuData, isLoading, error,  refetch, } = MenuData();
   const [expandedCategories, setExpandedCategories] = useState([]);
   const [isAllergiesExpanded, setIsAllergiesExpanded] = useState(false);
@@ -43,8 +45,8 @@ console.log(SpecePriceName,'ccheck here ');
   useEffect(() => {
     const fetchSpecialMenu = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/api/special-menu"
+        const response = await axiosSecure.get(
+          "/api/special-menu"
         ); // Adjust the URL as needed
         setSpecialMenuData(response.data);
       } catch (err) {

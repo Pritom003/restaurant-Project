@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react";
 import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 
 const PieCharts = () => {
   const [orderData, setOrderData] = useState([]);
+  const axiosSecure = useAxiosSecure();
+
 
   useEffect(() => {
-    fetch("http://localhost:3000/v3/api/orders/order-type")
-      .then((res) => res.json())
-      .then((data) => {
-        setOrderData(data); // Set the data for online vs pickup orders
+    axiosSecure
+      .get("/v3/api/orders/order-type")
+      .then((response) => {
+        setOrderData(response.data); // Assuming the data you need is in the response body
       })
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
-
   // Define the colors for the Pie chart
   const COLORS = ["#856d1e", "#e3d1bf"]; // Blue for online, yellow for pickup
 

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import useAxiosSecure from "./useAxiosSecure";
 
 // Custom hook to check if the restaurant is open based on time and isOpen status
 const useRestaurantStatus = () => {
@@ -6,15 +7,14 @@ const useRestaurantStatus = () => {
   const [loading, setLoading] = useState(true);
   const [openingTime, setOpeningTime] = useState(null);
   const [closingTime, setClosingTime] = useState(null);
-
+  const axiosSecure = useAxiosSecure();
   useEffect(() => {
     const fetchRestaurantStatus = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:3000/api/restaurant/status"
-        );
-        const data = await response.json();
-        const { NewopeningTime, NewclosingTime, isOpen, today } = data;
+        const response = await axiosSecure.get("/api/restaurant/status");
+        const { NewopeningTime, NewclosingTime, isOpen, today } = response.data;
+        // const data = await response.json();
+        // const { NewopeningTime, NewclosingTime, isOpen, today } = data;
 
         // Set opening and closing times to state
         setOpeningTime(NewopeningTime);

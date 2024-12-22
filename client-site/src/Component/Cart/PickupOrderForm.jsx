@@ -9,9 +9,10 @@ import {
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import Swal from "sweetalert2";
-import axios from "axios";
+// import axios from "axios";
 import useAuth from "../../Hooks/useAuth";
 import { useDispatch } from "react-redux";
+import useAxiosSecure from "../../Hooks/useAxiosSecure";
 
 const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
 const stripePromise = loadStripe(stripePublicKey);
@@ -19,6 +20,8 @@ const stripePromise = loadStripe(stripePublicKey);
 // Sample delivery charge mapping
 
 const PickupOrderForm = () => {
+  const axiosSecrue = useAxiosSecure();
+
   const { user } = useAuth();
   const dispatch = useDispatch();
   const location = useLocation();
@@ -47,8 +50,8 @@ const PickupOrderForm = () => {
   useEffect(() => {
     const fetchLocations = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/api/delivery-location"
+        const response = await axiosSecrue.get(
+          "/api/delivery-location"
         );
         setDeliveryLocations(response.data.data); // Update the state with fetched data
       } catch (error) {
@@ -119,7 +122,7 @@ const PickupOrderForm = () => {
     }
 
     try {
-      await axios.post("http://localhost:3000/api/orders", orderData);
+      await axiosSecrue.post("/api/orders", orderData);
       Swal.fire(
         "Success",
         "Your order has been placed successfully!",

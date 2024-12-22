@@ -1,14 +1,17 @@
 /* eslint-disable no-unused-vars */
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
 import Swal from 'sweetalert2'; // Import Swal
 import { FaPen, FaTrash } from 'react-icons/fa';
 import { useForm } from 'react-hook-form'; // Import React Hook Form
 import Modal from 'react-modal';
 import Specialmenulist from "./Specialmenulist";
 import useMenuData from '../../../Hooks/Menudatea';
+import useAxiosSecure from '../../../Hooks/useAxiosSecure';
 Modal.setAppElement('#root'); // Accessibility fix
 const AllMenuList = () => {
+  const axiosSecure = useAxiosSecure();
+
   // const [menu, setMenu] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [categoriesPerPage, setCategoriesPerPage] = useState(2); 
@@ -33,7 +36,7 @@ console.log(menu);
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/api/menu/${category}/item/${name}`);
+        await axiosSecure.delete(`/api/menu/${category}/item/${name}`);
         if (Array.isArray(menu)) {
           const updatedMenu = menu.map(cat =>
             cat.category === category
@@ -122,8 +125,8 @@ const handleUpdate = async (data) => {
   };
 
   try {
-    const response = await axios.put(
-      `http://localhost:3000/v4/menu/${editingItem.category}/item/${encodeURIComponent(cleanName(editingItem.name))}`,
+    const response = await axiosSecure.put(
+      `/v4/menu/${editingItem.category}/item/${encodeURIComponent(cleanName(editingItem.name))}`,
       updatedItem
     );
     if (response.status === 200) {
@@ -183,7 +186,7 @@ const handleUpdate = async (data) => {
   
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/api/menu/category/${id}`);
+        await axiosSecure.delete(`/api/menu/category/${id}`);
         const updatedMenu = menu.filter(cat => cat.category !== category);
 
         Swal.fire('Deleted!', `The category "${category}" has been deleted.`, 'success');

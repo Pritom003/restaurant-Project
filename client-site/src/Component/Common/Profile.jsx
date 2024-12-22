@@ -9,12 +9,15 @@ import {
   EmailAuthProvider,
 } from "firebase/auth";
 import Swal from "sweetalert2";
-import axios from "axios";
+// import axios from "axios";
 import useAuth from "../../Hooks/useAuth";
 import useRestaurantStatus from "../../Hooks/useRestaurantStatus";
 import 'react-time-picker/dist/TimePicker.css';  
+import useAxiosSecure from "../../Hooks/useAxiosSecure";
 
 const Profile = () => {
+  const axiosSecure = useAxiosSecure();
+
   const { user } = useAuth();
   const [role] = useRole();
   const { isRestaurantOpen,openingTime, closingTime} = useRestaurantStatus();
@@ -71,7 +74,7 @@ const [isOpen, setIsOpen] = useState(isRestaurantOpen);
  // Handle open/close toggle
  const handleRestaurantStatusChange = async () => {
   try {
-    const response = await axios.post("http://localhost:3000/api/restaurant/status", {
+    const response = await axiosSecure.post("/api/restaurant/status", {
       isOpen,
       NewopeningTime,
       NewclosingTime,

@@ -1,32 +1,37 @@
 import { useEffect, useState } from "react";
 import useAuth from "../../Hooks/useAuth";
 import TableRow from "./TableRow";
+import useAxiosSecure from "../../Hooks/useAxiosSecure";
 
 const MyOrders = () => {
   const { user } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   // const [error, setError] = useState(null);
+  const axiosSecure = useAxiosSecure();
 
+ 
   useEffect(() => {
     if (!user?.email) return; // Ensure user email is available
-
+  
     const fetchUserOrders = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:3000/api/orders/user?email=${user.email}`
+        const response = await axiosSecure.get(
+          `api/orders/user`,
+          { params: { email: user.email } } // Axios handles query parameters automatically
         );
-        const data = await response.json();
-        setOrders(data);
-        setLoading(false);
+        setOrders(response.data);
       } catch (error) {
-        console.error("Error fetching user orders:", error);
+        console.error("Error fetching user orders:", error.response?.data || error.message);
+      } finally {
         setLoading(false);
       }
     };
-
+  
     fetchUserOrders();
   }, [user?.email]);
+  
+
 
   if (loading) return <p>Loading...</p>;
   // if (error) return <p className="text-red-600">{error}</p>;

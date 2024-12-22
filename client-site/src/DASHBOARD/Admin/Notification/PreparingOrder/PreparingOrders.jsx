@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import ReactToPrint from "react-to-print";
 import Swal from "sweetalert2"; // Import SweetAlert2
+import useAxiosSecure from "../../../../Hooks/useAxiosSecure";
 
 const PreparingOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -8,20 +9,21 @@ const PreparingOrders = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const orderDetailsRef = useRef();
   // Fetch orders on component mount
+  const axiosSecure = useAxiosSecure();
+
+
   useEffect(() => {
     const fetchPreparingOrders = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:3000/api/orders/preparing"
-        );
-        const data = await response.json();
-        setOrders(data);
-        setLoading(false);
+        const response = await axiosSecure.get("/api/orders/preparing");
+        setOrders(response.data);
       } catch (error) {
         console.error("Error fetching preparing orders:", error);
+      } finally {
         setLoading(false);
       }
     };
+
     fetchPreparingOrders();
   }, []);
 
@@ -54,30 +56,26 @@ const PreparingOrders = () => {
     return () => clearInterval(timer); // Cleanup on unmount
   }, []);
 
-  const updateOrderStatus = async (orderId) => {
+  const updateOrderStatus = async (orderId, setOrders) => {
     try {
       // Optimistically remove the item immediately from the state
       setOrders((prevOrders) =>
         prevOrders.filter((order) => order._id !== orderId)
       );
-
-      const response = await fetch(
-        `http://localhost:3000/api/orders/${orderId}/expire`,
-        {
-          method: "PATCH",
-        }
+  
+      const response = await axiosSecure.patch(
+        `/api/orders/${orderId}/expire`
       );
-
-      if (response.ok) {
-        const updatedOrder = await response.json();
-        console.log("Order status updated to Expired:", updatedOrder);
+  
+      if (response.status === 200) {
+        console.log("Order status updated to Expired:", response.data);
         Swal.fire({
           title: "Order Done!",
           text: "The order status has been updated to Done.",
           icon: "success",
         });
       } else {
-        console.error("Failed to update order status", await response.json());
+        console.error("Failed to update order status", response.data);
         // Rollback if API call fails
         setOrders((prevOrders) => [...prevOrders, { _id: orderId }]);
       }
@@ -89,6 +87,8 @@ const PreparingOrders = () => {
   };
 
   // Add 5 more minutes to the order
+
+
   const addTimeToOrder = async (orderId) => {
     // Show confirmation dialog
     const result = await Swal.fire({
@@ -99,22 +99,16 @@ const PreparingOrders = () => {
       confirmButtonText: "Yes, Add Time!",
       cancelButtonText: "Cancel",
     });
-
+  
     if (result.isConfirmed) {
       try {
-        const response = await fetch(
-          `http://localhost:3000/api/orders/${orderId}`,
-          {
-            method: "PATCH",
-            body: JSON.stringify({ time: 5 }),
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
+        const response = await axiosSecure.patch(
+          `/api/orders/${orderId}`,
+          { time: 5 }, // Axios automatically sets the Content-Type to application/json for JSON payloads
         );
-
-        if (response.ok) {
-          const updatedOrder = await response.json();
+  
+        if (response.status === 200) {
+          const updatedOrder = response.data;
           console.log("5 minutes added:", updatedOrder);
           setOrders((prevOrders) =>
             prevOrders.map((order) =>
@@ -126,15 +120,13 @@ const PreparingOrders = () => {
             text: "5 minutes have been added to the preparation time.",
             icon: "success",
           });
-        } else {
-          console.error("Failed to update order time", await response.json());
         }
       } catch (error) {
-        console.error("Error updating order time:", error);
+        console.error("Error updating order time:", error.response?.data || error.message);
       }
     }
   };
-
+  
   const handleRowClick = (order) => setSelectedOrder(order);
 
   if (loading) {

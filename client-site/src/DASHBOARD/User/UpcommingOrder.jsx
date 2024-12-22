@@ -1,31 +1,35 @@
 import { useState, useEffect } from "react";
 import useAuth from "../../Hooks/useAuth";
+import useAxiosSecure from "../../Hooks/useAxiosSecure";
+import Swal from "sweetalert2";
 
 const UpcomingOrders = () => {
   const { user } = useAuth(); // Assuming user data is stored in context
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const axiosSecure = useAxiosSecure();
+
+  
 
   useEffect(() => {
     if (!user?.email) return; // Ensure user email is available
-
+  
     const fetchUserOrders = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:3000/api/orders/user?email=${user.email}`
+        const response = await axiosSecure.get(
+          `/api/orders/user`, 
+          { params: { email: user.email } } // Axios handles query parameters
         );
-        const data = await response.json();
-        setOrders(data);
-        setLoading(false);
+        setOrders(response.data);
       } catch (error) {
-        console.error("Error fetching user orders:", error);
+        console.error("Error fetching user orders:", error.response?.data || error.message);
+      } finally {
         setLoading(false);
       }
     };
-
+  
     fetchUserOrders();
-  }, [user?.email]);
-
+  }, [user?.email]);  
 
 
   // Filter out expired orders
@@ -51,31 +55,50 @@ const calculateRemainingTime = (updatedAt, preparationTime) => {
 };
 
 // Handle canceling the order
-const handleCancelOrder = async (orderId) => {
-  try {
-    const response = await fetch(
-      `http://localhost:3000/api/orders/${orderId}/cancel`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status: "Canceled" }),
-      }
-    );
 
-    if (response.ok) {
-      await response.json();
-      setOrders((prevOrders) =>
-        prevOrders.map((order) =>
-          order._id === orderId ? { ...order, status: "Canceled" } : order
-        )
+const handleCancelOrder = async (orderId) => {
+  // Show confirmation dialog before canceling
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'Do you really want to cancel this order?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, cancel it!',
+    cancelButtonText: 'No, keep it',
+  });
+
+  // Proceed with canceling if confirmed
+  if (result.isConfirmed) {
+    try {
+      const response = await axiosSecure.patch(
+        `/api/orders/${orderId}/cancel`,
+        { status: 'Canceled' }, // Axios automatically sets the Content-Type to application/json
       );
+
+      if (response.status === 200) {
+        setOrders((prevOrders) =>
+          prevOrders.map((order) =>
+            order._id === orderId ? { ...order, status: 'Canceled' } : order
+          )
+        );
+        Swal.fire({
+          title: 'Canceled!',
+          text: 'The order has been canceled.',
+          icon: 'success',
+        });
+      }
+    } catch (error) {
+      console.error('Error canceling order:', error.response?.data || error.message);
+      Swal.fire({
+        title: 'Error!',
+        text: 'There was an issue canceling the order.',
+        icon: 'error',
+      });
     }
-  } catch (error) {
-    console.error("Error canceling order:", error);
   }
 };
+
+
 
 // This effect will handle the countdown refresh
 useEffect(() => {

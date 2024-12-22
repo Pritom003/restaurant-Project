@@ -5,7 +5,7 @@ import { PiTrashSimpleThin } from "react-icons/pi";
 import Swal from "sweetalert2";
 import { TiShoppingCart } from "react-icons/ti";
 import { useState } from "react";
-
+import useAxiosSecure from "../../Hooks/useAxiosSecure"
 import OutOfRangeModal from "./OutofRangle";
 import useAuth from "../../Hooks/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -14,7 +14,9 @@ import useRestaurantStatus from "../../Hooks/useRestaurantStatus";
 const DELIVERY_CHARGE = 2.95;
 
 const Cart = () => {
+  
   const dispatch = useDispatch();
+  const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
   const { items, totalPrice } = useSelector((state) => state);
   const [orderType, setOrderType] = useState("");
@@ -57,7 +59,7 @@ const Cart = () => {
     };
     // console.log("Order data", orderData);
     try {
-      await axios.post("http://localhost:3000/api/orders", orderData);
+      await axiosSecure.post("/api/orders", orderData);
       // setShowPaymentForm(false);
       Swal.fire(
         "Order Placed",

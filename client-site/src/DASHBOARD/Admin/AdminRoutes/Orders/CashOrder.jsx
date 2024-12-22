@@ -1,8 +1,9 @@
 import { useEffect, useState, useRef } from "react";
-import axios from "axios";
+// import axios from "axios";
 import Swal from "sweetalert2";
 import ReactToPrint from "react-to-print";
 import { FaTrash, FaPrint, FaCheckCircle } from "react-icons/fa";
+import useAxiosSecure from "../../../../Hooks/useAxiosSecure";
 
 const CashOrder = () => {
   const [orders, setOrders] = useState([]);
@@ -10,12 +11,14 @@ const CashOrder = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [sortOption, setSortOption] = useState("descending"); // Default sort option for newest first
   const orderDetailsRef = useRef();
+  const axiosSecure = useAxiosSecure();
+
   console.log(selectedOrder);
 
   // Fetch orders on component mount
   useEffect(() => {
-    axios
-      .get("http://localhost:3000/api/orders/payment-methods?method=cash")
+    axiosSecure
+      .get("/api/orders/payment-methods?method=cash")
       .then((response) => {
         const fetchedOrders = response.data || [];
         setOrders(fetchedOrders);
@@ -69,8 +72,8 @@ const CashOrder = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios
-          .delete(`http://localhost:3000/api/orders/${id}`)
+        axiosSecure
+          .delete(`/api/orders/${id}`)
           .then((response) => {
             if (response.status >= 200 && response.status < 300) {
               setOrders((prevOrders) =>
@@ -90,8 +93,8 @@ const CashOrder = () => {
   };
 
   const handleUpdatePaymentStatus = (id) => {
-    axios
-      .patch(`http://localhost:3000/api/orders/${id}/payment-status`, {
+    axiosSecure
+      .patch(`/api/orders/${id}/payment-status`, {
         paymentStatus: "success",
       })
       .then(() => {

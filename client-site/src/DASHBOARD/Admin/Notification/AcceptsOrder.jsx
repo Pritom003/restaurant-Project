@@ -1,51 +1,53 @@
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 
 const AcceptOrder = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTime, setSelectedTime] = useState("30");
   const [selectedReason, setSelectedReason] = useState("Out of Stock");
+  const axiosSecure = useAxiosSecure();
 
-  // Fetch pending orders on component mount
+
+
   useEffect(() => {
     const fetchPendingOrders = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:3000/api/orders/pending"
-        );
-        const data = await response.json();
-        setOrders(data);
+        const response = await axiosSecure.get("/api/orders/pending");
+        setOrders(response.data); // Assuming the data you need is in the response body
         setLoading(false);
       } catch (error) {
         console.error("Error fetching pending orders:", error);
         setLoading(false);
       }
     };
+
     fetchPendingOrders();
   }, []);
-
   // Accept order and set preparation time
   const handleAccept = async (orderId) => {
     if (!selectedTime) {
       alert("Please select a time before accepting!");
       return;
     }
-
+  
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/orders/${orderId}`,
+      const response = await axiosSecure.patch(
+        `/api/orders/${orderId}`,
         {
-          method: "PATCH",
+          time: selectedTime,
+          status: "Preparing",
+        },
+        {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ time: selectedTime, status: "Preparing" }),
         }
       );
-
-      if (response.ok) {
-        const updatedOrder = await response.json();
+  
+      if (response.status === 200) {
+        const updatedOrder = response.data;
         Swal.fire({
           title: "Order Updated!",
           text: `Order #${updatedOrder.orderNumber} status updated to Preparing.`,
@@ -77,21 +79,23 @@ const AcceptOrder = () => {
       alert("Please select a reason for rejection!");
       return;
     }
-
+  
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/orders/${orderId}`,
+      const response = await axiosSecure.patch(
+        `/api/orders/${orderId}`,
         {
-          method: "PATCH",
+          status: "Rejected",
+          reason: selectedReason,
+        },
+        {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ status: "Rejected", reason: selectedReason }),
         }
       );
-
-      if (response.ok) {
-        const updatedOrder = await response.json();
+  
+      if (response.status === 200) {
+        const updatedOrder = response.data;
         Swal.fire({
           title: "Order Rejected",
           text: `Order #${updatedOrder.orderNumber} has been rejected.`,

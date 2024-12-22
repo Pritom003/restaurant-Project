@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+// import axios from "axios";
 import { Line, Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -25,8 +25,11 @@ ChartJS.register(
 );
 import {  FaChartLine, FaCalendarAlt } from "react-icons/fa";
 import Piecharts from "./Piechart";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 
 const AdminProfile = () => {
+  const axiosSecure = useAxiosSecure();
+
   const [dailyRevenue, setDailyRevenue] = useState([]);
   const [weeklyRevenue, setWeeklyRevenue] = useState([]);
   const [monthlyRevenue, setMonthlyRevenue] = useState([]);
@@ -85,15 +88,15 @@ const AdminProfile = () => {
     const fetchData = async () => {
       try {
         const [daily, weekly, monthly, yearly] = await Promise.all([
-          axios.get("http://localhost:3000/api/revenue/daily"),
-          axios.get(
-            `http://localhost:3000/api/revenue/weekly?weekOffset=${weekOffset}`
+          axiosSecure.get("/api/revenue/daily"),
+          axiosSecure.get(
+            `/api/revenue/weekly?weekOffset=${weekOffset}`
           ),
-          axios.get(
-            `http://localhost:3000/api/revenue/monthly?monthOffset=${monthOffset}`
+          axiosSecure.get(
+            `/api/revenue/monthly?monthOffset=${monthOffset}`
           ),
-          axios.get(
-            `http://localhost:3000/api/revenue/yearly?yearOffset=${yearOffset}`
+          axiosSecure.get(
+            `/api/revenue/yearly?yearOffset=${yearOffset}`
           ),
         ]);
         setDailyRevenue(daily.data);

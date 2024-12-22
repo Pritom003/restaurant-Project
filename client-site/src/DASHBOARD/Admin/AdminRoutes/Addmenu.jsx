@@ -2,12 +2,15 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import useMenuData from "../../../Hooks/Menudatea"; // Adjust path as needed
 import Swal from "sweetalert2";
-import axios from "axios";
+// import axios from "axios";
 import AddSpecialmenu from "./AddSpecialmenu";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 
 const AddMenuItem = () => {
   const { categories,refetch } = useMenuData(); // Use the hook to get categories
   const [isOtherCategory, setIsOtherCategory] = useState(false);
+  const axiosSecure = useAxiosSecure();
+
   const { register, handleSubmit } = useForm();
   const [isSetMenu, setIsSetMenu] = useState(false);
   const [setMenuItems, setSetMenuItems] = useState([
@@ -42,8 +45,8 @@ const AddMenuItem = () => {
     };
 
     try {
-      await axios.post(
-        `http://localhost:3000/api/menu/${itemData.category}/item`,
+      await axiosSecure.post(
+        `/api/menu/${itemData.category}/item`,
         itemData
       );
       Swal.fire({

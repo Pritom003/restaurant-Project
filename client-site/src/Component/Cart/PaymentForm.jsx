@@ -3,9 +3,11 @@
 
 import { useState } from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
-import axios from "axios";
+// import axios from "axios";
+import useAxiosSecure from "../../Hooks/useAxiosSecure";
 
 const PaymentForm = ({ totalPrice, handleOrderCompletion }) => {
+  const axiosSecure = useAxiosSecure();
   const stripe = useStripe();
   const elements = useElements();
   const [error, setError] = useState(null);
@@ -13,8 +15,8 @@ const PaymentForm = ({ totalPrice, handleOrderCompletion }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const { data } = await axios.post(
-      `http://localhost:3000/api/create-payment-intent`,
+    const { data } = await axiosSecure.post(
+      `/api/create-payment-intent`,
       { totalPrice }
     );
     const clientSecret = data.clientSecret;

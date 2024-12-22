@@ -1,10 +1,13 @@
 import { useForm } from "react-hook-form";
-import axios from "axios";
+// import axios from "axios";
 import {  useState } from "react";
 import Swal from "sweetalert2";
 import { useQuery } from "@tanstack/react-query";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 
 const AddSpecialmenu = () => {
+  const axiosSecure = useAxiosSecure();
+
   const { register, handleSubmit, reset, formState: { errors } } = useForm({
     defaultValues: {
       category: "Mid Week Special Platter",
@@ -19,7 +22,7 @@ const AddSpecialmenu = () => {
   const { data: setOptions, refetch } = useQuery({
     queryKey: ['setOptions'], // Use "queryKey" instead of an array argument
     queryFn: async () => {
-      const response = await axios.get('http://localhost:3000/api/special-menu/sets');
+      const response = await axiosSecure.get('/api/special-menu/sets');
       return response.data.sets || []; // Return only the required data
     }
   });
@@ -71,8 +74,8 @@ const AddSpecialmenu = () => {
     };
 
     try {
-   await axios.put(
-        `http://localhost:3000/api/special-menu/${encodeURIComponent(data.category)}`,
+   await axiosSecure.put(
+        `/api/special-menu/${encodeURIComponent(data.category)}`,
         formattedData
       );
      

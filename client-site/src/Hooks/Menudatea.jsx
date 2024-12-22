@@ -1,15 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
-// import useAxiosSecure from "./useAxiosSecure"; // Adjust path if needed
-import axios from "axios";
+import useAxiosSecure from "./useAxiosSecure"; // Adjust path if needed
+// import axios from "axios";
 
 const useMenuData = () => {
-  // const axiosSecure = useAxiosSecure();
+  const axiosSecure = useAxiosSecure();
 
   // Updated useQuery hook for TanStack Query v5
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['menuData'],
     queryFn: async () => {
-      const response = await axios.get("http://localhost:3000/api/menu");
+      const response = await axiosSecure.get("/api/menu");
       return response.data;
     },
     onSettled: (data) => {
