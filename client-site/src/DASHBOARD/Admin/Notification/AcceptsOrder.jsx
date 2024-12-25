@@ -124,7 +124,7 @@ const AcceptOrder = () => {
   if (loading) {
     return <div>Loading pending orders...</div>;
   }
-
+console.log(orders, 'orders');
   return (
     <div className="p-4 text-black">
       <h3 className="text-2xl font-bold mb-4">Pending Orders</h3>
@@ -166,8 +166,8 @@ const AcceptOrder = () => {
                       <span className=" text-xs" key={idx}>
                         {subItem.name}
                       </span>
-                    ))}
-                    (x{item.quantity})
+                    ))} <span className="text-[8px]">variant :`({item.variant}) `  spicelevel:`({item.spiceName})`</span>
+                    (x{item.quantity}) 
                   </span>
                 ))}
               </div>

@@ -179,7 +179,7 @@ const handleCancelOrder = async (orderId) => {
                       <span className=" text-xs" key={idx}>
                         {subItem.name}
                       </span>
-                    ))}
+                    ))}<span> variant :`({item.variant}) `  spicelevel:`({item.spiceName})`</span>
                     (x{item.quantity})
                   </span>
                 ))}

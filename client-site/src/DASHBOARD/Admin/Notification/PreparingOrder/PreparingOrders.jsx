@@ -183,7 +183,7 @@ const PreparingOrders = () => {
                           {/* <span>{subItem?.name}</span> */}
                         </span>
                       </div>
-                    ))}
+                    ))}<span> variant :`({item.variant}) `  spicelevel:`({item.spiceName})`</span>
                     (x{item.quantity})
                   </div>
                 ))}

@@ -16,7 +16,7 @@ if (initialState.items.length > 0) {
 const cartReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'ADD_TO_CART':
-      const { name, variant, spice, price, variantPrice, category, items } = action.payload;
+      const { name, variant, spice, price, variantPrice, category, items ,spicePrice} = action.payload;
       const key = variant ? `${name} (${variant})` : name;
 
       console.log(action.payload);
@@ -39,6 +39,8 @@ const cartReducer = (state = initialState, action) => {
           items,
           key,
           name,
+          spice,
+          spicePrice,
           spicelevel: spice?.name || null,
           spiceprice: spice?.price || null,
           variant: variant || null,

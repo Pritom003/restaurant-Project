@@ -40,9 +40,10 @@ const Cart = () => {
     category: item.category,
     subItems: item.items || [],
 
-    spiceName: item.spicelevel,
-    spicePrice: item.spiceprice,
+    spiceName: item.spice,
+    spicePrice: item.spicePrice,
   }));
+  console.log(formattedItems);
 
   // eslint-disable-next-line no-unused-vars
   const handleOrderCompletion = async (method, status) => {
@@ -169,8 +170,9 @@ const Cart = () => {
                   >
                     +
                   </button>
-                  {item.name} {item.variant && `(${item.variant})`}{" "}
-                  {item.spicelevel && `(${item.spicelevel})`}
+                  {item.name} <span className="lg:text-[8px] text-xs">{item.variant && `(${item.variant})`}</span>{" "}
+                 
+                  <span className="lg:text-[8px] text-xs"> {item.spice && `(${item.spice})`}</span>
                   {item.quantity > 1 && `(${item.quantity}x)`}
                   {/* Display special menu platter items under the category name */}
                   {item.category === "Special Platter" && (

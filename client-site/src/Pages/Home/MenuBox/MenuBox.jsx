@@ -11,8 +11,10 @@ import Swal from "sweetalert2";
 import useRestaurantStatus from "../../../Hooks/useRestaurantStatus";
 import { MdSignalWifiConnectedNoInternet1 } from "react-icons/md";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
+import MenuModal from "./MenuMOdal";
 const MenuBox = ({ addToCart }) => {
   const axiosSecure = useAxiosSecure();
+  const [selectedItem, setSelectedItem] = useState(null);
   const { menuData, isLoading, error,  refetch, } = MenuData();
   const [expandedCategories, setExpandedCategories] = useState([]);
   const [isAllergiesExpanded, setIsAllergiesExpanded] = useState(false);
@@ -116,15 +118,22 @@ const MenuBox = ({ addToCart }) => {
     setIsStillCantDecideOpen(true);
   };
 
-  const calculateTotalPrice = (item) => {
-    // console.log(item, "hello price ");
-    let totalPrice = item.price || 0;
-    if (SpecePriceName) totalPrice += SpecePriceName.price; // Add variant price
-    if (item.variantPrice)
-      totalPrice = item.variantPrice + SpecePriceName.price; // Add spicy level price if selected
-    // console.log(totalPrice);
-    return totalPrice.toFixed(2);
-  };
+console.log(SpecePriceName, "ccheck here ");
+const calculateTotalPrice = (item) => {
+  let totalPrice = item.price || 0;
+
+  // Add variant price if available
+  if (SpecePriceName && SpecePriceName.price) {
+    totalPrice += SpecePriceName.price;
+  }
+
+  // Add spice level price if selected
+  if (SpecePriceName && SpecePriceName.price) {
+    totalPrice += SpecePriceName.price;
+  }
+
+  return totalPrice.toFixed(2); // Returning the price in two decimal format
+};
 
   return (
     <div>
@@ -425,108 +434,87 @@ const MenuBox = ({ addToCart }) => {
                                     totalPrice,
                                   });
                                   refetch();
-                                  setSpicenameandprice({ name: "", price: 0 });
+                               
                                 }}
                                 className=" hover:boder-b-2 hover:border-b hover:border-b-red-950 cursor-pointer "
                               >
                                 {" "}
                                 {item.name}
                               </span>
-                              {item.varieties.length > 0 && (
+                              {item.varieties.length > 0  && (
                                 <div className="text-xs grid justify-end gap-1 text-gray-600 mt-1">
-                                  <select
-                                    className="bg-white text-black  w-44"
-                                    onChange={(e) => {
-                                      const selectedVariety =
-                                        item.varieties.find(
-                                          (variety) =>
-                                            variety.name === e.target.value
-                                        );
-
-                                      const updatedItem = {
-                                        ...item,
-                                        spice: SpecePriceName || null,
-                                        variant: selectedVariety.name || null,
-                                        variantPrice: selectedVariety
-                                          ? selectedVariety.price
-                                          : 0,
-                                        // Track the variant name for removing specific item
-                                        keyToRemove: selectedVariety
-                                          ? selectedVariety.name
-                                          : null,
-                                      };
-
-                                      // Dispatch to update cart
-                                      dispatch({
-                                        type: "ADD_TO_CART",
-                                        payload: updatedItem,
-                                      });
-                                      setSpicenameandprice({
-                                        name: "",
-                                        price: 0,
-                                      });
-                                      refetch();
-                                    }}
-                                  >
-                                    <option value="">Select a variety</option>
-                                    {item.varieties.map((variety, idx) => (
-                                      <option key={idx} value={variety.name}>
-                                        {variety.name} - £
-                                        {variety.price.toFixed(2)}
-                                      </option>
-                                    ))}
-                                  </select>
-                                </div>
-                              )}
-                              {item.spicyLevels.length > 0 && (
-                                <div className="text-xs grid justify-end gap-1 text-gray-600 mt-1">
-                                  <select
-                                    value={SpecePriceName.name || ""} // Ensuring the controlled value is properly set
-                                    className="bg-white text-black w-44"
-                                    onChange={(e) => {
-                                      const spice = item.spicyLevels.find(
-                                        (level) => level.name === e.target.value
-                                      );
-
-                                      if (spice) {
-                                        setSpicenameandprice({
-                                          name: spice.name,
-                                          price: spice.price,
-                                        });
-                                      }
-                                    }}
-                                  >
-                                    <option value="">Normal Spice</option>
-                                    {item.spicyLevels.map((spicy, idx) => (
-                                      <option key={idx} value={spicy.name}>
-                                        {spicy.name} - £{spicy.price.toFixed(2)}
-                                      </option>
-                                    ))}
-                                  </select>
-                                </div>
-                              )}
-
-                              {item.varieties.length === 0 && (
-                                <button
+                               
+                                   <button
                                   className="hover:underline"
-                                  onClick={() => {
-                                    const totalPrice =
-                                      calculateTotalPrice(item);
-                                    addToCart({
-                                      ...item,
-                                      spice: SpecePriceName?.name || null,
-                                      totalPrice,
-                                    });
-                                    refetch();
-                                    setSpicenameandprice({
-                                      name: "",
-                                      price: 0,
-                                    });
-                                  }}
+                                  onClick={() => setSelectedItem(item)
+                                    
+                                  }
+                                  
                                 >
-                                  + £{calculateTotalPrice(item)}
+                                  + select variety
                                 </button>
+
+                                {selectedItem && (
+  <MenuModal
+    item={selectedItem}
+    onClose={() => setSelectedItem(null)}
+    onAddToCart={(item) => {
+      dispatch({ type: "ADD_TO_CART", payload: item });
+      refetch();
+    }}
+  />
+)}
+                                </div>
                               )}
+                               
+                               {item.spicyLevels.length > 0 && item.varieties.length === 0 && (
+  <div className="text-xs grid justify-end gap-1 text-gray-600 mt-1">
+    <select
+      value={SpecePriceName.name || ""}
+      className="bg-white text-black w-44"
+      onChange={(e) => {
+        const spice = item.spicyLevels.find(
+          (level) => level.name === e.target.value
+        );
+        if (spice) {
+          setSpicenameandprice({
+            name: spice.name,
+            price: spice.price,
+          });
+        }
+      }}
+    >
+      <option value="">Normal Spice</option>
+      {item.spicyLevels.map((spicy, idx) => (
+        <option key={idx} value={spicy.name}>
+          {spicy.name} - £{spicy.price.toFixed(2)}
+        </option>
+      ))}
+    </select>
+  </div>
+)}
+
+{item.varieties.length === 0 && (
+  <button
+    className="hover:underline"
+    onClick={() => {
+    
+      const totalPrices = (SpecePriceName?.price || 0) + item.price;
+
+      addToCart({
+        ...item,
+        spice: SpecePriceName?.name || null,
+        spicePrice: SpecePriceName?.price || 0,
+        price : totalPrices.toFixed(2),
+      });
+      refetch();
+    setSpicenameandprice({ name: "", price: 0 });
+    }}
+  >
+    + £{(item.price).toFixed(2)} 
+  </button>
+)}
+
                             </div>
                           </ul>
                           <span className=" text-lga text-gray-600">
@@ -557,6 +545,10 @@ const MenuBox = ({ addToCart }) => {
             </span>
           </div>
         )}
+
+
+
+        
         {/* still cant decide  */}
 
         {isStillCantDecideOpen && (
