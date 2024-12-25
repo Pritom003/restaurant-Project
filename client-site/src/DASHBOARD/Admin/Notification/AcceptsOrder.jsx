@@ -129,8 +129,10 @@ const AcceptOrder = () => {
     <div className="p-4 text-black">
       <h3 className="text-2xl font-bold mb-4">Pending Orders</h3>
       {orders.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 
-        lg:grid-cols-3 gap-4 min-w-96 md:min-w-[500px] ">
+        <div
+          className="grid grid-cols-1 sm:grid-cols-2 
+        lg:grid-cols-3 gap-4 min-w-96 md:min-w-[500px] "
+        >
           {orders.map((order) => (
             <div
               key={order._id}
@@ -140,32 +142,35 @@ const AcceptOrder = () => {
                 Order #{order.orderNumber}
               </h4>
 
-             <div className="border-b-2 mb-2 pb-2"> <p>
-                <strong>User Email:</strong> {order.userEmail}
-              </p>
-              <p>
-                <strong>Total Price:</strong> £{order.totalPrice}
-              </p>
-              <p>
-                <strong>Status:</strong> {order.status}
-              </p>
-              <p>
-                <strong>reason:</strong> {order.reason ? order.reason : ""}
-              </p>
-              <h5 className="font-medium mt-3">Items:</h5>
-              {order.items.map((item, index) => (
-                <span className="flex text-xs flex-wrap gap-1" key={index}>
-                  {item.subItems.length > 0 &&
-                    item.subItems?.map((subItem) => subItem.name).join(", ")}
-                  {item.name}{" "}
-                  {item.subItems.map((subItem, idx) => (
-                    <span className=" text-xs" key={idx}>
-                      {subItem.name}
-                    </span>
-                  ))}
-                  (x{item.quantity})
-                </span>
-              ))}</div>
+              <div className="border-b-2 mb-2 pb-2">
+                {" "}
+                <p>
+                  <strong>User Email:</strong> {order.userEmail}
+                </p>
+                <p>
+                  <strong>Total Price:</strong> £{order.totalPrice}
+                </p>
+                <p>
+                  <strong>Status:</strong> {order.status}
+                </p>
+                <p>
+                  <strong>reason:</strong> {order.reason ? order.reason : ""}
+                </p>
+                <h5 className="font-medium mt-3">Items:</h5>
+                {order.items.map((item, index) => (
+                  <span className="flex text-xs flex-wrap gap-1" key={index}>
+                    {item.subItems.length > 0 &&
+                      item.subItems?.map((subItem) => subItem.name).join(", ")}
+                    {item.name}{" "}
+                    {item.subItems.map((subItem, idx) => (
+                      <span className=" text-xs" key={idx}>
+                        {subItem.name}
+                      </span>
+                    ))}
+                    (x{item.quantity})
+                  </span>
+                ))}
+              </div>
               <div className="flex justify-between">
                 {/* Accept Section */}
                 <div className="w-1/2 border-r border-gray-300 pr-4">
@@ -202,7 +207,7 @@ const AcceptOrder = () => {
                       "Too Busy",
                       "Out of Stock",
                       "Too Far",
-                  
+
                       "Closed Today",
                       "Please Call",
                     ].map((reason) => (

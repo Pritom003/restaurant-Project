@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import { Link } from 'react-router-dom';
-const baseURL = import.meta.env.VITE_BASE_URL;
+const SoketbaseURL = import.meta.env.VITE_BASE_URL;
 let socket;
 
 const Notifications = () => {
@@ -9,7 +9,7 @@ const Notifications = () => {
 
   useEffect(() => {
     if (!socket) {
-      socket = io(baseURL, {
+      socket = io(SoketbaseURL, {
         reconnection: true,
         reconnectionAttempts: 5,
         reconnectionDelay: 1000,

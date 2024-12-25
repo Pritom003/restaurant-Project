@@ -23,7 +23,7 @@ ChartJS.register(
   Tooltip,
   Legend
 );
-import {  FaChartLine, FaCalendarAlt } from "react-icons/fa";
+import { FaChartLine, FaCalendarAlt } from "react-icons/fa";
 import Piecharts from "./Piechart";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 
@@ -186,32 +186,33 @@ const AdminProfile = () => {
       {/* Revenue Cards */}
       <div className="flex flex-col lg:flex-row justify-around gap-4">
         {/* Daily Revenue */}
-        <div className="p-4 bg-[#7f6f51] text-[#ded2bb] rounded shadow  
-        text-center grid items-center justify-center">
+        <div
+          className="p-4 bg-base-300 text-black rounded shadow  
+        text-center grid items-center justify-center"
+        >
           <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
-          £ Daily
-            Revenue
+            £ Daily Revenue
           </h2>
           <div className="flex lg:flex-col items-center lg:justify-start justify-between gap-2">
-            <p className="text-5xl lg:text-4xl text-[#ded2bb] font-bold">
+            <p className="text-5xl lg:text-4xl text-black font-bold">
               £
               {dailyRevenue
                 ?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0)
                 .toFixed(2)}
             </p>
           </div>
-          <p className="text-xl text-[#ded2bb]">
+          <p className="text-xl text-black">
             {new Date().toLocaleDateString()}
           </p>
         </div>
 
         {/* Weekly Revenue */}
-        <div className="p-4 bg-[#6c6351] text-[#ded2bb] rounded shadow  text-center grid items-center justify-center">
+        <div className="p-4 bg-base-300 text-black rounded shadow  text-center grid items-center justify-center">
           <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
-            <FaChartLine className="mr-2 font-semibold text-[#ded2bb]" /> Weekly
+            <FaChartLine className="mr-2 font-semibold text-black" /> Weekly
             Revenue
           </h2>
-          <p className="text-5xl lg:text-4xl text-[#ded2bb] font-bold">
+          <p className="text-5xl lg:text-4xl text-black font-bold">
             £
             {weeklyRevenue
               ?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0)
@@ -240,12 +241,12 @@ const AdminProfile = () => {
         </div>
 
         {/* Monthly Revenue */}
-        <div className="p-4 bg-[#4b463d] text-[#ded2bb] rounded shadow  text-center">
+        <div className="p-4 bg-base-300 text-black rounded shadow  text-center">
           <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
-            <FaCalendarAlt className="mr-2 font-semibold text-[#ded2bb] " /> Monthly
+            <FaCalendarAlt className="mr-2 font-semibold text-black " /> Monthly
             Revenue
           </h2>
-          <p className="text-5xl lg:text-4xl text-[#ded2bb]  font-bold">
+          <p className="text-5xl lg:text-4xl text-black  font-bold">
             £
             {monthlyRevenue
               ?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0)
@@ -268,19 +269,19 @@ const AdminProfile = () => {
               &gt;
             </button>
           </div>
-          <p className="text-[#ded2bb]  text-xl">{getMonthName(monthOffset)}</p>
+          <p className="text-black  text-xl">{getMonthName(monthOffset)}</p>
         </div>
 
         {/* Yearly Revenue */}
         <div
-          className="p-4 bg-[#3b3935] rounded shadow 
+          className="p-4 bg-base-300 rounded shadow 
        text-center"
         >
-          <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
-            <FaCalendarAlt className="mr-2 font-semibold text-[#ded2bb] " /> Yearly
+          <h2 className="text-2xl lg:text-xl pb-2 flex text-black items-center font-semibold">
+            <FaCalendarAlt className="mr-2 font-semibold text-black " /> Yearly
             Revenue
           </h2>
-          <p className="text-5xl lg:text-4xl text-[#ded2bb]  font-bold">
+          <p className="text-5xl lg:text-4xl text-black  font-bold">
             £
             {yearlyRevenue
               ?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0)
@@ -300,7 +301,7 @@ const AdminProfile = () => {
               &gt;
             </button>
           </div>
-          <p className="text-[#ded2bb]  text-xl">
+          <p className="text-black  text-xl">
             {new Date().getFullYear() + yearOffset}
           </p>
           {/* <p className="text-5xl lg:text-4xl text-[#ded2bb]  font-bold">£{yearlyRevenue?.reduce((sum, { totalRevenue }) => sum + totalRevenue, 0).toFixed(2)}</p> */}
@@ -313,60 +314,59 @@ const AdminProfile = () => {
      justify-center gap-4"
       >
         {/* Weekly Chart */}
-        <div className="w-full bg-[#6c6351] p-5 ">
-          <h3 className="text-lg font-bold mb-4">Weekly Revenue Graph</h3>
+        <div className="w-full bg-base-300 p-5 ">
+          <h3 className="text-lg text-black font-bold mb-4">
+            Weekly Revenue Graph
+          </h3>
           <Line
             data={createChartData(
               formatWeekLabels(weeklyRevenue),
               daysOfWeek,
               "Revenue",
               "line",
-              "#26630b"
+              "black"
             )}
-         
             options={{
               responsive: true,
               plugins: {
                 legend: {
                   position: "top",
                   labels: {
-                    color:' #ded2bb', // Change legend text color
+                    color: " black", // Change legend text color
                   },
                 },
-        
               },
               scales: {
                 x: {
                   ticks: {
-                    color: ' #ded2bb', // Change color of X-axis labels
+                    color: " black", // Change color of X-axis labels
                   },
                   title: {
                     display: true,
-                    text: 'Days of the week', // Optional: Add title to X-axis
-                    color: '#ff9900', // Change color of X-axis title
+                    text: "Days of the week", // Optional: Add title to X-axis
+                    color: "black", // Change color of X-axis title
                   },
                 },
                 y: {
                   ticks: {
-                    color: ' #ded2bb', // Change color of Y-axis labels
+                    color: "black", // Change color of Y-axis labels
                   },
                   title: {
                     display: true,
-                    text: 'Revenue (£)', // Optional: Add title to Y-axis
-                    color: '#ff9900', // Change color of Y-axis title
+                    text: "Revenue (£)", // Optional: Add title to Y-axis
+                    color: "black", // Change color of Y-axis title
                   },
                 },
               },
-              
             }}
-
-
           />
         </div>
 
         {/* Monthly Chart */}
-        <div className="w-full bg-yellow-50 p-5">
-          <h3 className="text-lg font-bold mb-4">Monthly Revenue Graph</h3>
+        <div className="w-full bg-base-300 p-5">
+          <h3 className="text-lg text-black font-bold mb-4">
+            Monthly Revenue Graph
+          </h3>
           <Bar
             data={createChartData(
               formatMonthlyLabels(monthlyRevenue),
@@ -380,8 +380,10 @@ const AdminProfile = () => {
         </div>
 
         {/* Yearly Chart */}
-        <div className="w-full bg-[#3b3935] p-5">
-          <h3 className="text-lg font-bold mb-4">Yearly Revenue Graph</h3>
+        <div className="w-full bg-base-300 p-5">
+          <h3 className="text-lg text-black font-bold mb-4">
+            Yearly Revenue Graph
+          </h3>
           <Line
             data={createChartData(
               formatYearlyData(yearlyRevenue),
@@ -394,45 +396,46 @@ const AdminProfile = () => {
                 legend: {
                   position: "top",
                   labels: {
-                    color:' #ded2bb', // Change legend text color
+                    color: "black", // Change legend text color
                   },
                 },
                 title: {
                   display: true,
                   text: "Yearly Revenue Overview",
-                  color:'#ded2bb'
+                  color: "black",
                 },
               },
               scales: {
                 x: {
                   ticks: {
-                    color: ' #ded2bb', // Change color of X-axis labels
+                    color: " black", // Change color of X-axis labels
                   },
                   title: {
                     display: true,
-                    text: 'Months of the  Year', // Optional: Add title to X-axis
-                    color: '#ff9900', // Change color of X-axis title
+                    text: "Months of the  Year", // Optional: Add title to X-axis
+                    color: "black", // Change color of X-axis title
                   },
                 },
                 y: {
                   ticks: {
-                    color: ' #ded2bb', // Change color of Y-axis labels
+                    color: " black", // Change color of Y-axis labels
                   },
                   title: {
                     display: true,
-                    text: 'Revenue (£)', // Optional: Add title to Y-axis
-                    color: '#ff9900', // Change color of Y-axis title
+                    text: "Revenue (£)", // Optional: Add title to Y-axis
+                    color: "black", // Change color of Y-axis title
                   },
                 },
               },
-              
             }}
           />
         </div>
 
         {/* Pie Chart */}
-        <div className="w-full border-2 border-orange-900 shadow-2xl p-4">
-          <h3 className="text-lg font-bold mb-4">Payment Methods comparison</h3>
+        <div className="w-full border-2 border-orange-900 bg-base-300 shadow-2xl p-4">
+          <h3 className="text-lg font-bold text-black mb-4">
+            Payment Methods comparison
+          </h3>
 
           <Piecharts />
         </div>

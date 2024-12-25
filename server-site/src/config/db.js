@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const connectToMongoDB = async () => {
   try {
-    await mongoose.connect(`mongodb+srv://Deedar_uk:wvHGCmG8e2ieJeS9@cluster0.ucoarqa.mongodb.net/restaurantDB?retryWrites=true&w=majority&appName=Cluster0`, {
+    await mongoose.connect(`mongodb+srv://deedarlouth:aVEZD9gUThNpmOoL@cluster0.bturv.mongodb.net/deedarExpress?retryWrites=true&w=majority&appName=Cluster0`, {
 
     });
     console.log('Connected to MongoDB using Mongoose');

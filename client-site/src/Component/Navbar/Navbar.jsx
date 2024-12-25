@@ -20,7 +20,9 @@ const Navbar = () => {
   return (
     <nav
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        isScrolled ? "bg-[rgba(67,67,55,0.3)] backdrop-blur-sm" : "bg-transparent"
+        isScrolled
+          ? "bg-[rgba(67,67,55,0.3)] backdrop-blur-sm"
+          : "bg-transparent"
       }`}
     >
       <div className="container mx-auto flex items-center justify-between px-6 py-4">
@@ -35,8 +37,8 @@ const Navbar = () => {
             <NavLink
               to="/"
               className={({ isActive }) =>
-                `hover:text-orange-400 transition ${
-                  isActive ? "text-orange-400 underline decoration-gold" : ""
+                `hover:text-red-600 transition ${
+                  isActive ? "text-red-600 underline decoration-gold" : ""
                 }`
               }
             >
@@ -47,8 +49,8 @@ const Navbar = () => {
             <NavLink
               to="/menus"
               className={({ isActive }) =>
-                `hover:text-orange-400 transition ${
-                  isActive ? "text-orange-400 underline decoration-gold" : ""
+                `hover:text-red-600 transition ${
+                  isActive ? "text-red-600 underline decoration-gold" : ""
                 }`
               }
             >
@@ -59,8 +61,8 @@ const Navbar = () => {
             <NavLink
               to="/about"
               className={({ isActive }) =>
-                `hover:text-orange-400 transition ${
-                  isActive ? "text-orange-400 underline decoration-gold" : ""
+                `hover:text-black transition ${
+                  isActive ? "text-black underline decoration-gold" : ""
                 }`
               }
             >
@@ -71,8 +73,8 @@ const Navbar = () => {
             <NavLink
               to="/contact"
               className={({ isActive }) =>
-                `hover:text-orange-400 transition ${
-                  isActive ? "text-orange-400 underline decoration-gold" : ""
+                `hover:text-black transition ${
+                  isActive ? "text-black underline decoration-gold" : ""
                 }`
               }
             >
@@ -87,8 +89,8 @@ const Navbar = () => {
                 <NavLink
                   to="/dashboard"
                   className={({ isActive }) =>
-                    `hover:text-orange-400 transition ${
-                      isActive ? "text-orange-400 underline decoration-gold" : ""
+                    `hover:text-red-600 transition ${
+                      isActive ? "text-red-600 underline decoration-gold" : ""
                     }`
                   }
                 >
@@ -98,7 +100,7 @@ const Navbar = () => {
               <li>
                 <button
                   onClick={logOut}
-                  className="hover:text-orange-400 transition"
+                  className="hover:text-red-600 transition"
                 >
                   Logout
                 </button>
@@ -109,8 +111,8 @@ const Navbar = () => {
               <NavLink
                 to="/login"
                 className={({ isActive }) =>
-                  `hover:text-orange-400 transition ${
-                    isActive ? "text-orange-400 underline decoration-gold" : ""
+                  `hover:text-red-600 transition ${
+                    isActive ? "text-red-600 underline decoration-gold" : ""
                   }`
                 }
               >

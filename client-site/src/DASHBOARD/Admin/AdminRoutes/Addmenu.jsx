@@ -7,7 +7,7 @@ import AddSpecialmenu from "./AddSpecialmenu";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 
 const AddMenuItem = () => {
-  const { categories,refetch } = useMenuData(); // Use the hook to get categories
+  const { categories, refetch } = useMenuData(); // Use the hook to get categories
   const [isOtherCategory, setIsOtherCategory] = useState(false);
   const axiosSecure = useAxiosSecure();
 
@@ -55,7 +55,7 @@ const AddMenuItem = () => {
         icon: "success",
         confirmButtonText: "Okay",
       });
-refetch()
+      refetch();
       // Reset form and state after submission
       setVarieties([{ name: "", price: "" }]);
       setSpicyLevels([{ name: "", price: "" }]);
@@ -94,7 +94,6 @@ refetch()
     });
   };
 
-  
   const handleSetMenuItemChange = (index, field, value) => {
     setSetMenuItems((prevItems) => {
       const updatedItems = [...prevItems];
@@ -154,13 +153,15 @@ refetch()
           <label className="block  text-gray-700 font-medium">
             Select Category
           </label>
-          <select 
-                    {...register("category", { required: true })}
-            onChange={handleCategoryChange} 
+          <select
+            {...register("category", { required: true })}
+            onChange={handleCategoryChange}
             className="border rounded 
            bg-white  focus:outline-none focus:ring-2 focus:ring-orange-500"
           >
-            <option className=""  value="">Select a category</option>
+            <option className="" value="">
+              Select a category
+            </option>
             {categories.map((category) => (
               <option key={category} value={category}>
                 {category}
@@ -364,7 +365,7 @@ refetch()
           <button
             type="button"
             onClick={handleAddSpicyLevel}
-             className=" border-2 font-bold border-b-orange-950 mt-2"
+            className=" border-2 font-bold border-b-orange-950 mt-2"
           >
             Add Spicy Level +
           </button>
@@ -373,7 +374,7 @@ refetch()
         {/* Submit Button */}
         <button
           type="submit"
-          className="bg-orange-500 text-white px-4 py-2 rounded mt-4 w-full hover:bg-orange-600"
+          className="bg-red-500 text-white px-4 py-2 rounded mt-4 w-full hover:bg-orange-600"
         >
           Submit
         </button>

@@ -59,7 +59,9 @@ const UserList = () => {
           .delete(`/users/${email}`)
           .then(() => {
             Swal.fire("Deleted!", "User has been deleted.", "success");
-            setUsers((prevUsers) => prevUsers.filter((user) => user.email !== email));
+            setUsers((prevUsers) =>
+              prevUsers.filter((user) => user.email !== email)
+            );
           })
           .catch((error) => console.error("Error deleting user:", error));
       }
@@ -100,7 +102,7 @@ const UserList = () => {
                   <PiChefHatThin size={20} />
                 </button>
                 <button
-                  className="text-red-500 "
+                  className="text-black "
                   onClick={() => deleteUser(user.email)}
                   title="Delete User"
                 >
