@@ -64,65 +64,87 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
-// Print route
 app.post("/print", (req, res) => {
   const order = req.body;
 
   try {
-    const device = new escpos.USB(); // Connect to the USB printer
+    // Initialize the printer
+    const device = new escpos.USB(); // Ensure the correct printer is connected via USB
     const printer = new escpos.Printer(device);
 
-    device.open(() => {
-      printer
-        .font("a")
-        .align("ct")
-        .style("bu")
-        .size(1, 1)
-        .text("Deedar Uk")
-        .text(`Address: ${order.address}`)
-        .text(`Zip Code: ${order.zipcode}`)
-        .text(`Area: ${order.area}`)
-        .text(`Contact No: ${order.mobile}`)
-        .text("---------------")
-        .text(`Order Number: ${order.orderNumber}`)
-        .text(`CreatedAt: ${order.createdAt}`)
-        .text("---------------");
+    device.open((error) => {
+      if (error) {
+        console.error("Error opening device:", error);
+        return res.status(500).json({ error: "Failed to connect to printer" });
+      }
 
-      // Add items
-      printer.tableCustom([
-        { text: "Qty", align: "LEFT", width: 0.2 },
-        { text: "Item", align: "CENTER", width: 0.5 },
-        { text: "Price", align: "RIGHT", width: 0.3 },
-      ]);
+      try {
+        // Print header
+        printer
+          .font("a")
+          .align("ct")
+          .style("b")
+          .size(1, 1)
+          .text("Deedar Uk")
+          .text(`Address: ${order.address}`)
+          .text(`Zip Code: ${order.zipcode}`)
+          .text(`Area: ${order.area}`)
+          .text(`Contact No: ${order.mobile}`)
+          .text("---------------")
+          .text(`Order Number: ${order.orderNumber}`)
+          .text(`Created At: ${order.createdAt}`)
+          .text("---------------");
 
-      order.items.forEach((item) => {
+        // Print table header
         printer.tableCustom([
-          { text: item.quantity.toString(), align: "LEFT", width: 0.2 },
-          { text: item.name, align: "CENTER", width: 0.5 },
-          { text: `£ ${item.price}`, align: "RIGHT", width: 0.3 },
+          { text: "Qty", align: "LEFT", width: 0.2 },
+          { text: "Item", align: "CENTER", width: 0.5 },
+          { text: "Price", align: "RIGHT", width: 0.3 },
         ]);
-      });
 
-      // Add totals and payment info
-      printer
-        .text("---------------")
-        .text(`Delivery Charge: £ ${order.extraCharge}`)
-        .text(`Subtotal: £ ${order.totalPrice}`)
-        .text(`Total: £ ${order.totalPrice}`)
-        .text("---------------")
-        .text(`Payment Method: ${order.paymentMethod}`)
-        .text(`Payment Status: ${order.paymentStatus}`)
-        .text("---------------")
-        .text("Customer Copy")
-        .text("Thanks for visiting")
-        .cut()
-        .close();
+        // Print each item
+        order.items.forEach((item) => {
+          printer.tableCustom([
+            { text: item.quantity.toString(), align: "LEFT", width: 0.2 },
+            { text: item.name, align: "CENTER", width: 0.5 },
+            { text: `£ ${item.price.toFixed(2)}`, align: "RIGHT", width: 0.3 },
+          ]);
+        });
 
-      res.status(200).json({ message: "Print successful" });
+        // Print totals and payment info
+        printer
+          .text("---------------")
+          .tableCustom([
+            { text: "Delivery Charge:", align: "LEFT", width: 0.7 },
+            { text: `£ ${order.extraCharge.toFixed(2)}`, align: "RIGHT", width: 0.3 },
+          ])
+          .tableCustom([
+            { text: "Subtotal:", align: "LEFT", width: 0.7 },
+            { text: `£ ${order.totalPrice.toFixed(2)}`, align: "RIGHT", width: 0.3 },
+          ])
+          .tableCustom([
+            { text: "Total:", align: "LEFT", width: 0.7 },
+            { text: `£ ${order.totalPrice.toFixed(2)}`, align: "RIGHT", width: 0.3 },
+          ])
+          .text("---------------")
+          .text(`Payment Method: ${order.paymentMethod}`)
+          .text(`Payment Status: ${order.paymentStatus}`)
+          .text("---------------")
+          .text("Customer Copy")
+          .text("Thanks for visiting!")
+          .cut()
+          .close();
+
+        // Respond to the client
+        res.status(200).json({ message: "Print successful" });
+      } catch (printError) {
+        console.error("Printing Error:", printError);
+        res.status(500).json({ error: "Failed to print receipt" });
+      }
     });
   } catch (error) {
-    console.error("Printing Error:", error);
-    res.status(500).json({ error: "Failed to print" });
+    console.error("General Error:", error);
+    res.status(500).json({ error: "An unexpected error occurred" });
   }
 });
 
