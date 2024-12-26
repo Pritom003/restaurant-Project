@@ -214,7 +214,7 @@ const AllMenuList = () => {
     <div>
       <div className="flex flex-wrap gap-4 text-black">
         <div className="container mx-auto py-8 text-black">
-          <h2 className="text-center text-4xl font-chewy underline text-orange-600 pt-10">
+          <h2 className="text-center text-4xl font-chewy underline text-white pt-10">
             Regular Menus
           </h2>
           {loading ? (
@@ -237,7 +237,7 @@ const AllMenuList = () => {
                   {category.items.map((item, id) => (
                     <div
                       key={id}
-                      className="card p-4 border shadow-md rounded-lg bg-slate-500 text-orange-100"
+                      className="card p-4 border shadow-md rounded-lg bg-white text-black"
                     >
                       <h4 className="text-lg font-bold">{item.name}</h4>
                       <p className="text-sm">

@@ -14,7 +14,38 @@ const PickupOrder = () => {
   const [dataChanged, setDataChanged] = useState(false); // Track changes
   const orderDetailsRef = useRef();
   const axiosSecure = useAxiosSecure();
+  const [year, setYear] = useState("");
+  const [month, setMonth] = useState("");
+  // const axiosSecure = useAxiosSecure();
 
+  const handleDeleteMonthlyOrders = () => {
+    if (!year || !month) {
+      Swal.fire("Error", "Please select both year and month.", "error");
+      return;
+    }
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: `Do you want to delete all orders for ${year}-${month}?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete them!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axiosSecure
+          .delete(`/api/orders/month/${year}/${month}`)
+          .then((response) => {
+            Swal.fire("Deleted!", response.data.message, "success");
+          })
+          .catch((error) => {
+            console.error("Error deleting monthly orders:", error);
+            Swal.fire("Error!", "Failed to delete monthly orders.", "error");
+          });
+      }
+    });
+  };
   // Fetch and sort orders in descending order when the component mounts or data changes
   useEffect(() => {
     setIsLoading(true);
@@ -108,7 +139,7 @@ const PickupOrder = () => {
   return (
     <div className="overflow-x-auto mt-8 text-black">
       {isLoading && <p>Loading...</p>}
-      <h2 className="text-2xl font-semibold mb-4">Pick Up Orders</h2>
+      <h2 className="text-2xl font-semibold mb-4">Pick Up Orderssss</h2>
 
       {/* Month Filter Dropdown */}
       <div className="mb-4">
@@ -135,6 +166,49 @@ const PickupOrder = () => {
           <option value="11">November</option>
           <option value="12">December</option>
         </select>
+        <div className="mt-8">
+      <h2 className="text-2xl font-semibold mb-4">Delete Monthly Orders</h2>
+
+      <div className="flex items-center space-x-4">
+        <div>
+          <label htmlFor="year" className="block mb-2 font-medium">
+            Year
+          </label>
+          <input
+            id="year"
+            type="number"
+            className="p-2 border rounded-md bg-white"
+            value={year}
+            onChange={(e) => setYear(e.target.value)}
+            placeholder="e.g., 2024"
+          />
+        </div>
+        <div>
+          <label htmlFor="month" className="block mb-2 font-medium">
+            Month
+          </label>
+          <select
+            id="month"
+            className="p-2 border rounded-md bg-white"
+            value={month}
+            onChange={(e) => setMonth(e.target.value)}
+          >
+            <option value="">Select a month</option>
+            {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+              <option key={m} value={m}>
+                {m.toString().padStart(2, "0")} - {new Date(0, m - 1).toLocaleString("default", { month: "long" })}
+              </option>
+            ))}
+          </select>
+        </div>
+        <button
+          onClick={handleDeleteMonthlyOrders}
+          className="p-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+        >
+          Delete Orders
+        </button>
+      </div>
+    </div>
       </div>
 
       <div className="flex gap-6">

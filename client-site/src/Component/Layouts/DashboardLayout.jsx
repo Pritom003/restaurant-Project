@@ -45,8 +45,8 @@ const OrderSubMenu = ({ isOpen }) =>
           to="orderList/strip-order"
           className={({ isActive }) =>
             `mt-4 ${
-              isActive ? "text-red-300" : "text-white"
-            } hover:underline hover:text-black`
+              isActive ? "text-red-300 underline" : "text-white"
+            }text-xl hover:underline hover:text-orange-200`
           }
         >
           Online
@@ -58,25 +58,15 @@ const OrderSubMenu = ({ isOpen }) =>
           to="orderList/cash-on-delivery"
           className={({ isActive }) =>
             `mt-4 ${
-              isActive ? "text-red-300" : "text-white"
-            } hover:underline hover:text-black`
+              isActive ?  "text-red-300 underline" : "text-white"
+            } hover:underline hover:text-orange-200`
           }
         >
           Cash
         </NavLink>
       </li>
       {/* Uncomment and update as needed for additional submenus */}
-      {/* <li className="flex items-center gap-2 text-xl mr-2">
-        <RiTruckFill />
-        <NavLink 
-          to="orderList/pickup" 
-          className={({ isActive }) => 
-            `mt-4 ${isActive ? 'text-black' : 'text-white'} hover:underline hover:text-black`
-          }
-        >
-          Pickup
-        </NavLink>
-      </li> */}
+    
     </ul>
   );
 

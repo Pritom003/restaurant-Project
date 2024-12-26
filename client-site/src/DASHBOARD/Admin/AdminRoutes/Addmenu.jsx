@@ -141,11 +141,11 @@ const AddMenuItem = () => {
   console.log("From Front End", spicyLevels);
 
   return (
-    <div className="lg:flex  text-black  grid gap-2 justify-center align-middle items-center  ">
+    <div className="lg:flex  grid text-black   gap-2 justify-center align-middle items-center  ">
       <AddSpecialmenu />
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="min-w-[40vw] mx-auto p-4 max-h-[800px]
+        className="min-w-[40vw] mx-auto p-4 min-h-[700px]
          bg-orange-100 shadow-lg rounded-lg"
       >
         <h2 className="text-2xl font-bold mb-4 text-center">Add Menu Item</h2>

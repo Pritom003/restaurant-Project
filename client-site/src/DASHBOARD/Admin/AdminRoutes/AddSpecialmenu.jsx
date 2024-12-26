@@ -111,7 +111,7 @@ const AddSpecialmenu = () => {
   };
 
   return (
-    <div className="p-10 max-w-3xl mx-auto w-full bg-gradient-to-r from-green-50 to-green-100 shadow-xl rounded-lg max-h-[800px] overflow-auto">
+    <div className="p-10 max-w-3xl mx-auto w-full bg-gradient-to-r from-green-50 to-green-100 shadow-xl rounded-lg min-h-[700px] overflow-auto">
       <h2 className="text-3xl font-extrabold text-center text-gray-800 mb-8">
         Add Special Menu
       </h2>

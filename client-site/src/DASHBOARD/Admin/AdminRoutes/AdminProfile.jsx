@@ -187,7 +187,7 @@ const AdminProfile = () => {
       <div className="flex flex-col lg:flex-row justify-around gap-4">
         {/* Daily Revenue */}
         <div
-          className="p-4 bg-base-300 text-black rounded shadow  
+          className="p-4 bg-white text-black rounded shadow  
         text-center grid items-center justify-center"
         >
           <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
@@ -207,7 +207,7 @@ const AdminProfile = () => {
         </div>
 
         {/* Weekly Revenue */}
-        <div className="p-4 bg-base-300 text-black rounded shadow  text-center grid items-center justify-center">
+        <div className="p-4 bg-white text-black rounded shadow  text-center grid items-center justify-center">
           <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
             <FaChartLine className="mr-2 font-semibold text-black" /> Weekly
             Revenue
@@ -241,7 +241,7 @@ const AdminProfile = () => {
         </div>
 
         {/* Monthly Revenue */}
-        <div className="p-4 bg-base-300 text-black rounded shadow  text-center">
+        <div className="p-4 bg-white text-black rounded shadow  text-center">
           <h2 className="text-2xl lg:text-xl pb-2 flex items-center font-semibold">
             <FaCalendarAlt className="mr-2 font-semibold text-black " /> Monthly
             Revenue
@@ -274,7 +274,7 @@ const AdminProfile = () => {
 
         {/* Yearly Revenue */}
         <div
-          className="p-4 bg-base-300 rounded shadow 
+          className="p-4 bg-white rounded shadow 
        text-center"
         >
           <h2 className="text-2xl lg:text-xl pb-2 flex text-black items-center font-semibold">
@@ -314,7 +314,7 @@ const AdminProfile = () => {
      justify-center gap-4"
       >
         {/* Weekly Chart */}
-        <div className="w-full bg-base-300 p-5 ">
+        <div className="w-full bg-white p-5 ">
           <h3 className="text-lg text-black font-bold mb-4">
             Weekly Revenue Graph
           </h3>
@@ -363,7 +363,7 @@ const AdminProfile = () => {
         </div>
 
         {/* Monthly Chart */}
-        <div className="w-full bg-base-300 p-5">
+        <div className="w-full bg-white p-5">
           <h3 className="text-lg text-black font-bold mb-4">
             Monthly Revenue Graph
           </h3>
@@ -380,7 +380,7 @@ const AdminProfile = () => {
         </div>
 
         {/* Yearly Chart */}
-        <div className="w-full bg-base-300 p-5">
+        <div className="w-full bg-white p-5">
           <h3 className="text-lg text-black font-bold mb-4">
             Yearly Revenue Graph
           </h3>
@@ -432,7 +432,7 @@ const AdminProfile = () => {
         </div>
 
         {/* Pie Chart */}
-        <div className="w-full border-2 border-orange-900 bg-base-300 shadow-2xl p-4">
+        <div className="w-full border-2 border-orange-900 bg-white shadow-2xl p-4">
           <h3 className="text-lg font-bold text-black mb-4">
             Payment Methods comparison
           </h3>

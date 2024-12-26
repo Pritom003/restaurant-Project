@@ -330,7 +330,29 @@ router.patch('/api/orders/:id/expire', async (req, res) => {
 });
 
 
-// PATCH request to update order status
+// DELETE request to delete orders for a specific month
+router.delete("/api/orders/month/:year/:month", async (req, res) => {
+  const { year, month } = req.params;
+
+  try {
+    // Calculate the start and end dates of the month
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 0); // Last day of the month
+
+    // Delete orders within the date range
+    const result = await Order.deleteMany({
+      createdAt: { $gte: startDate, $lt: endDate },
+    });
+
+    res.status(200).json({
+      message: `Successfully deleted ${result.deletedCount} orders for ${year}-${month}.`,
+    });
+  } catch (error) {
+    console.error("Error deleting orders by month:", error);
+    res.status(500).json({ error: "Failed to delete orders for the month." });
+  }
+});
+
 // PATCH request to update order status to 'Expired' if preparation time exceeds
 router.patch('/api/orders/:id/expire', async (req, res) => {
   try {
