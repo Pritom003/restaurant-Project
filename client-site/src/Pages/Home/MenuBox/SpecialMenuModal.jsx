@@ -7,7 +7,7 @@ const SpecialMenuModal = ({ onClose, subcategories, onAddToCart, priceId }) => {
   const [selectedItems, setSelectedItems] = useState({});
   const [totalSubcategoryPrice, setTotalSubcategoryPrice] = useState(0); 
   const dispatch = useDispatch();
-
+console.log(subcategories);
   const handleSelect = (subcategoryName, subcategoryPrice, item) => {
     setSelectedItems((prev) => {
       const currentSelections = prev[subcategoryName] || [];

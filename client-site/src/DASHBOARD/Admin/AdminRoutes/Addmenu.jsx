@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 // import axios from "axios";
 import AddSpecialmenu from "./AddSpecialmenu";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
+import './AddSpecialmenu'
 
 const AddMenuItem = () => {
   const { categories, refetch } = useMenuData(); // Use the hook to get categories
@@ -141,6 +142,7 @@ const AddMenuItem = () => {
 
   return (
     <div className="lg:flex  text-black  grid gap-2 justify-center align-middle items-center  ">
+      <AddSpecialmenu />
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="min-w-[40vw] mx-auto p-4 max-h-[800px]
@@ -379,7 +381,7 @@ const AddMenuItem = () => {
           Submit
         </button>
       </form>
-      <AddSpecialmenu />
+
     </div>
   );
 };
