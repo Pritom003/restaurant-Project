@@ -62,8 +62,8 @@ const CashOrder = () => {
   };
 
   const handlePrint = () => {
-    axios
-      .post("http://localhost:5000/print", selectedOrder)
+    axiosSecure
+      .post("/print", selectedOrder)
       .then((response) => {
         console.log(response.data.message);
         alert("Printed successfully!");
